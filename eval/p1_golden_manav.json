@@ -128,7 +128,7 @@
     "conversation_id": "GM09",
     "turn": 1,
     "type": "figure",
-    "question": "In the unemployment chart that uses the March 2014 data vintage, what was the U.S. unemployment rate in 2013?",
+    "question": "In the unemployment chart that uses the March 2014 data vintage, which U.S. unemployment rate does it show for 2013?",
     "expected_answer": "The March 2014 vintage chart (Figure A-3) shows a U.S. unemployment rate of 7.4% in 2013.",
     "required_numbers": [7.4],
     "status": "answered",
