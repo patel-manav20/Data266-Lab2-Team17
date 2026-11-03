@@ -1,0 +1,220 @@
+[
+  {
+    "id": "G01",
+    "conversation_id": "GM01",
+    "turn": 1,
+    "type": "fact_table",
+    "question": "According to the PPI briefing, how long did unemployed people in the United States stay unemployed on average in 2010, compared with 2000-2007?",
+    "expected_answer": "Mean duration of unemployment rose from about 9 weeks over 2000-2007 to 33 weeks in 2010.",
+    "required_numbers": [9, 33],
+    "status": "answered",
+    "citations": ["DOC3:p5"],
+    "figure_references": [],
+    "evidence": [
+      {"doc": "DOC3", "pdf_page": 5, "label": "", "text": "Long-term unemployment also rose sharply: mean duration increased from about 9 weeks over 2000-2007 to 33 weeks in 2010."}
+    ]
+  },
+  {
+    "id": "G02",
+    "conversation_id": "GM02",
+    "turn": 1,
+    "type": "fact_table",
+    "question": "What was the average U.S. unemployment rate over 2000 to 2007?",
+    "expected_answer": "The U.S. unemployment rate averaged 5.0% over 2000-2007.",
+    "required_numbers": [5.0],
+    "status": "answered",
+    "citations": ["DOC1:Table 1-2", "DOC1:p5"],
+    "figure_references": ["Table 1-2"],
+    "evidence": [
+      {"doc": "DOC1", "pdf_page": 5, "label": "Table 1-2", "text": "Unemployment rate 6.5 5.0 5.8 9.3 9.6 9.1 9.0; the 2000-2007 average cell is 5.0"},
+      {"doc": "DOC1", "pdf_page": 4, "label": "", "text": "Importantly, the average unemployment rate since 2000 was 5.0%, substantially lower than in the previous 20 years."}
+    ]
+  },
+  {
+    "id": "G03",
+    "conversation_id": "GM03",
+    "turn": 1,
+    "type": "fact_table",
+    "question": "What was China's inflation rate in 2013?",
+    "expected_answer": "China's inflation rate was 1.8% in 2013 (GDP deflator, outturn).",
+    "required_numbers": [1.8],
+    "status": "answered",
+    "citations": ["DOC2:Table A-2", "DOC2:p3"],
+    "figure_references": ["Table A-2"],
+    "evidence": [
+      {"doc": "DOC2", "pdf_page": 3, "label": "Table A-2", "text": "China, Inflation rate: 7.8 (5.5) | 2.0 (3.3) | 1.8; the 2013 cell is 1.8"}
+    ]
+  },
+  {
+    "id": "G04",
+    "conversation_id": "GM04",
+    "turn": 1,
+    "type": "fact_table",
+    "question": "What was the U.S. labour force participation rate in 2009 according to the Pacific Policy Institute briefing?",
+    "expected_answer": "The U.S. labour force participation rate was 65.4% in 2009.",
+    "required_numbers": [65.4],
+    "status": "answered",
+    "citations": ["DOC3:Table B-2", "DOC3:p5"],
+    "figure_references": ["Table B-2"],
+    "evidence": [
+      {"doc": "DOC3", "pdf_page": 5, "label": "Table B-2", "text": "2009 | 9.3 | 65.4; the participation cell for 2009 is 65.4"}
+    ]
+  },
+  {
+    "id": "G05",
+    "conversation_id": "GM05",
+    "turn": 1,
+    "type": "fact_table",
+    "question": "What Okun's law slope does DOC3 estimate for the Euro area, and what growth rate keeps Euro area unemployment constant?",
+    "expected_answer": "For the Euro area (1992-2013) the slope is -0.31, and growth of 1.6% keeps unemployment constant.",
+    "required_numbers": [-0.31, 1.6],
+    "status": "answered",
+    "citations": ["DOC3:Table B-1", "DOC3:p2"],
+    "figure_references": ["Table B-1"],
+    "evidence": [
+      {"doc": "DOC3", "pdf_page": 2, "label": "Table B-1", "text": "Euro area, 1992-2013 | -0.31 | 0.50 | 1.6"}
+    ]
+  },
+  {
+    "id": "G06",
+    "conversation_id": "GM06",
+    "turn": 1,
+    "type": "figure",
+    "question": "In the unemployment chart in Supplement A that uses the September 2011 data vintage, what rate was forecast for the United States in 2011?",
+    "expected_answer": "The September 2011 vintage chart (Figure A-2) shows a forecast of 9.1% for the United States in 2011.",
+    "required_numbers": [9.1],
+    "status": "answered",
+    "citations": ["DOC2:Figure A-2", "DOC2:p4"],
+    "figure_references": ["Figure A-2"],
+    "evidence": [
+      {"doc": "DOC2", "pdf_page": 4, "label": "Figure A-2", "text": "data label 9.1 on the dashed U.S. line at 2011"},
+      {"doc": "DOC2", "pdf_page": 3, "label": "Table A-2", "text": "United States, Unemployment rate: 8.9 (9.1); the 2011 forecast in brackets is 9.1"}
+    ]
+  },
+  {
+    "id": "G07",
+    "conversation_id": "GM07",
+    "turn": 1,
+    "type": "figure",
+    "question": "On the Okun's law chart in Briefing B for the United States that ends in 2010, what slope does the fitted line have and what growth keeps unemployment constant?",
+    "expected_answer": "Figure B-1 (1961-2010) has a slope of -0.42, and growth of 3.1% keeps unemployment constant.",
+    "required_numbers": [-0.42, 3.1],
+    "status": "answered",
+    "citations": ["DOC3:Figure B-1", "DOC3:p2"],
+    "figure_references": ["Figure B-1"],
+    "evidence": [
+      {"doc": "DOC3", "pdf_page": 2, "label": "Figure B-1", "text": "printed on the chart: change in u = 1.30 - 0.42 x growth; growth needed to keep u constant = 3.1%"},
+      {"doc": "DOC3", "pdf_page": 2, "label": "Table B-1", "text": "United States, 1961-2010 | -0.42 | 1.30 | 3.1"}
+    ]
+  },
+  {
+    "id": "G08",
+    "conversation_id": "GM08",
+    "turn": 1,
+    "type": "figure",
+    "question": "According to Figure A-1, what was the 2012 output growth outturn for emerging and developing economies, and what had been forecast?",
+    "expected_answer": "The 2012 outturn was 4.9%, below the fall-2011 forecast of 6.0%.",
+    "required_numbers": [4.9, 6.0],
+    "status": "answered",
+    "citations": ["DOC2:Figure A-1", "DOC2:p2"],
+    "figure_references": ["Figure A-1"],
+    "evidence": [
+      {"doc": "DOC2", "pdf_page": 2, "label": "Figure A-1", "text": "data labels 6.0 (forecast) and 4.9 (outturn) on the Emerging and developing bars"},
+      {"doc": "DOC2", "pdf_page": 2, "label": "Table A-1", "text": "Emerging and developing economies | 6.4 | 6.2 | 6.0 | 4.9 | 4.6"}
+    ]
+  },
+  {
+    "id": "G09",
+    "conversation_id": "GM09",
+    "turn": 1,
+    "type": "figure",
+    "question": "In the unemployment chart that uses the March 2014 data vintage, what was the U.S. unemployment rate in 2013?",
+    "expected_answer": "The March 2014 vintage chart (Figure A-3) shows a U.S. unemployment rate of 7.4% in 2013.",
+    "required_numbers": [7.4],
+    "status": "answered",
+    "citations": ["DOC2:Figure A-3", "DOC2:p4"],
+    "figure_references": ["Figure A-3"],
+    "evidence": [
+      {"doc": "DOC2", "pdf_page": 4, "label": "Figure A-3", "text": "data label 7.4 on the U.S. line at 2013"},
+      {"doc": "DOC2", "pdf_page": 3, "label": "Table A-2", "text": "United States, Unemployment rate: 8.9 (9.1) | 8.1 (9.0) | 7.4; the 2013 cell is 7.4"}
+    ]
+  },
+  {
+    "id": "G10",
+    "conversation_id": "GM10",
+    "turn": 1,
+    "type": "figure",
+    "question": "According to Figure 1-6, what was China's population in 2010, and what share of world output did it have?",
+    "expected_answer": "Figure 1-6 gives China's population as 1,340 million in 2010 and its share of world output as 9.3%.",
+    "required_numbers": [1340, 9.3],
+    "status": "answered",
+    "citations": ["DOC1:Figure 1-6", "DOC1:p10"],
+    "figure_references": ["Figure 1-6"],
+    "evidence": [
+      {"doc": "DOC1", "pdf_page": 10, "label": "Figure 1-6", "text": "China, 2010. Output: $5.8 trillion. Population: 1,340 million. Share of world output: 9.3%"}
+    ]
+  },
+  {
+    "id": "G11",
+    "conversation_id": "GM11",
+    "turn": 1,
+    "type": "figure",
+    "question": "According to Figure 1-5, how large was Euro area output in 2010, and what share of world output was that?",
+    "expected_answer": "Figure 1-5 shows Euro area output of $12.2 trillion in 2010, which was 19.6% of world output.",
+    "required_numbers": [12.2, 19.6],
+    "status": "answered",
+    "citations": ["DOC1:Figure 1-5", "DOC1:p8"],
+    "figure_references": ["Figure 1-5"],
+    "evidence": [
+      {"doc": "DOC1", "pdf_page": 8, "label": "Figure 1-5", "text": "EU17: Euro area, 2010. Output: $12.2 trillion. Population: 331.3 million. Share of world output: 19.6%"}
+    ]
+  },
+  {
+    "id": "G12",
+    "conversation_id": "GM12",
+    "turn": 1,
+    "type": "two_source",
+    "question": "How did the U.S. GDP deflator inflation rate in 2011 turn out compared with the forecast in Document 1?",
+    "expected_answer": "U.S. GDP deflator inflation in 2011 was 2.1% (outturn). This replaces the fall-2011 forecast of 2.9% in Document 1.",
+    "required_numbers": [2.1, 2.9],
+    "status": "answered",
+    "citations": ["DOC2:Table A-2", "DOC1:Table 1-2"],
+    "figure_references": ["Table A-2", "Table 1-2"],
+    "evidence": [
+      {"doc": "DOC2", "pdf_page": 3, "label": "Table A-2", "text": "United States, Inflation rate: 2.1 (2.9) | 1.8 (1.2) | 1.5"},
+      {"doc": "DOC1", "pdf_page": 5, "label": "Table 1-2", "text": "Inflation rate 4.2 2.8 3.8 -0.3 1.7 2.9 1.2; the 2011 forecast is 2.9"}
+    ]
+  },
+  {
+    "id": "G13",
+    "conversation_id": "GM13",
+    "turn": 1,
+    "type": "two_source",
+    "question": "By how many percentage points did China's inflation rate change between 2010 and 2013?",
+    "expected_answer": "China's inflation fell from 3.3% in 2010 (Document 1) to 1.8% in 2013 (DOC2), a drop of 1.5 percentage points.",
+    "required_numbers": [3.3, 1.8, 1.5],
+    "status": "answered",
+    "citations": ["DOC1:Table 1-4", "DOC2:Table A-2"],
+    "figure_references": ["Table 1-4", "Table A-2"],
+    "evidence": [
+      {"doc": "DOC1", "pdf_page": 11, "label": "Table 1-4", "text": "Inflation rate 8.1 1.6 5.9 -0.6 3.3 5.5 3.3; the 2010 cell is 3.3"},
+      {"doc": "DOC2", "pdf_page": 3, "label": "Table A-2", "text": "China, Inflation rate: 7.8 (5.5) | 2.0 (3.3) | 1.8; the 2013 cell is 1.8"}
+    ]
+  },
+  {
+    "id": "G14",
+    "conversation_id": "GM14",
+    "turn": 1,
+    "type": "two_source",
+    "question": "What Okun's law slope does Document 1 give for the United States, and how does DOC3's estimate for 1961-2013 compare?",
+    "expected_answer": "Document 1 gives a slope of about -0.4 and says growth of about 3% keeps unemployment constant. DOC3's 1961-2013 estimate is -0.41 with 2.9% growth needed, so the two agree.",
+    "required_numbers": [-0.4, 3, -0.41, 2.9],
+    "status": "answered",
+    "citations": ["DOC1:p29", "DOC3:Table B-1"],
+    "figure_references": ["Table B-1"],
+    "evidence": [
+      {"doc": "DOC1", "pdf_page": 29, "label": "", "text": "The slope of the line is -0.4. ... output growth must be equal to 3% ... just to keep the unemployment rate constant."},
+      {"doc": "DOC3", "pdf_page": 2, "label": "Table B-1", "text": "United States, 1961-2013 | -0.41 | 1.19 | 2.9"}
+    ]
+  }
+]
