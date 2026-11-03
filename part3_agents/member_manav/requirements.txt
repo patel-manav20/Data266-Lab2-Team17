@@ -1,0 +1,11 @@
+torch
+diffusers
+transformers
+accelerate
+peft
+huggingface_hub
+torchmetrics
+gradio
+pillow
+numpy
+pandas

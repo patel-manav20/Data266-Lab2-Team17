@@ -1,0 +1,11 @@
+torch
+transformers
+accelerate
+sentence-transformers
+chromadb
+rank_bm25
+pdfplumber
+pypdfium2
+pillow
+numpy
+pandas
