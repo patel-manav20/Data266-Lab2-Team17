@@ -9,3 +9,5 @@ pypdfium2
 pillow
 numpy
 pandas
+scipy
+matplotlib
