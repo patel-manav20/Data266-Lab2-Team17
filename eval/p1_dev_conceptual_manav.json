@@ -1,0 +1,304 @@
+{
+ "description": "Conceptual dev set for Part 1, written from the three PDFs only. Each topic has a formal and a colloquial wording. Required terms and source sentences were checked against the PDF text with pdfplumber.",
+ "page_numbering": "pdf_page is the 1-based page of the PDF file, the same numbering as DOCn:pN citations",
+ "items": [
+  {
+   "id": "C01",
+   "topic": "two channels of the crisis spreading abroad",
+   "formal": "Through which two channels did the U.S. financial crisis spread to other countries?",
+   "colloquial": "how did the US crisis end up hurting other countries too, what were the two ways it spread?",
+   "required_terms": [
+    "two channels",
+    "trade",
+    "financial",
+    "imports",
+    "repatriated"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 2
+    }
+   ],
+   "sentences": [
+    "Other countries were affected through two channels.",
+    "The first channel was trade.",
+    "As U.S. consumers and firms cut spending, part of the decrease fell on imports of foreign goods.",
+    "The second channel was financial.",
+    "U.S. banks, badly needing funds in the United States, repatriated funds from other countries, creating problems for banks in those countries as well."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C02",
+   "topic": "Fed and U.S. government response",
+   "formal": "What actions did the Federal Reserve and the U.S. government take in response to the crisis?",
+   "colloquial": "what did the fed and the government actually do when the crisis hit?",
+   "required_terms": [
+    "interest rates",
+    "zero",
+    "cut taxes",
+    "increased spending"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 2
+    }
+   ],
+   "sentences": [
+    "Despite strong actions by the Fed, which cut interest rates all the way down to zero, and by the U.S. government, which cut taxes and increased spending, demand decreased, and so did output."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C03",
+   "topic": "discouraged workers",
+   "formal": "Who are discouraged workers, and why are they not counted as unemployed?",
+   "colloquial": "what's a discouraged worker and why don't they show up in the jobless numbers?",
+   "required_terms": [
+    "give up looking",
+    "no longer counted",
+    "discouraged workers",
+    "not in the labor force"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 23
+    }
+   ],
+   "sentences": [
+    "Note that only those looking for a job are counted as unemployed; those who do not have a job and are not looking for one are counted as not in the labor force.",
+    "When unemployment is high, some of the unemployed give up looking for a job and therefore are no longer counted as unemployed.",
+    "These people are known as discouraged workers."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C04",
+   "topic": "value added and the three ways to think about GDP",
+   "formal": "How is value added defined, and what are the three equivalent ways of thinking about GDP?",
+   "colloquial": "what does value added mean and what are the three ways you can look at GDP?",
+   "required_terms": [
+    "intermediate goods",
+    "final goods",
+    "value added",
+    "incomes"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 18
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 19
+    }
+   ],
+   "sentences": [
+    "The value added by a firm is defined as the value of its production minus the value of the intermediate goods used in production.",
+    "From the production side: GDP equals the value of the final goods and services produced in the economy during a given period.",
+    "Also from the production side: GDP is the sum of value added in the economy during a given period.",
+    "From the income side: GDP is the sum of incomes in the economy during a given period."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C05",
+   "topic": "hedonic pricing",
+   "formal": "What is hedonic pricing and how is it used to measure the price of computers?",
+   "colloquial": "what's hedonic pricing? how do they figure out computer prices when the computers keep getting better?",
+   "required_terms": [
+    "characteristics",
+    "implicit price",
+    "pleasure",
+    "Department of Commerce"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 22
+    }
+   ],
+   "sentences": [
+    "This approach, which treats goods as providing a collection of characteristics—for computers, speed, memory, and so on—each with an implicit price, is called hedonic pricing (“hedone” means “pleasure” in Greek).",
+    "It is used by the Department of Commerce—which constructs real GDP—to estimate changes in the price of complex and fast changing goods, such as automobiles and computers."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C06",
+   "topic": "short, medium and long run",
+   "formal": "What determines output in the short run, the medium run and the long run?",
+   "colloquial": "what drives output over a few years vs a decade vs a few decades?",
+   "required_terms": [
+    "demand",
+    "supply factors",
+    "education system",
+    "saving rate"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 31
+    }
+   ],
+   "sentences": [
+    "Year-to-year movements in output are primarily driven by movements in demand.",
+    "Over the medium run, the economy tends to return to the level of output determined by supply factors: the capital stock, the level of technology, and the size of the labor force.",
+    "To do so, we must look at factors like the education system, the saving rate, and the role of the government."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C07",
+   "topic": "why economists care about inflation",
+   "formal": "Why do economists care about inflation if all prices and wages could rise together?",
+   "colloquial": "if wages go up with prices anyway, why do economists even worry about inflation?",
+   "required_terms": [
+    "pure inflation",
+    "income distribution",
+    "uncertainty",
+    "tax brackets"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 28
+    }
+   ],
+   "sentences": [
+    "So why do economists care about inflation? Precisely because there is no such thing as pure inflation:",
+    "Because they don’t, inflation affects income distribution.",
+    "Variations in relative prices also lead to more uncertainty, making it harder for firms to make decisions about the future, such as investment decisions.",
+    "If tax brackets are not adjusted for inflation, for example, people move into higher and higher tax brackets as their nominal income increases, even if their real income remains the same."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C08",
+   "topic": "steps of the euro introduction",
+   "formal": "In what steps was the euro introduced as a common currency?",
+   "colloquial": "how did the switch to the euro actually happen, step by step?",
+   "required_terms": [
+    "1999",
+    "fixed the value",
+    "quoted",
+    "2002",
+    "notes and coins"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 7
+    }
+   ],
+   "sentences": [
+    "The transition took place in steps.",
+    "On January 1, 1999, each of the 11 countries fixed the value of its currency to the Euro.",
+    "From 1999 to 2002, prices were quoted both in national currency units and in Euros, but the Euro was not yet used as currency.",
+    "This happened in 2002, when Euro notes and coins replaced national currencies."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C09",
+   "topic": "two views on the speed of U.S. deficit reduction",
+   "formal": "What are the two views on how quickly the U.S. budget deficit should be reduced?",
+   "colloquial": "should the US cut its deficit fast or slow? what do the two sides say?",
+   "required_terms": [
+    "proceed rapidly",
+    "credibility",
+    "dangerous",
+    "slowly and steadily"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 6
+    }
+   ],
+   "sentences": [
+    "Some economists argue that deficit reduction should start now and proceed rapidly.",
+    "They argue that the credibility of the U.S. government is at stake, and that only a strong reduction will convince people that the government will do what is needed to stabilize the debt.",
+    "Other economists argue, however, that too fast a reduction in the deficit would be dangerous.",
+    "Their recommendation is thus to reduce the deficit, but to do it slowly and steadily."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C10",
+   "topic": "reliability of China's unemployment numbers",
+   "formal": "Why should China's unemployment figures be treated with caution?",
+   "colloquial": "can we trust China's jobless numbers? why not really?",
+   "required_terms": [
+    "less reliable",
+    "poorer countries",
+    "grain of salt",
+    "countryside"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 11
+    }
+   ],
+   "sentences": [
+    "Numbers for unemployment are typically less reliable in poorer countries, so you should take those numbers with a grain of salt: Many workers stay in the countryside rather than being unemployed in the cities."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C11",
+   "topic": "labor force and unemployment rate definitions",
+   "formal": "How are the labor force and the unemployment rate defined?",
+   "colloquial": "what counts as the labor force, and how do you get the unemployment rate from it?",
+   "required_terms": [
+    "looking for one",
+    "sum of employment and unemployment",
+    "ratio",
+    "labor force"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 22
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 23
+    }
+   ],
+   "sentences": [
+    "Unemployment is the number of people who do not have a job but are looking for one.",
+    "The labor force is the sum of employment and unemployment:",
+    "The unemployment rate is the ratio of the number of people who are unemployed to the number of people in the labor force:"
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "C12",
+   "topic": "nominal versus real GDP",
+   "formal": "What is the difference between nominal GDP and real GDP?",
+   "colloquial": "nominal vs real GDP, what's the actual difference?",
+   "required_terms": [
+    "current price",
+    "constant",
+    "quantities",
+    "final goods"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 19
+    }
+   ],
+   "sentences": [
+    "Nominal GDP is the sum of the quantities of final goods produced times their current price.",
+    "That’s why real GDP is constructed as the sum of the quantities of final goods times constant (rather than current) prices."
+   ],
+   "status": "answered"
+  }
+ ]
+}
