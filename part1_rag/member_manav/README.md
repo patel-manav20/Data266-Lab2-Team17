@@ -94,13 +94,52 @@ Full tables and the code that produced them are in `part1_rag/member_manav/noteb
 (run once on a Mac, no GPU, `RUN_DIAGNOSTICS=True`; its outputs are saved in
 `part1_rag/member_manav/outputs/`). Summary:
 
-**Golden set (25 items, never used to choose any setting).** Scored 0.694 overall (the local copy of the
-Kaggle formula: 0.40 answer facts + 0.20 status + 0.20 figure F1 + 0.20 citations) with the hybrid system;
-swapping the text route's retrieval for dense-only (`baseline_retrieve`) gave the identical score on every
-one of the 25 items, because none of them actually reach the text route -- they all resolve through the
-fact store, the chart route or the label route. Per category (mean score): unanswerable, injection,
-false_premise and multi_turn_user_value all score 1.000; outturn_over_forecast 0.889; two_source 0.894;
-**figure 0.550, fact_table 0.540 and multi_turn 0.333 are the three weak categories** (see Limitations).
+**Golden set (25 items, never used to choose any setting).** Measured in two modes, named in each table.
+Swapping the text route's retrieval for dense-only (`baseline_retrieve`) gave the identical score on every
+one of the 25 items in both modes, because none of them actually reach the text route -- they all resolve
+through the fact store, the chart route or the label route.
+
+*Mac mode (`p1_eval.ipynb`, no GPU, reranker and chart-naming model off):*
+
+| | answer | status | figure F1 | citations | **score** |
+|---|---|---|---|---|---|
+| overall | 0.577 | 0.880 | 0.733 | 0.703 | **0.694** |
+
+| category | score | n |
+|---|---|---|
+| unanswerable, injection, false_premise, multi_turn_user_value | 1.000 | 1, 1, 1, 2 |
+| outturn_over_forecast | 0.889 | 3 |
+| two_source | 0.894 | 3 |
+| **figure** | **0.550** | 6 |
+| **fact_table** | **0.540** | 5 |
+| **multi_turn** | **0.333** | 3 |
+
+*Production mode (Kaggle, `manavpatel2025/lab2-golden-prod-probe`, Qwen3-Reranker-4B + Qwen3-VL chart
+naming attached, as v31):*
+
+| | answer | status | figure F1 | citations | **score** |
+|---|---|---|---|---|---|
+| overall | 0.637 | 0.960 | 0.733 | 0.783 | **0.750** |
+
+| category | score | n |
+|---|---|---|
+| unanswerable, injection, false_premise, multi_turn_user_value | 1.000 | 1, 1, 1, 2 |
+| outturn_over_forecast | 0.950 | 3 |
+| two_source | 0.894 | 3 |
+| fact_table | 0.700 | 5 |
+| **figure** | **0.553** | 6 |
+| **multi_turn** | **0.467** | 3 |
+
+Production mode scores higher overall (0.750 vs 0.694) and on every component; **figure and multi_turn are
+still the two weakest categories in both modes** (see Limitations). The local scorer formula is the local
+copy of the Kaggle formula: 0.40 answer facts + 0.20 status + 0.20 figure F1 + 0.20 citations.
+
+The golden expectations (`citations` and `figure_references` in `eval/p1_golden_manav*.json`) were written
+before the board tests, and for the three `outturn_over_forecast` items they use the earlier citation
+convention (both the current value's source and the one it replaced). The conventions adopted from the
+board tests (C2) now cite only the current source, so those three items' citations and figure-F1
+components score lower than they would against the old convention -- this is the adopted behaviour working
+as intended, not a regression. The golden items themselves were not changed.
 
 **Retrieval (Recall@k, MRR).** On the golden set, hybrid retrieval beats dense-only (MRR 0.844 vs 0.778,
 R@1 0.76 vs 0.68); on the auto-generated drop-clause questions (100, made from the corpus's own sentences)
@@ -128,11 +167,11 @@ with no GPU and every diagnostic on, loading the pipeline and answering the gold
 
 ## Limitations
 
-- **Three question types score noticeably lower than the rest** on the golden set: figure (0.550),
-  fact_table (0.540) and multi_turn (0.333). Figure questions on a Mac (no vision model) lose the few chart
-  series names that depend on it; fact_table and multi_turn questions ask for a specific number from prose
-  or across turns, which is harder for the text route than the structured fact-store lookup most other
-  categories use.
+- **Figure and multi_turn score noticeably lower than the rest** on the golden set, in both the Mac and
+  the production run (figure 0.550/0.553, multi_turn 0.333/0.467) -- both ask for a specific number, from
+  a chart reading or across turns, which is harder than the structured fact-store lookup most other
+  categories use. fact_table scores much better in production (0.700) than on a Mac (0.540), since several
+  fact_table items depend on the reranker to find the right prose sentence.
 - **Three raster figures' series names can't be fully verified from the image alone:** Figure B-1 and
   Figure B-2 each have one name but three colors (no caption or legend to tell them apart), and Figure B-5
   only matches the table on 3 of its 4 printed labels. The chart reader still gives a value in each case,
