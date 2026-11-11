@@ -1,0 +1,9 @@
+,v31
+health,health | chart names: on (named 10 of 13) | reranker: Qwen/Qwen3-Reranker-4B on cuda:1 | gate: off | model load failures: 0
+"stage: load data, parse documents, build the fact store",490.3 s
+stage: load models,170.0 s
+stage: answer questions and write submission,91.8 s
+stage: diagnostics (skipped),8.7 s
+total,760.8 s (RUN_DIAGNOSTICS: False)
+errors,0
+validator,"valid: 40 rows (submission.csv, submission_label_page.csv, validate_submission.py)"

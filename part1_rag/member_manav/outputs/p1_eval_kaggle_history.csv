@@ -1,0 +1,18 @@
+version,score,change
+v2,0.637,"first submitted run: rule-based pipeline offline on Kaggle (fact store and resolver, hybrid dense + BM25 retrieval, extractive text answers), crash fix, deterministic runs"
+v5,0.627,"model-written text answers (measured later and turned off, see ""What we tried and why it is off"")"
+v7,0.666,"extractive text answers chosen by a pre-set rule over model-written ones, support filter, growth-series route for one entity"
+v8,0.666,"submission written before diagnostics, model off for text answers, shortened group names matched (e.g. ""emerging economies"")"
+v9,0.63,"bge-base embedder, bge-reranker-v2-m3 reranker, answer assembly V4, a relevance gate calibrated on drop-clause questions (it refused answerable questions), hyphen fix"
+v10,0.63,"same notebook as v9, second run (determinism check)"
+v13,0.691,"gate recalibrated, answer assembly V2 chosen by the local scorer"
+v17,0.751,"refusal policy, explanatory-question class, time anchors, documents-only questions, comparison series, follow-ups keep the previous question's class"
+v21,0.784,"chart values from series named by Qwen3-VL, forecast and outturn wording, plural figure labels, Okun's law prediction"
+v22,0.784,model-written lead sentence prepended to the text answer (measured later and turned off)
+v29,0.808,"value requests must match the asked variable (fixes a real regression -- a question about an entity with no fact for the asked variable was wrongly answered), diagnostics skip when off"
+v30,0.808,"figure-mention fallback: a figure with no chart value answers with trusted body text that discusses it, instead of the bare caption"
+C1 (board test),0.814,"chart-route citations keep only the figure label(s) used, drop table citations -- adopted as a general rule in v31"
+C2 (board test),0.812,a revised value or an outturn that replaces a forecast cites and lists only the current value's source -- adopted as a general rule in v31
+C3 (board test),0.808,"a figure with a corrected sibling lists only the cited version in figure_references -- no change over the current behaviour, not adopted"
+C4 (board test),0.819,a refusal of a request to change the documents gets status session_override -- adopted as a general rule in v31
+v31,,"C1, C2 and C4 adopted as general rules (reply()'s cite_facts, REFUSAL_STATUS); logic frozen here"
