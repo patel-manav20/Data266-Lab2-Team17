@@ -60,36 +60,44 @@ by the training loss.
 ## Evaluation
 
 120 images generated (base, rank 8, rank 32 x 20 fixed prompts x seeds 0 and 1), fixed sampler settings
-(PNDM scheduler, 30 steps, guidance 7.5, 512x512, fp16) for every model.
+(PNDM scheduler, 30 steps, guidance 7.5, 512x512, fp16) for every model. KID is computed over 20 in-domain
+generations vs. **all 82 test images** (subset_size 20, 100 subsets, seed 266); every number below except
+the "all images" KID/CLIP columns excludes images the safety checker returned as a black placeholder (see
+Safety below) -- nothing is ever regenerated or replaced, the flag just isn't allowed to corrupt a metric.
 
 | metric | rank 8 | rank 32 | base |
 |---|---|---|---|
-| KID (in-domain, vs. 20 test images -- noisy at this subset size) | 0.0899 +/- 0.0000 | 0.0492 +/- 0.0000 | -- |
-| CLIP score (mean, all 20 prompts) | 26.95 | 26.97 | 29.24 |
-| LPIPS (seed 0 vs. seed 1, mean) | 0.7552 | 0.8076 | 0.8132 |
+| KID, without flagged (used by the rule) | 0.0642 +/- 0.0101 (n=16) | 0.0347 +/- 0.0066 (n=17) | 0.0909 +/- 0.0091 (n=20) |
+| KID, all images | 0.0896 +/- 0.0084 | 0.0472 +/- 0.0063 | 0.0909 +/- 0.0091 |
+| CLIP score, without flagged (mean, all 20 prompts) | 27.94 | 28.23 | 29.24 |
+| LPIPS, without flagged pairs (seed 0 vs. seed 1, mean) | 0.7670 | 0.7517 | 0.8132 |
 | GPU-hours (training) | 1.16 | 1.24 | -- |
 
-CLIP score by prompt type (mean):
+CLIP score by prompt type (mean, without flagged):
 
 | type | rank 8 | rank 32 | base |
 |---|---|---|---|
-| in_domain | 24.95 | 25.31 | 28.05 |
+| in_domain | 26.66 | 26.91 | 28.05 |
 | out_of_domain | 29.25 | 28.60 | 31.07 |
-| compositional | 28.66 | 28.65 | 29.81 |
+| compositional | 28.66 | 30.29 | 29.81 |
 
-Lower LPIPS between the two seeds means less diversity (more similar images for different seeds); rank 8
-is noticeably less diverse than rank 32 or the base model here.
+Lower LPIPS between the two seeds means less diversity (more similar images for different seeds). With the
+flagged black placeholders dropped, rank 32 is actually the *least* diverse of the three here -- the
+opposite of what the uncorrected numbers suggested, because 3 of its dropped prompts happened to be
+unusually high-LPIPS ones.
 
 ### Final run
 
 The rule was fixed before any image was looked at: the run with the lower in-domain KID is final; if the
 two KID means differ by less than the larger of their standard deviations, the run with the higher mean
 CLIP score over all 20 prompts is final instead; if that CLIP difference is also under 0.005, rank 8 is
-chosen (fewer parameters).
+chosen (fewer parameters). The rule uses the "without flagged" numbers above.
 
-**Result: rank 32 is FINAL.** KID differs by 0.0407 (0.0899 vs. 0.0492), which is decisively outside the
-(zero, at this subset size) standard deviation, so the rule resolves at step 1 without needing CLIP or the
-parameter tie-break. Rank 8 is the comparison run. Both model cards on Hugging Face state this.
+**Result: rank 32 is FINAL.** KID differs by 0.0294 (0.0642 vs. 0.0347), which is outside the larger
+standard deviation (0.0101), so the rule resolves at step 1 without needing CLIP or the parameter
+tie-break -- the same winner as before the NSFW correction, just with a smaller (and now non-trivial,
+since KID is computed against all 82 test images instead of 20) margin. Rank 8 is the comparison run.
+Both model cards on Hugging Face state this.
 
 ### Safety and memorization
 
@@ -97,9 +105,26 @@ parameter tie-break. Rank 8 is the comparison run. Both model cards on Hugging F
   characters, so the models, adapters, and every generated image here are for **non-commercial research
   only**.
 - **NSFW filter:** kept on (the pipeline's own default safety checker). **8 of 120** generated images were
-  flagged.
+  flagged, and **all 8 were confirmed to be pure-black placeholders** (the safety checker's standard
+  behavior), not real content -- so they are excluded from every "without flagged" number above, and the
+  (model, prompt) pair is dropped entirely from LPIPS rather than comparing a real image to a black one.
+  The flags themselves are never removed from `metadata.jsonl` or the published dataset, and no flagged
+  image was ever regenerated or swapped out.
+
+  | model | prompt | type | seed |
+  |---|---|---|---|
+  | rank 8 | P04 | in_domain | 0 |
+  | rank 8 | P04 | in_domain | 1 |
+  | rank 8 | P05 | in_domain | 1 |
+  | rank 8 | P07 | in_domain | 1 |
+  | rank 32 | P04 | in_domain | 0 |
+  | rank 32 | P09 | in_domain | 1 |
+  | rank 32 | P10 | in_domain | 0 |
+  | rank 32 | P17 | compositional | 1 |
+
 - **Memorization check:** CLIP image-embedding similarity between 10 in-domain generations per run and
-  every one of the 743 training images. The 3 closest pairs overall:
+  every one of the 743 training images. The 3 closest pairs overall (shown side by side with their closest
+  training image in the notebook):
 
   | model | prompt | closest train image | similarity |
   |---|---|---|---|
@@ -112,11 +137,12 @@ parameter tie-break. Rank 8 is the comparison run. Both model cards on Hugging F
 
 ### Human evaluation
 
-Pending: a rater pack (`outputs/rating/rater_1.html`, `outputs/rating/rater_2.html`, plus a blank
+Pending: a rater pack (`outputs/rating/rater_1.html`, `rater_2.html`, `rater_3.html`, plus a blank
 `outputs/rating/blind_rating_sheet.csv`) holds 25 blind pairs of rank 32 vs. the base model, left/right
-randomized by seed 266, with no filename or model name anywhere in the page so the comparison stays blind.
-The answer key is kept off GitHub and off the shared Drive folder until ratings are collected. Once rated
-CSVs come back, the win rate and inter-rater agreement will be added here.
+randomized by seed 266 -- the same 25 pairs in the same order for every rater -- with no filename or model
+name anywhere in the page so the comparison stays blind. The answer key is kept off GitHub and off the
+shared Drive folder until ratings are collected. Once rated CSVs come back, the win rate and inter-rater
+agreement will be added here.
 
 ## Hugging Face
 
