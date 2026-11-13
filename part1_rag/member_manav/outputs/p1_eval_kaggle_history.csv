@@ -15,4 +15,5 @@ C1 (board test),0.814,"chart-route citations keep only the figure label(s) used,
 C2 (board test),0.812,a revised value or an outturn that replaces a forecast cites and lists only the current value's source -- adopted as a general rule in v31
 C3 (board test),0.808,"a figure with a corrected sibling lists only the cited version in figure_references -- no change over the current behaviour, not adopted"
 C4 (board test),0.819,a refusal of a request to change the documents gets status session_override -- adopted as a general rule in v31
-v31,,"C1, C2 and C4 adopted as general rules (reply()'s cite_facts, REFUSAL_STATUS); logic frozen here"
+v31,0.818,"C1, C2 and C4 adopted as general rules (reply()'s cite_facts, REFUSAL_STATUS); logic frozen here"
+v32,,figure_references on a revised/outturn-over-forecast answer follow its own citations -- a label whose citation didn't survive C2's narrowing to a page is dropped (fig_follows_cites)
