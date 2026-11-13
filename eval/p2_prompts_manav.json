@@ -1,62 +1,62 @@
 [
   {
     "id": "P01",
-    "type": "in-domain",
+    "type": "in_domain",
     "prompt": "a red fish with a gold crown on its head",
     "test_image_id": 35
   },
   {
     "id": "P02",
-    "type": "in-domain",
+    "type": "in_domain",
     "prompt": "a very cute looking pokemon with big eyes",
     "test_image_id": 44
   },
   {
     "id": "P03",
-    "type": "in-domain",
+    "type": "in_domain",
     "prompt": "a bird with a long beak flying through the air",
     "test_image_id": 97
   },
   {
     "id": "P04",
-    "type": "in-domain",
+    "type": "in_domain",
     "prompt": "a yellow and white cartoon character with a red eye",
     "test_image_id": 100
   },
   {
     "id": "P05",
-    "type": "in-domain",
-    "prompt": "a drawing of a dragon with black and white spots",
-    "test_image_id": 255
+    "type": "in_domain",
+    "prompt": "a gray and yellow dragon with large horns",
+    "test_image_id": 392
   },
   {
     "id": "P06",
-    "type": "in-domain",
+    "type": "in_domain",
     "prompt": "a robot with a yellow helmet and green legs",
     "test_image_id": 491
   },
   {
     "id": "P07",
-    "type": "in-domain",
-    "prompt": "a cartoon character holding a large piece of wood",
-    "test_image_id": 547
+    "type": "in_domain",
+    "prompt": "a cartoon picture of a bear holding a baseball bat",
+    "test_image_id": 19
   },
   {
     "id": "P08",
-    "type": "in-domain",
-    "prompt": "a cartoon picture of a giant spider crawling out of a rock",
-    "test_image_id": 575
+    "type": "in_domain",
+    "prompt": "a black and white picture of a cat wearing a witches hat",
+    "test_image_id": 639
   },
   {
     "id": "P09",
-    "type": "in-domain",
-    "prompt": "a very cute looking cartoon character with big eyes",
-    "test_image_id": 679
+    "type": "in_domain",
+    "prompt": "a very cute looking animal with big ears",
+    "test_image_id": 418
   },
   {
     "id": "P10",
-    "type": "in-domain",
-    "prompt": "a drawing of a cartoon character with long hair",
-    "test_image_id": 690
+    "type": "in_domain",
+    "prompt": "a cartoon character with pink hair and a pom pom on top of it",
+    "test_image_id": 757
   }
 ]
