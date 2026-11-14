@@ -2,8 +2,10 @@
 # the notebook's own run-info and package-check cells). transformers==5.20.2 is confirmed in
 # part3_agents/member_manav/notebooks/p3_agents.ipynb's install-pin comment, which records what
 # Part 1 ran. accelerate/sentence-transformers/pillow/pandas/scipy/matplotlib come from the Kaggle
-# base image (not pip-installed by this notebook) and are not yet independently confirmed from a
-# `pip freeze` -- pinning those four finishes under C1 (next Kaggle push captures the real freeze).
+# base image (not pip-installed by this notebook) -- the real v34 re-run's own run-info/package-check
+# cells were checked after that run and still do not print resolved versions for these, so they
+# stay unpinned on purpose rather than guessed; pinning them needs a `pip freeze`-style print added
+# to the notebook itself, which is a notebook-content change, not something a re-run alone captures.
 torch==2.15.0
 transformers==5.20.2
 accelerate
