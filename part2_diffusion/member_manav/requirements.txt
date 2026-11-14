@@ -1,4 +1,8 @@
-torch
+# Pinned to the versions printed by the graded Colab T4 run's own install cells (p2_finetune.ipynb,
+# p2_generate_eval.ipynb). torch/torchvision/huggingface_hub/tensorboard/pillow/numpy/pandas/matplotlib
+# come from the Colab base image (not pip-installed by these notebooks) and are not yet independently
+# confirmed from a `pip freeze` -- pinning those finishes under C2 (captured during the next re-run).
+torch==2.14.1+cu130
 torchvision
 diffusers==0.42.1
 transformers
@@ -7,10 +11,10 @@ peft==0.21.2
 torchao==0.18.0
 datasets==4.8.5
 huggingface_hub
-torchmetrics
-torch-fidelity
-lpips
-open_clip_torch
+torchmetrics==1.9.0
+torch-fidelity==0.4.0
+lpips==0.1.4
+open_clip_torch==4.2.2
 imagehash==4.3.2
 tensorboard
 pillow

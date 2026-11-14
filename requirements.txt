@@ -1,0 +1,42 @@
+# This repo runs on two different graded environments (Part 1 on Kaggle, Parts 2 and 3 on
+# Colab T4), so each part keeps its own pinned requirements.txt next to its notebooks:
+#   part1_rag/member_manav/requirements.txt
+#   part2_diffusion/member_manav/requirements.txt
+#   part3_agents/member_manav/requirements.txt
+# This file is the union of all three, for anyone who wants a single pip install covering the
+# whole repo. If two parts pin the same package to different versions, install per-part instead --
+# installing this file into one environment will keep only one of them.
+
+# --- Part 1 (Kaggle, python 3.11.18) ---
+torch==2.15.0
+transformers==5.20.2
+accelerate
+sentence-transformers
+chromadb==1.5.9
+rank_bm25==0.2.2
+pdfplumber==0.11.10
+pypdfium2==5.14.0
+pillow
+numpy==2.4.6
+pandas
+scipy
+matplotlib
+
+# --- Part 2 (Colab T4) ---
+torchvision
+diffusers==0.42.1
+peft==0.21.2
+torchao==0.18.0
+datasets==4.8.5
+huggingface_hub
+torchmetrics==1.9.0
+torch-fidelity==0.4.0
+lpips==0.1.4
+open_clip_torch==4.2.2
+imagehash==4.3.2
+tensorboard
+
+# --- Part 3 (Colab T4) ---
+pydantic==2.14.2
+opencv-python-headless==5.0.0.93
+gradio==6.31.0

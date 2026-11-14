@@ -1,13 +1,19 @@
-torch
-transformers
+# Pinned to the versions actually printed by the graded Kaggle run (python 3.11.18, confirmed in
+# the notebook's own run-info and package-check cells). transformers==5.20.2 is confirmed in
+# part3_agents/member_manav/notebooks/p3_agents.ipynb's install-pin comment, which records what
+# Part 1 ran. accelerate/sentence-transformers/pillow/pandas/scipy/matplotlib come from the Kaggle
+# base image (not pip-installed by this notebook) and are not yet independently confirmed from a
+# `pip freeze` -- pinning those four finishes under C1 (next Kaggle push captures the real freeze).
+torch==2.15.0
+transformers==5.20.2
 accelerate
 sentence-transformers
-chromadb
-rank_bm25
-pdfplumber
-pypdfium2
+chromadb==1.5.9
+rank_bm25==0.2.2
+pdfplumber==0.11.10
+pypdfium2==5.14.0
 pillow
-numpy
+numpy==2.4.6
 pandas
 scipy
 matplotlib
