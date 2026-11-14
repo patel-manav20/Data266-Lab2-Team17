@@ -1,0 +1,36 @@
+{
+  "request": "Describe this image.",
+  "image": {
+    "path": "/content/p3_images/s14_r10_truncated.jpg",
+    "valid": false,
+    "error": "could not open the image file (OSError)",
+    "width": null,
+    "height": null
+  },
+  "route": "unsupported",
+  "safety": {
+    "unsafe_request": false,
+    "real_person_deceptive_edit": false,
+    "instruction_in_image": false,
+    "instruction_text_found": null,
+    "reason": null
+  },
+  "vision": null,
+  "prompt": null,
+  "negative_prompt": null,
+  "generation": null,
+  "generation_history": [],
+  "critique": null,
+  "critique_history": [],
+  "revision_count": 0,
+  "errors": [],
+  "final_message": "I couldn't read the image you provided: could not open the image file (OSError). Please try a valid JPG or PNG file.",
+  "final_image_path": null,
+  "trace": [
+    {
+      "agent": "Planner",
+      "time_s": 0.0021058410002297023,
+      "summary": "route=unsupported"
+    }
+  ]
+}

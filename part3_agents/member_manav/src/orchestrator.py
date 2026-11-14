@@ -98,6 +98,7 @@ def _run_pipeline(state: AgentState, *, vlm_call, generate_fn, classifier_fn,
         if not critique_enabled:
             state.critique = critique_mod.CritiqueResult(safe=not gen.nsfw_flagged,
                                                            decision="accept" if not gen.nsfw_flagged else "reject")
+            state.critique_history.append(state.critique)
             break
 
         t0 = time.perf_counter()
@@ -106,6 +107,7 @@ def _run_pipeline(state: AgentState, *, vlm_call, generate_fn, classifier_fn,
         result = critique_mod.decide(clip_score, clip_threshold, verdict_text,
                                       safe=not gen.nsfw_flagged, revision_count=state.revision_count)
         state.critique = result
+        state.critique_history.append(result)
         state.log("Critique", time.perf_counter() - t0,
                    f"decision={result.decision} clip={clip_score}")
 

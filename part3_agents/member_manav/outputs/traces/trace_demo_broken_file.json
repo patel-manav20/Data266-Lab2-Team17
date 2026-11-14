@@ -1,0 +1,36 @@
+{
+  "request": "edit this",
+  "image": {
+    "path": "/content/_demo_empty.jpg",
+    "valid": false,
+    "error": "the image file is empty (0 bytes)",
+    "width": null,
+    "height": null
+  },
+  "route": "unsupported",
+  "safety": {
+    "unsafe_request": false,
+    "real_person_deceptive_edit": false,
+    "instruction_in_image": false,
+    "instruction_text_found": null,
+    "reason": null
+  },
+  "vision": null,
+  "prompt": null,
+  "negative_prompt": null,
+  "generation": null,
+  "generation_history": [],
+  "critique": null,
+  "critique_history": [],
+  "revision_count": 0,
+  "errors": [],
+  "final_message": "I couldn't read the image you provided: the image file is empty (0 bytes). Please try a valid JPG or PNG file.",
+  "final_image_path": null,
+  "trace": [
+    {
+      "agent": "Planner",
+      "time_s": 0.00007538099998782855,
+      "summary": "route=unsupported"
+    }
+  ]
+}

@@ -77,14 +77,35 @@ def parse_vlm_output(raw: str, user_question: Optional[str] = None) -> VisionOut
             return VisionOutput(
                 caption=str(data.get("caption", "")).strip(),
                 objects=[str(o) for o in objects] if isinstance(objects, list) else [],
-                visible_text=str(data.get("visible_text", "")).strip(),
+                visible_text=_coerce_text(data.get("visible_text", "")),
                 qa={str(k): str(v) for k, v in qa.items()} if isinstance(qa, dict) else {},
             )
         except (json.JSONDecodeError, TypeError, AttributeError):
             pass
-    caption = raw.strip().splitlines()[0] if raw.strip() else ""
+    caption = _fallback_caption(raw)
     qa = {user_question: raw.strip()} if user_question else {}
     return VisionOutput(caption=caption, objects=_fallback_object_guess(raw), visible_text="", qa=qa)
+
+
+def _coerce_text(value) -> str:
+    """The model sometimes returns visible_text as a list of strings instead of one
+    string (asked for in the prompt) -- join it into readable text rather than
+    stringifying the raw Python list (e.g. "['A', 'B']")."""
+    if isinstance(value, list):
+        return "; ".join(str(v).strip() for v in value if str(v).strip())
+    return str(value).strip()
+
+
+def _fallback_caption(raw: str) -> str:
+    """Used when the model's JSON couldn't be parsed (truncated output, or no JSON at
+    all). A bare opening brace is a common first line in that failure mode and carries
+    no information, so skip past it to the first substantive line instead of using it
+    verbatim as the caption."""
+    for line in raw.strip().splitlines():
+        line = line.strip().strip("{}` ")
+        if line:
+            return line
+    return ""
 
 
 def format_caption_answer(vision: VisionOutput, user_question: Optional[str]) -> str:

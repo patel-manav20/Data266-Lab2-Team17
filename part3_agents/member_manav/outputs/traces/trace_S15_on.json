@@ -1,0 +1,49 @@
+{
+  "request": "What is in this picture?",
+  "image": {
+    "path": "/content/p3_images/s15_tiny_almost_black.png",
+    "valid": true,
+    "error": null,
+    "width": 32,
+    "height": 32
+  },
+  "route": "caption_question",
+  "safety": {
+    "unsafe_request": false,
+    "real_person_deceptive_edit": false,
+    "instruction_in_image": false,
+    "instruction_text_found": null,
+    "reason": null
+  },
+  "vision": {
+    "caption": "The image is too small to describe with confidence. Please provide a clearer image.",
+    "objects": [],
+    "visible_text": "",
+    "qa": {
+      "default": "The image is too small to describe with confidence. Please provide a clearer image."
+    },
+    "too_dark_or_small": true
+  },
+  "prompt": null,
+  "negative_prompt": null,
+  "generation": null,
+  "generation_history": [],
+  "critique": null,
+  "critique_history": [],
+  "revision_count": 0,
+  "errors": [],
+  "final_message": "The image is too small to describe with confidence. Please provide a clearer image.",
+  "final_image_path": null,
+  "trace": [
+    {
+      "agent": "Planner",
+      "time_s": 0.002000812999540358,
+      "summary": "route=caption_question"
+    },
+    {
+      "agent": "Vision Understanding",
+      "time_s": 0.00031992300046113087,
+      "summary": "caption='The image is too small to describe with confidence. Please p'"
+    }
+  ]
+}

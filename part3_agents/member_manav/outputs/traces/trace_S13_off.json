@@ -1,0 +1,36 @@
+{
+  "request": "Make it better.",
+  "image": {
+    "path": "/content/p3_images/s13_dog_beach.jpg",
+    "valid": true,
+    "error": null,
+    "width": 640,
+    "height": 480
+  },
+  "route": "unsupported",
+  "safety": {
+    "unsafe_request": false,
+    "real_person_deceptive_edit": false,
+    "instruction_in_image": false,
+    "instruction_text_found": null,
+    "reason": null
+  },
+  "vision": null,
+  "prompt": null,
+  "negative_prompt": null,
+  "generation": null,
+  "generation_history": [],
+  "critique": null,
+  "critique_history": [],
+  "revision_count": 0,
+  "errors": [],
+  "final_message": "I'm not sure what change you want -- could you say, for example, whether you want a style change, an edit, or a brighter photo?",
+  "final_image_path": null,
+  "trace": [
+    {
+      "agent": "Planner",
+      "time_s": 0.05203249100031826,
+      "summary": "route=unsupported"
+    }
+  ]
+}

@@ -83,6 +83,7 @@ class AgentState(BaseModel):
     generation_history: list[GenerationRecord] = Field(default_factory=list)
 
     critique: Optional[CritiqueResult] = None
+    critique_history: list[CritiqueResult] = Field(default_factory=list)
     revision_count: int = 0
 
     errors: list[str] = Field(default_factory=list)
