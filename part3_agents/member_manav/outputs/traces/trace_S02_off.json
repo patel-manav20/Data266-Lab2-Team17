@@ -16,16 +16,18 @@
     "reason": null
   },
   "vision": {
-    "caption": "\"caption\": \"A digital sign in a shopping district welcomes visitors to 'Shopping City - Now Green' with information from Metropolitan Police.\",",
+    "caption": "\"caption\": \"A digital sign welcomes visitors to Shopping City, with information from Metropolitan Police, set against a bustling urban street scene.\",",
     "objects": [
       "people",
+      "car",
+      "bus",
       "bicycle",
       "sign",
       "street"
     ],
     "visible_text": "",
     "qa": {
-      "What does the sign say, and what kind of shop is this?": "{\n  \"caption\": \"A digital sign in a shopping district welcomes visitors to 'Shopping City - Now Green' with information from Metropolitan Police.\",\n  \"objects\": [\n    \"digital sign\",\n    \"shopping mall\",\n    \"bicycles\",\n    \"buildings\",\n    \"people\",\n    \"suv\",\n    \"street\",\n    \"signage\"\n  ],\n  \"visible_text\": [\n    \"SHARINGEY COUNCIL\",\n    \"Information\",\n    \"ARRIVING FROM\",\n    \"METROPOLITAN\",\n    \"POLICE\",\n    \"WELCOME TO\",\n    \"SHOPPING CITY\",\n    \"NOW GREEN\",\n    \"NEXT\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\","
+      "What does the sign say, and what kind of shop is this?": "{\n  \"caption\": \"A digital sign welcomes visitors to Shopping City, with information from Metropolitan Police, set against a bustling urban street scene.\",\n  \"objects\": [\n    \"digital sign\",\n    \"bicycles\",\n    \"buildings\",\n    \"people\",\n    \"street\",\n    \"bicycles\",\n    \"signage\",\n    \"cars\"\n  ],\n  \"visible_text\": [\n    \"SHARINGEY COUNCIL\",\n    \"Information\",\n    \"ARRIVING FROM\",\n    \"METROPOLITAN\",\n    \"POLICE\",\n    \"WELCOME TO\",\n    \"SHOPPING CITY\",\n    \"MOW GREEN\",\n    \"NEXT\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M"
     },
     "too_dark_or_small": false
   },
@@ -37,18 +39,18 @@
   "critique_history": [],
   "revision_count": 0,
   "errors": [],
-  "final_message": "\"caption\": \"A digital sign in a shopping district welcomes visitors to 'Shopping City - Now Green' with information from Metropolitan Police.\", {\n  \"caption\": \"A digital sign in a shopping district welcomes visitors to 'Shopping City - Now Green' with information from Metropolitan Police.\",\n  \"objects\": [\n    \"digital sign\",\n    \"shopping mall\",\n    \"bicycles\",\n    \"buildings\",\n    \"people\",\n    \"suv\",\n    \"street\",\n    \"signage\"\n  ],\n  \"visible_text\": [\n    \"SHARINGEY COUNCIL\",\n    \"Information\",\n    \"ARRIVING FROM\",\n    \"METROPOLITAN\",\n    \"POLICE\",\n    \"WELCOME TO\",\n    \"SHOPPING CITY\",\n    \"NOW GREEN\",\n    \"NEXT\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",",
+  "final_message": "\"caption\": \"A digital sign welcomes visitors to Shopping City, with information from Metropolitan Police, set against a bustling urban street scene.\", {\n  \"caption\": \"A digital sign welcomes visitors to Shopping City, with information from Metropolitan Police, set against a bustling urban street scene.\",\n  \"objects\": [\n    \"digital sign\",\n    \"bicycles\",\n    \"buildings\",\n    \"people\",\n    \"street\",\n    \"bicycles\",\n    \"signage\",\n    \"cars\"\n  ],\n  \"visible_text\": [\n    \"SHARINGEY COUNCIL\",\n    \"Information\",\n    \"ARRIVING FROM\",\n    \"METROPOLITAN\",\n    \"POLICE\",\n    \"WELCOME TO\",\n    \"SHOPPING CITY\",\n    \"MOW GREEN\",\n    \"NEXT\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M",
   "final_image_path": null,
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.03579799899989666,
+      "time_s": 0.04256144199985101,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 16.221944198000074,
-      "summary": "caption='\"caption\": \"A digital sign in a shopping district welcomes v'"
+      "time_s": 15.789926594000008,
+      "summary": "caption='\"caption\": \"A digital sign welcomes visitors to Shopping Cit'"
     }
   ]
 }

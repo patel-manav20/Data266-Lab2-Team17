@@ -58,7 +58,9 @@ class CritiqueResult(BaseModel):
     clip_threshold: Optional[float] = None
     vlm_verdict: Optional[str] = None  # "yes" | "no" | None
     safe: bool = True
-    decision: str = "accept"  # "accept" | "revise" | "reject"
+    # per-attempt: "accept" | "revise" | "discarded" (unsafe, never counted as best)
+    # overall (state.critique after a run finishes): "accept" | "stopped_at_cap" | "reject"
+    decision: str = "accept"
     revision_instruction: Optional[str] = None
 
 

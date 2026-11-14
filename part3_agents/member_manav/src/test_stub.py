@@ -16,6 +16,7 @@ from pathlib import Path
 
 from .state import AgentState, GenerationRecord
 from .orchestrator import run as orchestrator_run
+from .orchestrator import run_both as orchestrator_run_both
 
 RESULTS: list[dict] = []
 
@@ -87,6 +88,24 @@ def make_stub_generate_fn(nsfw_flagged: bool = False):
         return GenerationRecord(model=model, mode=mode, prompt=prompt, negative_prompt=negative_prompt,
                                  seed=seed, strength=strength, output_path=f"/tmp/stub_out_{seed}.png",
                                  time_s=0.01, nsfw_flagged=nsfw_flagged)
+    return _gen
+
+
+def make_stub_generate_fn_nsfw_sequence(nsfw_flags: list[bool]):
+    """Like make_stub_generate_fn, but nsfw_flagged varies per call in the given order
+    (repeating the last value once exhausted) -- for testing the discard-and-retry path."""
+    calls = {"n": 0}
+
+    def _gen(state: AgentState, prompt: str, negative_prompt: str, seed: int, strength: float) -> GenerationRecord:
+        i = min(calls["n"], len(nsfw_flags) - 1)
+        calls["n"] += 1
+        model = {"style_change": "stable-diffusion-v1-5 (img2img, stub)",
+                  "edit": "instruct-pix2pix (stub)",
+                  "domain_style": "stable-diffusion-v1-5 + part2-lora-r32 (stub)"}.get(state.route, "stub")
+        mode = "img2img" if state.image.path else "text2img"
+        return GenerationRecord(model=model, mode=mode, prompt=prompt, negative_prompt=negative_prompt,
+                                 seed=seed, strength=strength, output_path=f"/tmp/stub_out_{seed}.png",
+                                 time_s=0.01, nsfw_flagged=nsfw_flags[i])
     return _gen
 
 
@@ -348,6 +367,93 @@ def run_all_tests(images_dir: str) -> bool:
         check("CRITIQUE_OFF", "CLIP score is still recorded even with the loop off",
               state.critique.clip_score == 0.19, state.critique.clip_score)
     critique_off_test()
+
+    # ---- extra: unsafe attempts are discarded and retried, never counted as best --------
+    def unsafe_discard_then_safe_test():
+        # attempts 1 and 2 unsafe (discarded), attempt 3 safe and passes outright
+        state = orchestrator_run(
+            "Make this look like a watercolor painting.", p("s04_dog_sitting_park.jpg"),
+            vlm_call=stub_vlm_call, generate_fn=make_stub_generate_fn_nsfw_sequence([True, True, False]),
+            classifier_fn=classifier_should_not_be_called,
+            clip_score_fn=make_stub_clip_score_fn([0.30]), vlm_judge_fn=always_yes_judge,
+            clip_threshold=0.25, trace_dir="/tmp/p3_stub_traces", request_id="UNSAFE_THEN_SAFE",
+        )
+        check("UNSAFE_THEN_SAFE", "3 attempts total (2 discarded, 1 safe)",
+              len(state.generation_history) == 3, len(state.generation_history))
+        check("UNSAFE_THEN_SAFE", "first two attempts discarded", [c.decision for c in state.critique_history[:2]] == ["discarded", "discarded"])
+        check("UNSAFE_THEN_SAFE", "overall decision is accept (the one safe attempt passed)",
+              state.critique.decision == "accept", state.critique.decision)
+        check("UNSAFE_THEN_SAFE", "final image is the 3rd (safe) attempt, seed 269",
+              state.final_image_path == "/tmp/stub_out_269.png", state.final_image_path)
+    unsafe_discard_then_safe_test()
+
+    def all_unsafe_reject_test():
+        # every attempt unsafe -> reject, no image shown, clear message; never "accept"
+        state = orchestrator_run(
+            "Make this look like a watercolor painting.", p("s04_dog_sitting_park.jpg"),
+            vlm_call=stub_vlm_call, generate_fn=make_stub_generate_fn(nsfw_flagged=True),
+            classifier_fn=classifier_should_not_be_called,
+            clip_score_fn=make_stub_clip_score_fn([0.30]), vlm_judge_fn=always_yes_judge,
+            clip_threshold=0.25, trace_dir="/tmp/p3_stub_traces", request_id="ALL_UNSAFE",
+        )
+        check("ALL_UNSAFE", "3 attempts tried (1 + 2 revisions), all discarded",
+              len(state.generation_history) == 3 and
+              all(c.decision == "discarded" for c in state.critique_history), len(state.critique_history))
+        check("ALL_UNSAFE", "overall decision is reject, never accept", state.critique.decision == "reject")
+        check("ALL_UNSAFE", "no final image shown", state.final_image_path is None)
+        check("ALL_UNSAFE", "message says none of the attempts passed the safety check",
+              "safety check" in (state.final_message or ""))
+    all_unsafe_reject_test()
+
+    def discard_does_not_win_best_test():
+        # attempt 1: safe, low CLIP (would revise). attempt 2: unsafe (discarded, must
+        # never be picked as "best" even though it's never compared on CLIP at all).
+        # attempt 3: safe, low CLIP again -> cap reached, stopped_at_cap, and the BEST
+        # safe attempt (by CLIP) must be chosen between attempt 1 and attempt 3 only.
+        state = orchestrator_run(
+            "Make this look like a watercolor painting.", p("s04_dog_sitting_park.jpg"),
+            vlm_call=stub_vlm_call,
+            generate_fn=make_stub_generate_fn_nsfw_sequence([False, True, False]),
+            classifier_fn=classifier_should_not_be_called,
+            clip_score_fn=make_stub_clip_score_fn([0.10, 0.20]),  # only 2 CLIP calls happen (attempt 2 is skipped)
+            vlm_judge_fn=always_no_judge, clip_threshold=0.99,  # never passes -> always revise/cap out
+            trace_dir="/tmp/p3_stub_traces", request_id="DISCARD_NOT_BEST",
+        )
+        check("DISCARD_NOT_BEST", "3 attempts total", len(state.generation_history) == 3)
+        check("DISCARD_NOT_BEST", "middle attempt discarded (unsafe)",
+              state.critique_history[1].decision == "discarded")
+        check("DISCARD_NOT_BEST", "overall stopped_at_cap (cap reached, but a safe attempt existed)",
+              state.critique.decision == "stopped_at_cap", state.critique.decision)
+        check("DISCARD_NOT_BEST", "best safe attempt chosen by CLIP (attempt 3, clip 0.20), not the unsafe one",
+              state.critique.clip_score == 0.20, state.critique.clip_score)
+    discard_does_not_win_best_test()
+
+    # ---- extra: run_both() prepares ONCE and shares that state between ON and OFF -------
+    def run_both_shared_state_test():
+        vlm_call_log = {"n": 0}
+
+        def counting_vlm_call(image_path, prompt):
+            vlm_call_log["n"] += 1
+            return stub_vlm_call(image_path, prompt)
+
+        state_on, state_off = orchestrator_run_both(
+            "Make this look like a watercolor painting.", p("s04_dog_sitting_park.jpg"),
+            vlm_call=counting_vlm_call, generate_fn=make_stub_generate_fn(),
+            classifier_fn=classifier_should_not_be_called,
+            clip_score_fn=make_stub_clip_score_fn([0.30]), vlm_judge_fn=always_yes_judge,
+            clip_threshold=0.25, trace_dir="/tmp/p3_stub_traces", request_id_prefix="RUN_BOTH",
+        )
+        check("RUN_BOTH", "Vision (and therefore the VLM) ran exactly once, shared by both modes",
+              vlm_call_log["n"] == 1, vlm_call_log["n"])
+        check("RUN_BOTH", "ON and OFF start from the identical prompt",
+              state_on.prompt == state_off.prompt and state_on.prompt is not None, state_on.prompt)
+        check("RUN_BOTH", "ON and OFF start from the identical route",
+              state_on.route == state_off.route == "style_change")
+        check("RUN_BOTH", "ON and OFF both attempt seed 266 first",
+              state_on.generation_history[0].seed == 266 and state_off.generation_history[0].seed == 266)
+        check("RUN_BOTH", "mutating state_on's vision does not affect state_off (true deep copy)",
+              state_on.vision is not state_off.vision)
+    run_both_shared_state_test()
 
     # ---- extra: a request that is unsafe needs no image at all (image=None) -------------
     def no_image_unsafe_test():

@@ -1,7 +1,9 @@
-"""Critique: decides accept / revise / reject from a CLIP score, a yes/no VLM
-judgement and the safety flag. Pure decision logic -- the CLIP score and the VLM
-judgement are passed in as already-computed values, so this is fully testable without
-loading anything.
+"""Critique: per-attempt decision logic. Pure -- the CLIP score and the VLM judgement
+are passed in as already-computed values, so this is fully testable without loading
+anything. Unsafe attempts never reach decide() at all (the orchestrator discards them
+directly); this only decides between a SAFE attempt passing or needing another try. The
+revision cap is the orchestrator's responsibility, not this function's -- it just says
+accept/revise for one attempt, with no notion of how many attempts remain.
 """
 from __future__ import annotations
 
@@ -12,7 +14,9 @@ from .state import CritiqueResult
 MAX_REVISIONS = 2
 
 # at most 2 revisions: each step gets stronger (more edit strength, a new seed, and a
-# rephrased subject in the prompt)
+# rephrased subject in the prompt). Used for a "revise" (didn't pass) and for a
+# "discarded" (unsafe) attempt alike -- the orchestrator applies the same strategy
+# either way to get a materially different next try.
 REVISION_STRATEGIES = [
     {"strength_delta": 0.15, "seed_offset": 1, "rephrase": False,
      "note": "increase the edit strength and use a new seed"},
@@ -22,28 +26,14 @@ REVISION_STRATEGIES = [
 
 
 def decide(clip_score: Optional[float], clip_threshold: float, vlm_verdict: Optional[str],
-           safe: bool, revision_count: int) -> CritiqueResult:
-    if not safe:
-        return CritiqueResult(clip_score=clip_score, clip_threshold=clip_threshold,
-                               vlm_verdict=vlm_verdict, safe=False, decision="reject")
-
+           safe: bool = True) -> CritiqueResult:
+    """Decides accept vs. revise for one SAFE attempt. Never call this for an unsafe
+    attempt -- the orchestrator builds a "discarded" CritiqueResult directly for those."""
     passes_clip = clip_score is not None and clip_score >= clip_threshold
     passes_vlm = vlm_verdict == "yes"
-    if passes_clip and passes_vlm:
-        return CritiqueResult(clip_score=clip_score, clip_threshold=clip_threshold,
-                               vlm_verdict=vlm_verdict, safe=True, decision="accept")
-
-    if revision_count >= MAX_REVISIONS:
-        # out of revisions and still wouldn't pass -- this is NOT an accept: the
-        # orchestrator picks the best (highest-CLIP, safe) attempt seen so far and
-        # says plainly that it may not fully match the request
-        return CritiqueResult(clip_score=clip_score, clip_threshold=clip_threshold,
-                               vlm_verdict=vlm_verdict, safe=True, decision="stopped_at_cap")
-
-    strategy = REVISION_STRATEGIES[min(revision_count, len(REVISION_STRATEGIES) - 1)]
+    decision = "accept" if (passes_clip and passes_vlm) else "revise"
     return CritiqueResult(clip_score=clip_score, clip_threshold=clip_threshold,
-                           vlm_verdict=vlm_verdict, safe=True, decision="revise",
-                           revision_instruction=strategy["note"])
+                           vlm_verdict=vlm_verdict, safe=safe, decision=decision)
 
 
 def next_revision_strategy(revision_count: int) -> dict:

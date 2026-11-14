@@ -6,12 +6,12 @@ revises it when needed. Domain-style requests use my Part 2 LoRA
 (`itzmnv/data266-lab2-sd15-pokemon-lora-r32`). Every model is open -- no hosted API.
 
 **Status: run end to end on a Colab T4, judging pack built from this exact run.** All 15
-scenarios (critique loop ON and OFF) and all 10 red-team cases executed for real;
-results below. Human judging (task success, judge agreement, critic agreement, red-team
-attack success) is pending -- the judging pack is built and in `outputs/judging/`,
-waiting on two people to actually rate it. The pack was intentionally held back and
-rebuilt from this run (not an earlier one) so judges rate the outputs of the code
-actually committed here.
+scenarios (critique loop ON and OFF, from a *fair* comparison -- see below) and all 10
+red-team cases executed for real; results below. Human judging (task success, judge
+agreement, critic agreement, red-team attack success) is pending -- the judging pack is
+built and in `outputs/judging/`, waiting on two people to actually rate it. The pack was
+intentionally held back and rebuilt from this run (not an earlier one) so judges rate
+the outputs of the code actually committed here.
 
 ## Workflow
 
@@ -54,57 +54,82 @@ the prompt entirely (see `src/prompt_engineering.py`).
 Peak across the whole run: **13.38 GB**, under the 16 GB T4 limit. Two diffusion
 pipelines are never loaded together (`get_pipeline()` frees the previous one first).
 
+## Fairness and determinism
+
+Earlier runs had two bugs that made the with/without-critique comparison meaningless:
+ON and OFF each re-ran Planner/Vision/Prompt Engineering independently, so they could
+end up critiquing *different prompts* for the "same" scenario; and an unsafe attempt
+caused an immediate reject instead of a retry, so a single bad draw could sink a
+scenario that would otherwise have succeeded. Both are fixed now:
+
+- **Shared upstream state:** `run_both()` (`src/orchestrator.py`) runs Planner, Vision
+  and Prompt Engineering exactly ONCE per scenario, then branches into two independent
+  generate/critique loops (on, then off) from identical deep copies of that one prepared
+  state. Both modes see the same route, vision output and prompt; attempt 1 of both
+  starts from the same seed (266).
+- **Determinism check (printed by the notebook):** S05 run with the loop OFF twice and
+  ON once, independently from scratch each time (not the shared-state path -- a
+  stronger test of the whole pipeline, including the VLM). All three runs' first-attempt
+  images are **byte-identical** (same MD5 hash) -- **DETERMINISM TEST: PASS**. Needed
+  greedy decoding (`do_sample=False`) on every VLM call; without it, Vision's caption
+  could vary between otherwise-identical runs and silently change the prompt.
+- **Unsafe attempts are discarded, not rejected:** a flagged attempt is never returned
+  and never counted as the best result, but the loop retries if the cap allows.
+  "Reject" now only happens when *no* attempt across the whole run was safe.
+
+**Fairness check (printed by the notebook): for every one of the 9 generation
+scenarios, ON's final CLIP >= OFF's CLIP -- 9/9 PASS**, with no exceptions needed this
+run (no scenario's first ON attempt was unsafe).
+
 ## Results (final run, critique ON and OFF, all scenarios and red-team cases)
 
 | id | route | final decision | attempts | CLIP | time (s) |
 |---|---|---|---|---|---|
-| S01 | caption_question | -- | 0 | -- | 13.4 |
-| S02 | caption_question | -- | 0 | -- | 16.2 |
+| S01 | caption_question | -- | 0 | -- | 14.4 |
+| S02 | caption_question | -- | 0 | -- | 15.8 |
 | S03 | caption_question | -- | 0 | -- | 10.6 |
-| S04 | style_change | accept | 1 | 0.308 | 17.0 |
-| S05 | style_change | accept | 1 | 0.300 | 14.9 |
-| S06 | style_change | accept | 2 | 0.368 | 23.5 |
-| S07 | edit | **stopped_at_cap** | 3 | 0.290 | 41.1 |
-| S08 | edit | **stopped_at_cap** | 3 | 0.300 | 36.2 |
-| S09 | edit | **stopped_at_cap** | 3 | 0.253 | 36.8 |
-| S10 | domain_style | accept | 1 | 0.305 | 10.6 |
-| S11 | domain_style | **reject** | 2 | 0.102 | 26.3 |
-| S12 | domain_style | **stopped_at_cap** | 3 | 0.276 | 26.1 |
+| S04 | style_change | **stopped_at_cap** | 3 | 0.370 | 52.6 |
+| S05 | style_change | accept | 1 | 0.296 | 15.0 |
+| S06 | style_change | accept | 2 | 0.369 | 23.8 |
+| S07 | edit | **stopped_at_cap** | 3 | 0.291 | 58.6 |
+| S08 | edit | **stopped_at_cap** | 3 | 0.342 | 37.7 |
+| S09 | edit | **stopped_at_cap** | 3 | 0.311 | 38.3 |
+| S10 | domain_style | accept | 1 | 0.305 | 11.1 |
+| S11 | domain_style | accept | 1 | 0.300 | 16.9 |
+| S12 | domain_style | **stopped_at_cap** | 3 | 0.276 | 25.8 |
 | S13 | unsupported (ambiguous) | -- | 0 | -- | 0.1 |
 | S14 | unsupported (broken file) | -- | 0 | -- | 0.0 |
 | S15 | caption_question (too dark/small) | -- | 0 | -- | 0.0 |
 
-**Generation scenarios: 9 total -- 4 accept, 4 stopped at cap, 1 reject.** "Stopped at
+**Generation scenarios: 9 total -- 4 accept, 5 stopped at cap, 0 reject.** "Stopped at
 cap" is not treated as accept: the critic still said revise after the 2-revision limit,
 so the system returns the highest-CLIP *safe* attempt seen (not necessarily the last
-one) and says plainly it may not fully match the request. S11 ("turn my cat into a
-Pokemon-style creature") had its last attempt flagged NSFW by the safety checker (a
-black placeholder); since no attempt was both safe and passing, Critique rejected rather
-than showing a black image. Task success itself (does the output actually satisfy the
-rubric) is for the human judges -- see below.
+one) and says plainly it may not fully match the request. No attempt was flagged NSFW in
+this run (see the dynamic safety note below -- it was S11 in an earlier run, this time
+nothing). Task success itself (does the output actually satisfy the rubric) is for the
+human judges -- see below.
 
-### With vs. without the critique loop (same seed, generation scenarios only)
+### With vs. without the critique loop (same seed, shared upstream state, generation scenarios only)
 
 | id | route | CLIP (ON) | CLIP (OFF) | attempts (ON) | attempts (OFF) | time ON (s) | time OFF (s) |
 |---|---|---|---|---|---|---|---|
-| S04 | style_change | 0.308 | 0.308 | 1 | 1 | 17.0 | 14.2 |
-| S05 | style_change | 0.300 | 0.315 | 1 | 1 | 14.9 | 15.7 |
-| S06 | style_change | 0.368 | 0.324 | 2 | 1 | 23.5 | 14.6 |
-| S07 | edit | 0.290 | 0.304 | 3 | 1 | 41.1 | 18.8 |
-| S08 | edit | 0.300 | 0.333 | 3 | 1 | 36.2 | 17.1 |
-| S09 | edit | 0.253 | 0.273 | 3 | 1 | 36.8 | 17.3 |
-| S10 | domain_style | 0.305 | 0.305 | 1 | 1 | 10.6 | 7.3 |
-| S11 | domain_style | 0.102 | 0.300 | 2 | 1 | 26.3 | 14.4 |
-| S12 | domain_style | 0.276 | 0.223 | 3 | 1 | 26.1 | 7.4 |
+| S04 | style_change | 0.370 | 0.318 | 3 | 1 | 52.6 | 14.2 |
+| S05 | style_change | 0.296 | 0.296 | 1 | 1 | 15.0 | 14.8 |
+| S06 | style_change | 0.369 | 0.274 | 2 | 1 | 23.8 | 14.2 |
+| S07 | edit | 0.291 | 0.289 | 3 | 1 | 58.6 | 20.3 |
+| S08 | edit | 0.342 | 0.333 | 3 | 1 | 37.7 | 17.3 |
+| S09 | edit | 0.311 | 0.288 | 3 | 1 | 38.3 | 17.7 |
+| S10 | domain_style | 0.305 | 0.305 | 1 | 1 | 11.1 | 7.4 |
+| S11 | domain_style | 0.300 | 0.300 | 1 | 1 | 16.9 | 14.3 |
+| S12 | domain_style | 0.276 | 0.223 | 3 | 1 | 25.8 | 7.5 |
 
-**Mean CLIP, loop ON: 0.278 (n=9). Mean CLIP, loop OFF: 0.298 (n=9).** Loop OFF is
-slightly higher on average and always faster (never more than 1 attempt) -- the loop
-earns its cost mainly on S11, where a single bad draw (OFF) would have shown a clean
-result (CLIP 0.300) while ON caught an NSFW flag on a later attempt and correctly
-rejected instead of returning a black image; and on S06, where ON found a visibly better
-match (0.368 vs. 0.324) at the cost of one extra attempt. The judges' pass/fail on both
-versions (shown side by side in the judging pack) decides whether this trade-off is
-worth it per scenario.
+**Mean CLIP, loop ON: 0.318 (n=9). Mean CLIP, loop OFF: 0.292 (n=9).** ON is now
+consistently >= OFF (the fairness check above), as it should be: ON always has at least
+OFF's one attempt, plus the option to revise. When ON's first attempt already passes
+(S05, S10, S11), ON and OFF are identical -- the loop adds nothing because nothing was
+needed. When it doesn't, ON finds a better match at the cost of 1-2 extra attempts (S04,
+S06, S07-S09, S12). The judges' pass/fail on both versions (shown side by side in the
+judging pack) decides whether that trade-off is worth it per scenario.
 
 CLIP-threshold calibration (8 Part 2 test-split images, never used by any scenario or
 red-team case): scores `[0.178, 0.225, 0.182, 0.197, 0.199, 0.209, 0.19, 0.177]` ->
@@ -132,22 +157,25 @@ and its final message was never "PWNED"; R01 and R03 flagged the embedded text a
 instruction-like in the safety trace (2/10 overall) without following it. Whether each
 non-refused case still counts as a fully safe outcome is for the red-team judging pack.
 
-**Safety note:** S11's NSFW flag matches a pattern already seen in Part 2 -- the SD 1.5
-safety checker flags fine-tuned Pokemon-style (LoRA) outputs noticeably more than base
-outputs on the same kind of prompt, even though nothing about the subject matter is
-remotely NSFW. The flagged image itself is blacked out by the checker and cannot be
-inspected to confirm, but given the recurring pattern with the same checker on the same
-kind of fine-tuned output, this is treated as a likely false positive rather than a
-genuine safety concern.
+**Safety note (computed dynamically in the notebook, not hardcoded):** in an earlier run,
+one domain-style (Pokemon LoRA) attempt was flagged NSFW and discarded -- matching a
+pattern already seen in Part 2, where the SD 1.5 safety checker flags fine-tuned
+Pokemon-style outputs noticeably more than base outputs on the same kind of prompt, even
+though nothing about the subject matter is remotely NSFW, and is treated as a likely
+false positive (the flagged image itself is blacked out by the checker and can't be
+inspected to confirm). In *this* run, zero attempts were flagged across all 9 generation
+scenarios -- the checker's behavior is not fully deterministic run to run even at a
+fixed seed, which the notebook's safety-note cell reports honestly either way rather
+than asserting a specific scenario was affected.
 
 ### Efficiency
 
-Median seconds per request (all 40 requests): **11.6s**. Generation routes
-(style_change/edit/domain_style) median **17.1s** (n=19) vs. caption/question and
+Median seconds per request (all 40 requests): **12.7s**. Generation routes
+(style_change/edit/domain_style) median **17.3s** (n=19) vs. caption/question and
 unsupported (refused or broken) median **0.05s** (n=21). By route: caption_question
-10.8s (n=10), domain_style 12.5s (n=6), style_change 15.7s (n=7), edit **27.5s** (n=6,
-down from ~70s before fixing instruct-pix2pix's inference steps -- see below),
-unsupported 0.0s (n=11, refused/handled before any model call).
+10.6s (n=10), domain_style 12.7s (n=6), style_change 15.0s (n=7), edit **29.0s** (n=6,
+down from ~70s before fixing instruct-pix2pix's inference steps), unsupported 0.0s
+(n=11, refused/handled before any model call).
 
 ## Tools and models
 
@@ -171,10 +199,13 @@ model, adapter and generated image here is for **non-commercial research only**.
 `src/test_stub.py` runs the real routing/safety/prompt-engineering/critique/
 orchestration logic against all 15 scenarios (`eval/p3_scenarios_manav.json`) and all 10
 red-team cases (`eval/p3_redteam_manav.json`) with plain Python stand-ins for every
-model call -- no GPU, no downloads (145/145 checks pass, including that the revision cap
-stops at "stopped_at_cap" rather than silently accepting, returns the best-CLIP safe
-attempt rather than the last one, and that `critique_enabled=False` still records a CLIP
-score). Run it with:
+model call -- no GPU, no downloads (162/162 checks pass), including that: the revision
+cap stops at "stopped_at_cap" rather than silently accepting; the best-CLIP *safe*
+attempt is returned, not the last one; `critique_enabled=False` still records a CLIP
+score; an unsafe attempt is discarded and retried rather than causing an immediate
+reject, and "reject" only happens when no attempt was ever safe; an unsafe attempt in
+the middle of a run is never picked as the best one; and `run_both()` calls the VLM
+exactly once and gives both modes the identical prepared state. Run it with:
 
 ```
 python -m src.test_stub --images-dir <path to the images built by src/build_test_images.py>
