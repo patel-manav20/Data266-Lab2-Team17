@@ -29,7 +29,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0029.png",
-    "time_s": 7.480844771999955,
+    "time_s": 7.069746013999975,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -44,7 +44,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0029.png",
-      "time_s": 7.480844771999955,
+      "time_s": 7.069746013999975,
       "nsfw_flagged": false
     }
   ],
@@ -73,17 +73,17 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.0009545880000132456,
+      "time_s": 0.0009359700000004523,
       "summary": "route=domain_style"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 9.589000001142267e-6,
+      "time_s": 9.12700011213019e-6,
       "summary": "Make two Pokemon-style creatures side by side, one red fire type and one blue wa"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.481174956999894,
+      "time_s": 7.070093814000074,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=266"
     }
   ]

@@ -45,7 +45,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0008.png",
-    "time_s": 8.533203746000027,
+    "time_s": 8.211681011999872,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,7 +60,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0007.png",
-      "time_s": 7.508104063000019,
+      "time_s": 7.079478881000114,
       "nsfw_flagged": false
     },
     {
@@ -74,7 +74,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0008.png",
-      "time_s": 8.533203746000027,
+      "time_s": 8.211681011999872,
       "nsfw_flagged": false
     }
   ],
@@ -111,37 +111,37 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.06093665899993539,
+      "time_s": 0.06152068300002611,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 6.893137187000093,
+      "time_s": 6.834394252000038,
       "summary": "caption='A serene night scene at a marina with boats anchored in calm'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000012121000054321485,
+      "time_s": 9.808999948290875e-6,
       "summary": "Change the style to an oil painting with thick brush strokes, (starting image: A"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.50844618699989,
+      "time_s": 7.079856735000021,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.4108875120000448,
+      "time_s": 0.38662304400008907,
       "summary": "decision=revise clip=0.274177223443985"
     },
     {
       "agent": "Image Generation",
-      "time_s": 8.533547301999988,
+      "time_s": 8.212025284999982,
       "summary": "stable-diffusion-v1-5 (img2img) seed=267"
     },
     {
       "agent": "Critique",
-      "time_s": 0.40339624300008836,
+      "time_s": 0.3881192490000558,
       "summary": "decision=accept clip=0.3685036301612854"
     }
   ]

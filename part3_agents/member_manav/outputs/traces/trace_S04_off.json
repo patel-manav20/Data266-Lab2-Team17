@@ -44,7 +44,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0004.png",
-    "time_s": 7.106260675000158,
+    "time_s": 6.855731434000063,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -59,7 +59,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0004.png",
-      "time_s": 7.106260675000158,
+      "time_s": 6.855731434000063,
       "nsfw_flagged": false
     }
   ],
@@ -88,22 +88,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.05049284100005025,
+      "time_s": 0.05256184199993186,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.0916180649999205,
+      "time_s": 7.150853201000018,
       "summary": "caption='A happy Bernese Mountain Dog sits on the ground next to a re'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000011790000144173973,
+      "time_s": 9.550000186209218e-6,
       "summary": "Make this look like a watercolor painting, (starting image: A happy Bernese Moun"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.106610070999977,
+      "time_s": 6.856014085999959,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     }
   ]

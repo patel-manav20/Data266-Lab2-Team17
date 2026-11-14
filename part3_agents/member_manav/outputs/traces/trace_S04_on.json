@@ -44,7 +44,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0003.png",
-    "time_s": 9.735564816000078,
+    "time_s": 9.448549634000074,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -59,7 +59,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0001.png",
-      "time_s": 26.521306967999863,
+      "time_s": 28.03242743099986,
       "nsfw_flagged": false
     },
     {
@@ -73,7 +73,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0002.png",
-      "time_s": 8.06662975900008,
+      "time_s": 7.9389219470001535,
       "nsfw_flagged": false
     },
     {
@@ -87,7 +87,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0003.png",
-      "time_s": 9.735564816000078,
+      "time_s": 9.448549634000074,
       "nsfw_flagged": false
     }
   ],
@@ -132,47 +132,47 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.05049284100005025,
+      "time_s": 0.05256184199993186,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.0916180649999205,
+      "time_s": 7.150853201000018,
       "summary": "caption='A happy Bernese Mountain Dog sits on the ground next to a re'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000011790000144173973,
+      "time_s": 9.550000186209218e-6,
       "summary": "Make this look like a watercolor painting, (starting image: A happy Bernese Moun"
     },
     {
       "agent": "Image Generation",
-      "time_s": 26.521701220000068,
+      "time_s": 28.032755382000005,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.37445799900001475,
+      "time_s": 0.36176027599981353,
       "summary": "decision=revise clip=0.3179152011871338"
     },
     {
       "agent": "Image Generation",
-      "time_s": 8.06694385700007,
+      "time_s": 7.939223932000004,
       "summary": "stable-diffusion-v1-5 (img2img) seed=267"
     },
     {
       "agent": "Critique",
-      "time_s": 0.37766714400004275,
+      "time_s": 0.36984766700015825,
       "summary": "decision=revise clip=0.3261035084724426"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.735912088000077,
+      "time_s": 9.448868643000196,
       "summary": "stable-diffusion-v1-5 (img2img) seed=269"
     },
     {
       "agent": "Critique",
-      "time_s": 0.38513681500012353,
+      "time_s": 0.3622116220001317,
       "summary": "decision=revise clip=0.3696483373641968"
     }
   ]

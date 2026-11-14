@@ -45,7 +45,7 @@
     "image_guidance_scale": 1.75,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0015.png",
-    "time_s": 9.590824891000011,
+    "time_s": 9.063733630000115,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,7 +60,7 @@
       "image_guidance_scale": 1.6,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0014.png",
-      "time_s": 9.745972072000086,
+      "time_s": 9.36854898599995,
       "nsfw_flagged": false
     },
     {
@@ -74,7 +74,7 @@
       "image_guidance_scale": 1.75,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0015.png",
-      "time_s": 9.590824891000011,
+      "time_s": 9.063733630000115,
       "nsfw_flagged": false
     },
     {
@@ -88,7 +88,7 @@
       "image_guidance_scale": 1.95,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0016.png",
-      "time_s": 9.554759207000188,
+      "time_s": 8.891866537999931,
       "nsfw_flagged": false
     }
   ],
@@ -133,47 +133,47 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.030932252999946286,
+      "time_s": 0.0321722989999671,
       "summary": "route=edit"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.606589619000033,
+      "time_s": 8.057194713999934,
       "summary": "caption='A gray cat sits on a yellow blanket atop a red couch, gazing'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.00001114400015467254,
+      "time_s": 9.492999879512354e-6,
       "summary": "Add a small party hat on the cat, (starting image: A gray cat sits on a yellow b"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.746294527000146,
+      "time_s": 9.368856970000024,
       "summary": "timbrooks/instruct-pix2pix seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.4034423999999035,
+      "time_s": 0.3860860639999828,
       "summary": "decision=revise clip=0.3327513039112091"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.591231619999917,
+      "time_s": 9.064053005000005,
       "summary": "timbrooks/instruct-pix2pix seed=267"
     },
     {
       "agent": "Critique",
-      "time_s": 0.39948745500009863,
+      "time_s": 0.3881908159999057,
       "summary": "decision=revise clip=0.34189939498901367"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.555097457000102,
+      "time_s": 8.892183136000085,
       "summary": "timbrooks/instruct-pix2pix seed=269"
     },
     {
       "agent": "Critique",
-      "time_s": 0.3945303259999946,
+      "time_s": 0.3760550219999459,
       "summary": "decision=revise clip=0.30044078826904297"
     }
   ]

@@ -45,7 +45,7 @@
     "image_guidance_scale": 1.6,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0021.png",
-    "time_s": 9.76228082700004,
+    "time_s": 9.102423241999986,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,7 +60,7 @@
       "image_guidance_scale": 1.6,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0021.png",
-      "time_s": 9.76228082700004,
+      "time_s": 9.102423241999986,
       "nsfw_flagged": false
     }
   ],
@@ -89,22 +89,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.02657763399997748,
+      "time_s": 0.026630221000004894,
       "summary": "route=edit"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.890464342999849,
+      "time_s": 7.303457101000049,
       "summary": "caption='A dimly lit room with a plaid sofa, a red armchair, and a te'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000013130000070304959,
+      "time_s": 0.00002356900017730368,
       "summary": "This photo is too dark. Make it brighter and clearer, (starting image: A dimly l"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.76261330400007,
+      "time_s": 9.102757000999873,
       "summary": "timbrooks/instruct-pix2pix seed=266"
     }
   ]

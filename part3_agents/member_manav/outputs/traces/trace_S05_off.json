@@ -45,7 +45,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0006.png",
-    "time_s": 7.266101602999925,
+    "time_s": 6.937109954999869,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,7 +60,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0006.png",
-      "time_s": 7.266101602999925,
+      "time_s": 6.937109954999869,
       "nsfw_flagged": false
     }
   ],
@@ -89,22 +89,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.09149494199982655,
+      "time_s": 0.09331974800011267,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.4564757180000925,
+      "time_s": 7.255677910000031,
       "summary": "caption='An old bicycle leans against a weathered wooden door in a ru'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000013009999975110986,
+      "time_s": 0.000018745000033959514,
       "summary": "Turn this photo into a pencil sketch, (starting image: An old bicycle leans agai"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.266428202000043,
+      "time_s": 6.937483625999903,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     }
   ]

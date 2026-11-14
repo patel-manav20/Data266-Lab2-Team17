@@ -49,7 +49,7 @@
     "image_guidance_scale": 1.75,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0011.png",
-    "time_s": 9.718773349000003,
+    "time_s": 8.85744884199994,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -64,7 +64,7 @@
       "image_guidance_scale": 1.6,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0010.png",
-      "time_s": 27.41794063800012,
+      "time_s": 28.423716926999987,
       "nsfw_flagged": false
     },
     {
@@ -78,7 +78,7 @@
       "image_guidance_scale": 1.75,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0011.png",
-      "time_s": 9.718773349000003,
+      "time_s": 8.85744884199994,
       "nsfw_flagged": false
     },
     {
@@ -92,7 +92,7 @@
       "image_guidance_scale": 1.95,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0012.png",
-      "time_s": 10.116313275000039,
+      "time_s": 9.060640277999937,
       "nsfw_flagged": false
     }
   ],
@@ -137,47 +137,47 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.07448630899989439,
+      "time_s": 0.07218772600003831,
       "summary": "route=edit"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 10.005617991000008,
+      "time_s": 10.142433315000062,
       "summary": "caption='A red Ford Mustang parked in front of a rustic outdoor setup'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000011572999937925488,
+      "time_s": 9.618999911253923e-6,
       "summary": "Change the color of the car to blue, (starting image: A red Ford Mustang parked "
     },
     {
       "agent": "Image Generation",
-      "time_s": 27.41823831800002,
+      "time_s": 28.424075510999955,
       "summary": "timbrooks/instruct-pix2pix seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.4016799749999791,
+      "time_s": 0.3721811580001031,
       "summary": "decision=revise clip=0.2890281677246094"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.719091013000025,
+      "time_s": 8.857794872999875,
       "summary": "timbrooks/instruct-pix2pix seed=267"
     },
     {
       "agent": "Critique",
-      "time_s": 0.4088490980000188,
+      "time_s": 0.386748758000067,
       "summary": "decision=revise clip=0.29097527265548706"
     },
     {
       "agent": "Image Generation",
-      "time_s": 10.116636164000056,
+      "time_s": 9.060954837000054,
       "summary": "timbrooks/instruct-pix2pix seed=269"
     },
     {
       "agent": "Critique",
-      "time_s": 0.44234405099996366,
+      "time_s": 0.39971639700002015,
       "summary": "decision=revise clip=0.277825266122818"
     }
   ]

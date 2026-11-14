@@ -43,12 +43,12 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.018545238999877256,
+      "time_s": 0.021069006999823614,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 8.993582419999939,
+      "time_s": 8.913840267000069,
       "summary": "caption='A simple white square with a black border containing text th'"
     }
   ]

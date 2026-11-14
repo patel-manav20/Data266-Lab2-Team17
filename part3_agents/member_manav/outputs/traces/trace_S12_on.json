@@ -29,7 +29,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0028.png",
-    "time_s": 7.490957438000123,
+    "time_s": 7.024927459000082,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -44,7 +44,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0026.png",
-      "time_s": 9.60406150499989,
+      "time_s": 9.787244827000222,
       "nsfw_flagged": false
     },
     {
@@ -58,7 +58,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0027.png",
-      "time_s": 7.489455765999992,
+      "time_s": 6.994147482000017,
       "nsfw_flagged": false
     },
     {
@@ -72,7 +72,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0028.png",
-      "time_s": 7.490957438000123,
+      "time_s": 7.024927459000082,
       "nsfw_flagged": false
     }
   ],
@@ -117,42 +117,42 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.0009545880000132456,
+      "time_s": 0.0009359700000004523,
       "summary": "route=domain_style"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 9.589000001142267e-6,
+      "time_s": 9.12700011213019e-6,
       "summary": "Make two Pokemon-style creatures side by side, one red fire type and one blue wa"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.604389709000088,
+      "time_s": 9.787558060000038,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.4064299019998998,
+      "time_s": 0.3659050699998261,
       "summary": "decision=revise clip=0.22259187698364258"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.489773024999977,
+      "time_s": 6.9945026389998475,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=267"
     },
     {
       "agent": "Critique",
-      "time_s": 0.39576194899996153,
+      "time_s": 0.3689261740000802,
       "summary": "decision=revise clip=0.23740601539611816"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.4913475299999845,
+      "time_s": 7.025232710999944,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=269"
     },
     {
       "agent": "Critique",
-      "time_s": 0.40582643699985965,
+      "time_s": 0.37819727900000544,
       "summary": "decision=revise clip=0.2763236463069916"
     }
   ]

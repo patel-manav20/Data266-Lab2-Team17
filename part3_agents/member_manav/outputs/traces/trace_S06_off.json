@@ -45,7 +45,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0009.png",
-    "time_s": 7.2289608910000425,
+    "time_s": 6.9786382130000675,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,7 +60,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0009.png",
-      "time_s": 7.2289608910000425,
+      "time_s": 6.9786382130000675,
       "nsfw_flagged": false
     }
   ],
@@ -89,22 +89,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.06093665899993539,
+      "time_s": 0.06152068300002611,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 6.893137187000093,
+      "time_s": 6.834394252000038,
       "summary": "caption='A serene night scene at a marina with boats anchored in calm'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000012121000054321485,
+      "time_s": 9.808999948290875e-6,
       "summary": "Change the style to an oil painting with thick brush strokes, (starting image: A"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.2293552809999255,
+      "time_s": 6.978951588999962,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     }
   ]

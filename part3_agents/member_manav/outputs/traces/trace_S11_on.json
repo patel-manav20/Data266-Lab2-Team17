@@ -43,7 +43,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0024.png",
-    "time_s": 9.910244879000174,
+    "time_s": 10.04649875799987,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -58,7 +58,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0024.png",
-      "time_s": 9.910244879000174,
+      "time_s": 10.04649875799987,
       "nsfw_flagged": false
     }
   ],
@@ -87,27 +87,27 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.042546174999870345,
+      "time_s": 0.04013420299997961,
       "summary": "route=domain_style"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 6.57468948199994,
+      "time_s": 6.600388667999823,
       "summary": "caption='An orange tabby cat rests comfortably on a colorful blanket '"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000011225000207559788,
+      "time_s": 0.00001061599982676853,
       "summary": "Turn my cat into a Pokemon-style creature, (starting image: An orange tabby cat "
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.910611736999954,
+      "time_s": 10.046804755999801,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.4038595600000008,
+      "time_s": 0.3816826699999183,
       "summary": "decision=accept clip=0.3000660240650177"
     }
   ]

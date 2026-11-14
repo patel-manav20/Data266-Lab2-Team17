@@ -44,12 +44,12 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.04256144199985101,
+      "time_s": 0.03811131199995543,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 15.789926594000008,
+      "time_s": 15.70678840100004,
       "summary": "caption='\"caption\": \"A digital sign welcomes visitors to Shopping Cit'"
     }
   ]

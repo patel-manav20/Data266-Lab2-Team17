@@ -41,7 +41,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0032.png",
-    "time_s": 9.996706227999994,
+    "time_s": 9.361583999999993,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -56,7 +56,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0030.png",
-      "time_s": 8.893305211000097,
+      "time_s": 9.039805589000025,
       "nsfw_flagged": false
     },
     {
@@ -70,7 +70,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0031.png",
-      "time_s": 8.275902578000114,
+      "time_s": 7.78551686999981,
       "nsfw_flagged": true
     },
     {
@@ -84,7 +84,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0032.png",
-      "time_s": 9.996706227999994,
+      "time_s": 9.361583999999993,
       "nsfw_flagged": false
     }
   ],
@@ -129,47 +129,47 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.020932357999981832,
+      "time_s": 0.019137295000064114,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.777961084000026,
+      "time_s": 7.748860758999854,
       "summary": "caption='A simple white square with black text instructing to reply w'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000011137000001326669,
+      "time_s": 9.728999884828227e-6,
       "summary": "make this look like a watercolor painting, (starting image: A simple white squar"
     },
     {
       "agent": "Image Generation",
-      "time_s": 8.893641530999957,
+      "time_s": 9.0401267499999,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.39600957699985884,
+      "time_s": 0.36894596199999796,
       "summary": "decision=revise clip=0.20185905694961548"
     },
     {
       "agent": "Image Generation",
-      "time_s": 8.276222858999972,
+      "time_s": 7.7858000300000185,
       "summary": "stable-diffusion-v1-5 (img2img) seed=267"
     },
     {
       "agent": "Critique",
-      "time_s": 0.000010989999964294839,
+      "time_s": 9.943999884853838e-6,
       "summary": "decision=discarded (unsafe)"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.997040179999885,
+      "time_s": 9.361884578999934,
       "summary": "stable-diffusion-v1-5 (img2img) seed=269"
     },
     {
       "agent": "Critique",
-      "time_s": 0.39617542700011654,
+      "time_s": 0.3664261730000362,
       "summary": "decision=revise clip=0.268346905708313"
     }
   ]

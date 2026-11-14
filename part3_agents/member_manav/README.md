@@ -170,12 +170,25 @@ than asserting a specific scenario was affected.
 
 ### Efficiency
 
-Median seconds per request (all 40 requests): **12.7s**. Generation routes
-(style_change/edit/domain_style) median **17.3s** (n=19) vs. caption/question and
-unsupported (refused or broken) median **0.05s** (n=21). By route: caption_question
-10.6s (n=10), domain_style 12.7s (n=6), style_change 15.0s (n=7), edit **29.0s** (n=6,
+Median seconds per request (all 40 requests): **13.2s**. Generation routes
+(style_change/edit/domain_style) median **16.9s** (n=19) vs. caption/question and
+unsupported (refused or broken) median **0.06s** (n=21). By route: caption_question
+10.4s (n=10), domain_style 13.2s (n=6), style_change 14.6s (n=7), edit **27.4s** (n=6,
 down from ~70s before fixing instruct-pix2pix's inference steps), unsupported 0.0s
 (n=11, refused/handled before any model call).
+
+### Reproducibility fix (pydantic pin, commit hash)
+
+`pydantic` was unpinned in the install cell (no cp313 wheel existed at the version it
+would otherwise have pinned to); it is now pinned to `2.14.2`, the version already
+confirmed working with Python 3.13 on this Colab image. The run-info cell also printed
+an empty commit hash on every Colab run, because `git rev-parse` was running inside the
+detached Colab working directory, which has no `.git` -- it now takes a `COMMIT_OVERRIDE`
+papermill parameter (the same pattern `p2_finetune.ipynb` already used) and falls back to
+`git rev-parse` only when that's unset. Re-running the whole notebook end to end after
+both fixes reproduced the determinism test (`DETERMINISM TEST: PASS`, same image hash)
+and every CLIP/accept/stopped-at-cap number exactly -- confirming both fixes are purely
+reproducibility bookkeeping with no effect on the system's actual behavior.
 
 ## Tools and models
 

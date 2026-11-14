@@ -46,12 +46,12 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.07260948300017844,
+      "time_s": 0.07732577699994181,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 14.28705960100001,
+      "time_s": 14.481813114000033,
       "summary": "caption='A white and red Metropolitan Transit System bus is parked at'"
     }
   ]

@@ -45,7 +45,7 @@
     "image_guidance_scale": 1.6,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0017.png",
-    "time_s": 9.624454119999882,
+    "time_s": 8.812339849999944,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,7 +60,7 @@
       "image_guidance_scale": 1.6,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0017.png",
-      "time_s": 9.624454119999882,
+      "time_s": 8.812339849999944,
       "nsfw_flagged": false
     }
   ],
@@ -89,22 +89,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.030932252999946286,
+      "time_s": 0.0321722989999671,
       "summary": "route=edit"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.606589619000033,
+      "time_s": 8.057194713999934,
       "summary": "caption='A gray cat sits on a yellow blanket atop a red couch, gazing'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.00001114400015467254,
+      "time_s": 9.492999879512354e-6,
       "summary": "Add a small party hat on the cat, (starting image: A gray cat sits on a yellow b"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.62479247500005,
+      "time_s": 8.812665739000067,
       "summary": "timbrooks/instruct-pix2pix seed=266"
     }
   ]
