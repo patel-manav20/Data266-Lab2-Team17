@@ -201,7 +201,9 @@ root's `links.txt`.
 ## Notebooks
 
 - `notebooks/p1_rag.ipynb`: the Kaggle notebook. It builds the full index, answers every question and
-  writes `submission.csv`. All code is inside the notebook; logic is frozen (commit `ffe1f01`).
+  writes `submission.csv`. All code is inside the notebook; logic is frozen (commit `ffe1f01`). Its
+  saved outputs are from Kaggle version 34 -- a single T4 by default (`CUDA_VISIBLE_DEVICES=0`, the
+  reranker never targets a second GPU), 681.6s total, `submission.csv` byte-identical to version 32's.
 - `notebooks/p1_eval.ipynb`: runs the frozen pipeline (by executing `p1_rag.ipynb`'s own cells, not a copy
   of its code) and produces every number in the Results section above, plus the blank groundedness-rating
   sheets in `outputs/`.
