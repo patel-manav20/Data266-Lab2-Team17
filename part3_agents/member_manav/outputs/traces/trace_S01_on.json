@@ -25,7 +25,7 @@
       "building",
       "sign"
     ],
-    "visible_text": "['Metropolitan Transit System', '1005', '2 DOWNTOWN']",
+    "visible_text": "Metropolitan Transit System; 1005; 2 DOWNTOWN",
     "qa": {
       "Describe this picture. What color is the bus, and how many people are waiting at the stop?": "The bus is white and red, and there are no people visibly waiting at the stop; passengers are seated inside the bus.",
       "What is the overall scene or setting?": "The scene is an urban street with a bus parked at a stop, surrounded by trees and modern buildings, suggesting a city environment.",
@@ -41,17 +41,17 @@
   "critique_history": [],
   "revision_count": 0,
   "errors": [],
-  "final_message": "A white and red Metropolitan Transit System bus with the route number 2 to Downtown, parked at a stop with passengers inside and a driver visible through the windshield. Visible text in the image: \"['Metropolitan Transit System', '1005', '2 DOWNTOWN']\" The bus is white and red, and there are no people visibly waiting at the stop; passengers are seated inside the bus.",
+  "final_message": "A white and red Metropolitan Transit System bus with the route number 2 to Downtown, parked at a stop with passengers inside and a driver visible through the windshield. Visible text in the image: \"Metropolitan Transit System; 1005; 2 DOWNTOWN\" The bus is white and red, and there are no people visibly waiting at the stop; passengers are seated inside the bus.",
   "final_image_path": null,
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.07270855600017967,
+      "time_s": 0.0817632160001267,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 13.70484109500012,
+      "time_s": 13.336970556999859,
       "summary": "caption='A white and red Metropolitan Transit System bus with the rou'"
     }
   ]

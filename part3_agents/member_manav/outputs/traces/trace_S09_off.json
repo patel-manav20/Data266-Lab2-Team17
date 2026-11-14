@@ -40,12 +40,12 @@
     "prompt": "This photo is too dark. Make it brighter and clearer, (starting image: A dimly lit living room with a plaid sofa, a pink armchair, and a television on a stand.)",
     "negative_prompt": "blurry, low quality, distorted, extra limbs, watermark, text artifacts",
     "seed": 266,
-    "steps": null,
+    "steps": 30,
     "strength": null,
     "image_guidance_scale": 1.6,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0019.png",
-    "time_s": 30.377827567999702,
+    "time_s": 9.469407900000078,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -55,17 +55,17 @@
       "prompt": "This photo is too dark. Make it brighter and clearer, (starting image: A dimly lit living room with a plaid sofa, a pink armchair, and a television on a stand.)",
       "negative_prompt": "blurry, low quality, distorted, extra limbs, watermark, text artifacts",
       "seed": 266,
-      "steps": null,
+      "steps": 30,
       "strength": null,
       "image_guidance_scale": 1.6,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0019.png",
-      "time_s": 30.377827567999702,
+      "time_s": 9.469407900000078,
       "nsfw_flagged": false
     }
   ],
   "critique": {
-    "clip_score": null,
+    "clip_score": 0.27325183153152466,
     "clip_threshold": null,
     "vlm_verdict": null,
     "safe": true,
@@ -74,7 +74,7 @@
   },
   "critique_history": [
     {
-      "clip_score": null,
+      "clip_score": 0.27325183153152466,
       "clip_threshold": null,
       "vlm_verdict": null,
       "safe": true,
@@ -89,22 +89,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.029312402999494225,
+      "time_s": 0.02647024899988537,
       "summary": "route=edit"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.726338523999402,
+      "time_s": 7.839698903000226,
       "summary": "caption='A dimly lit living room with a plaid sofa, a pink armchair, '"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000010378999832028057,
+      "time_s": 9.988999863708159e-6,
       "summary": "This photo is too dark. Make it brighter and clearer, (starting image: A dimly l"
     },
     {
       "agent": "Image Generation",
-      "time_s": 30.378124372000457,
+      "time_s": 9.46971423099967,
       "summary": "timbrooks/instruct-pix2pix seed=266"
     }
   ]

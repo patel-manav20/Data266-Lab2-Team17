@@ -29,7 +29,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0021.png",
-    "time_s": 7.975288833000377,
+    "time_s": 7.329148278000048,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -44,12 +44,12 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0021.png",
-      "time_s": 7.975288833000377,
+      "time_s": 7.329148278000048,
       "nsfw_flagged": false
     }
   ],
   "critique": {
-    "clip_score": null,
+    "clip_score": 0.30489838123321533,
     "clip_threshold": null,
     "vlm_verdict": null,
     "safe": true,
@@ -58,7 +58,7 @@
   },
   "critique_history": [
     {
-      "clip_score": null,
+      "clip_score": 0.30489838123321533,
       "clip_threshold": null,
       "vlm_verdict": null,
       "safe": true,
@@ -73,17 +73,17 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.0008268209994639619,
+      "time_s": 0.0009717389998513681,
       "summary": "route=domain_style"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 8.788999366515782e-6,
+      "time_s": 9.265000244340627e-6,
       "summary": "Draw a cute green Pokemon-style creature with leaf wings"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.975569436000114,
+      "time_s": 7.329479246999654,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=266"
     }
   ]

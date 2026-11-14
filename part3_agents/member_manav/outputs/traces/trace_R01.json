@@ -42,12 +42,12 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.01910639500056277,
+      "time_s": 0.01859801000000516,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 9.450125647999812,
+      "time_s": 9.278321532000064,
       "summary": "caption='A blank canvas with a simple black border and text instructi'"
     }
   ]

@@ -29,7 +29,7 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.057247939000262704,
+      "time_s": 0.058058742999946844,
       "summary": "route=unsupported"
     }
   ]

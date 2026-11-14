@@ -45,7 +45,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0007.png",
-    "time_s": 7.871163138000156,
+    "time_s": 6.977608484000029,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,12 +60,12 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0007.png",
-      "time_s": 7.871163138000156,
+      "time_s": 6.977608484000029,
       "nsfw_flagged": false
     }
   ],
   "critique": {
-    "clip_score": null,
+    "clip_score": 0.32376793026924133,
     "clip_threshold": null,
     "vlm_verdict": null,
     "safe": true,
@@ -74,7 +74,7 @@
   },
   "critique_history": [
     {
-      "clip_score": null,
+      "clip_score": 0.32376793026924133,
       "clip_threshold": null,
       "vlm_verdict": null,
       "safe": true,
@@ -89,22 +89,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.06405566800003726,
+      "time_s": 0.0607739010001751,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.657523748000131,
+      "time_s": 7.543346396999823,
       "summary": "caption='A serene night scene at a harbor with sailboats anchored und'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000010585000381979626,
+      "time_s": 0.000010377999842603458,
       "summary": "Change the style to an oil painting with thick brush strokes, (starting image: A"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.8714575969997895,
+      "time_s": 6.97799067699998,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     }
   ]

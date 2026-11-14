@@ -305,13 +305,16 @@ def run_all_tests(images_dir: str) -> bool:
     run_case("R10", "caption this", p("s14_r10_truncated.jpg"), expect_route="unsupported",
              extra_asserts=broken_asserts("R10"))
 
-    # ---- extra: the revise loop stops at 2 (not a scenario/red-team id, a unit check) ---
+    # ---- extra: the revise loop stops at 2 and picks the best safe attempt, not the
+    # last one (not a scenario/red-team id, a unit check) -------------------------------
     def revise_loop_test():
+        # scores are never high enough to pass threshold=0.25, but attempt 2 (seed 267)
+        # is the best of the three -- the system should return THAT one, not attempt 3
         state = orchestrator_run(
             "Make this look like a watercolor painting.", p("s04_dog_sitting_park.jpg"),
             vlm_call=stub_vlm_call, generate_fn=make_stub_generate_fn(),
             classifier_fn=classifier_should_not_be_called,
-            clip_score_fn=make_stub_clip_score_fn([0.05, 0.05, 0.05, 0.05, 0.05]),  # always fails
+            clip_score_fn=make_stub_clip_score_fn([0.05, 0.08, 0.03]),
             vlm_judge_fn=always_no_judge, clip_threshold=0.25,
             trace_dir="/tmp/p3_stub_traces", request_id="REVISE_LOOP",
         )
@@ -319,9 +322,32 @@ def run_all_tests(images_dir: str) -> bool:
               state.revision_count)
         check("REVISE_LOOP", "exactly 3 generation attempts in history (1 + 2 revisions)",
               len(state.generation_history) == 3, len(state.generation_history))
-        check("REVISE_LOOP", "final decision is accept (best effort) after the limit",
-              state.critique.decision == "accept")
+        check("REVISE_LOOP", "final decision is stopped_at_cap, not accept",
+              state.critique.decision == "stopped_at_cap", state.critique.decision)
+        check("REVISE_LOOP", "per-attempt critic decisions recorded (3 entries)",
+              len(state.critique_history) == 3, len(state.critique_history))
+        check("REVISE_LOOP", "returns the best-CLIP safe attempt (seed 267, clip 0.08), not the last",
+              state.final_image_path == "/tmp/stub_out_267.png", state.final_image_path)
+        check("REVISE_LOOP", "final message says it may not fully match the request",
+              "may not fully match" in (state.final_message or ""))
     revise_loop_test()
+
+    # ---- extra: critique_enabled=False still computes a CLIP score (needed for the
+    # with/without-critique comparison) even though it never decides anything with it ---
+    def critique_off_test():
+        state = orchestrator_run(
+            "Make this look like a watercolor painting.", p("s04_dog_sitting_park.jpg"),
+            vlm_call=stub_vlm_call, generate_fn=make_stub_generate_fn(),
+            classifier_fn=classifier_should_not_be_called,
+            clip_score_fn=make_stub_clip_score_fn([0.19]), vlm_judge_fn=always_no_judge,
+            critique_enabled=False, trace_dir="/tmp/p3_stub_traces", request_id="CRITIQUE_OFF",
+        )
+        check("CRITIQUE_OFF", "exactly 1 attempt (no revise loop when critique is off)",
+              len(state.generation_history) == 1, len(state.generation_history))
+        check("CRITIQUE_OFF", "decision is accept (not flagged NSFW)", state.critique.decision == "accept")
+        check("CRITIQUE_OFF", "CLIP score is still recorded even with the loop off",
+              state.critique.clip_score == 0.19, state.critique.clip_score)
+    critique_off_test()
 
     # ---- extra: a request that is unsafe needs no image at all (image=None) -------------
     def no_image_unsafe_test():

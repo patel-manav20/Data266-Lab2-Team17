@@ -16,7 +16,7 @@
     "reason": null
   },
   "vision": {
-    "caption": "{",
+    "caption": "\"caption\": \"A digital sign welcomes visitors to Shopping City, with information from the Metropolitan Police, set against a bustling urban street scene.\",",
     "objects": [
       "people",
       "bus",
@@ -38,18 +38,18 @@
   "critique_history": [],
   "revision_count": 0,
   "errors": [],
-  "final_message": "{ {\n  \"caption\": \"A digital sign welcomes visitors to Shopping City, with information from the Metropolitan Police, set against a bustling urban street scene.\",\n  \"objects\": [\n    \"digital sign\",\n    \"street\",\n    \"buildings\",\n    \"bicycles\",\n    \"people\",\n    \"suv\",\n    \"signage\"\n  ],\n  \"visible_text\": [\n    \"SHARINGEY COUNCIL\",\n    \"Information\",\n    \"ARRIVING FROM\",\n    \"METROPOLITAN\",\n    \"POLICE\",\n    \"WELCOME TO\",\n    \"SHOPPING CITY\",\n    \"MOW GREEN\",\n    \"NEXT\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M",
+  "final_message": "\"caption\": \"A digital sign welcomes visitors to Shopping City, with information from the Metropolitan Police, set against a bustling urban street scene.\", {\n  \"caption\": \"A digital sign welcomes visitors to Shopping City, with information from the Metropolitan Police, set against a bustling urban street scene.\",\n  \"objects\": [\n    \"digital sign\",\n    \"street\",\n    \"buildings\",\n    \"bicycles\",\n    \"people\",\n    \"suv\",\n    \"signage\"\n  ],\n  \"visible_text\": [\n    \"SHARINGEY COUNCIL\",\n    \"Information\",\n    \"ARRIVING FROM\",\n    \"METROPOLITAN\",\n    \"POLICE\",\n    \"WELCOME TO\",\n    \"SHOPPING CITY\",\n    \"MOW GREEN\",\n    \"NEXT\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M\",\n    \"M",
   "final_image_path": null,
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.04009141700043983,
+      "time_s": 0.03910775799977273,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 16.499696652999774,
-      "summary": "caption='{'"
+      "time_s": 16.1494937020002,
+      "summary": "caption='\"caption\": \"A digital sign welcomes visitors to Shopping Cit'"
     }
   ]
 }

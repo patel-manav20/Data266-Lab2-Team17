@@ -44,7 +44,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0001.png",
-    "time_s": 10.131207775999428,
+    "time_s": 9.842318152000189,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -59,13 +59,13 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0001.png",
-      "time_s": 10.131207775999428,
+      "time_s": 9.842318152000189,
       "nsfw_flagged": false
     }
   ],
   "critique": {
     "clip_score": 0.30823948979377747,
-    "clip_threshold": 0.15,
+    "clip_threshold": 0.178,
     "vlm_verdict": "yes",
     "safe": true,
     "decision": "accept",
@@ -74,7 +74,7 @@
   "critique_history": [
     {
       "clip_score": 0.30823948979377747,
-      "clip_threshold": 0.15,
+      "clip_threshold": 0.178,
       "vlm_verdict": "yes",
       "safe": true,
       "decision": "accept",
@@ -88,27 +88,27 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.0533905419997609,
+      "time_s": 0.05246913999962999,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 6.918923977000304,
+      "time_s": 6.7140184099998805,
       "summary": "caption='A happy Bernese Mountain Dog sits on a gravel path next to a'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000011515000551298726,
+      "time_s": 0.000010830000064743217,
       "summary": "Make this look like a watercolor painting, (starting image: A happy Bernese Moun"
     },
     {
       "agent": "Image Generation",
-      "time_s": 10.131535761000123,
+      "time_s": 9.84276059099966,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.4207402420006474,
+      "time_s": 0.3663145599998643,
       "summary": "decision=accept clip=0.30823948979377747"
     }
   ]

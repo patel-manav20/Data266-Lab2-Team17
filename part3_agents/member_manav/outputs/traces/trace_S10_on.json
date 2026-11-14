@@ -29,7 +29,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0020.png",
-    "time_s": 10.32055238599969,
+    "time_s": 10.249097405999692,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -44,13 +44,13 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0020.png",
-      "time_s": 10.32055238599969,
+      "time_s": 10.249097405999692,
       "nsfw_flagged": false
     }
   ],
   "critique": {
     "clip_score": 0.30489838123321533,
-    "clip_threshold": 0.15,
+    "clip_threshold": 0.178,
     "vlm_verdict": "yes",
     "safe": true,
     "decision": "accept",
@@ -59,7 +59,7 @@
   "critique_history": [
     {
       "clip_score": 0.30489838123321533,
-      "clip_threshold": 0.15,
+      "clip_threshold": 0.178,
       "vlm_verdict": "yes",
       "safe": true,
       "decision": "accept",
@@ -73,22 +73,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.00008921500011638273,
+      "time_s": 0.00006905999998707557,
       "summary": "route=domain_style"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 8.953000360634178e-6,
+      "time_s": 0.000025615999675210332,
       "summary": "Draw a cute green Pokemon-style creature with leaf wings"
     },
     {
       "agent": "Image Generation",
-      "time_s": 10.320865286999833,
+      "time_s": 10.249403988999802,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.43333659499967325,
+      "time_s": 0.38509821199977523,
       "summary": "decision=accept clip=0.30489838123321533"
     }
   ]

@@ -34,9 +34,11 @@ def decide(clip_score: Optional[float], clip_threshold: float, vlm_verdict: Opti
                                vlm_verdict=vlm_verdict, safe=True, decision="accept")
 
     if revision_count >= MAX_REVISIONS:
-        # out of revisions: accept the best attempt rather than looping forever
+        # out of revisions and still wouldn't pass -- this is NOT an accept: the
+        # orchestrator picks the best (highest-CLIP, safe) attempt seen so far and
+        # says plainly that it may not fully match the request
         return CritiqueResult(clip_score=clip_score, clip_threshold=clip_threshold,
-                               vlm_verdict=vlm_verdict, safe=True, decision="accept")
+                               vlm_verdict=vlm_verdict, safe=True, decision="stopped_at_cap")
 
     strategy = REVISION_STRATEGIES[min(revision_count, len(REVISION_STRATEGIES) - 1)]
     return CritiqueResult(clip_score=clip_score, clip_threshold=clip_threshold,

@@ -47,7 +47,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0004.png",
-    "time_s": 8.076602804999311,
+    "time_s": 6.93022243400037,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -62,12 +62,12 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0004.png",
-      "time_s": 8.076602804999311,
+      "time_s": 6.93022243400037,
       "nsfw_flagged": false
     }
   ],
   "critique": {
-    "clip_score": null,
+    "clip_score": 0.31482428312301636,
     "clip_threshold": null,
     "vlm_verdict": null,
     "safe": true,
@@ -76,7 +76,7 @@
   },
   "critique_history": [
     {
-      "clip_score": null,
+      "clip_score": 0.31482428312301636,
       "clip_threshold": null,
       "vlm_verdict": null,
       "safe": true,
@@ -91,22 +91,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.08578901000055339,
+      "time_s": 0.09881884800006446,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 8.968535312000313,
+      "time_s": 8.714679805999822,
       "summary": "caption='A vintage bicycle leans against an old, weathered wooden doo'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000010679999832063913,
+      "time_s": 0.000011658999937935732,
       "summary": "Turn this photo into a pencil sketch, (starting image: A vintage bicycle leans a"
     },
     {
       "agent": "Image Generation",
-      "time_s": 8.076894044000255,
+      "time_s": 6.930551833999743,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     }
   ]

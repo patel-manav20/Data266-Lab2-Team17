@@ -43,7 +43,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0024.png",
-    "time_s": 8.389425764000407,
+    "time_s": 7.482905159999973,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -58,12 +58,12 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0024.png",
-      "time_s": 8.389425764000407,
+      "time_s": 7.482905159999973,
       "nsfw_flagged": false
     }
   ],
   "critique": {
-    "clip_score": null,
+    "clip_score": 0.3000660240650177,
     "clip_threshold": null,
     "vlm_verdict": null,
     "safe": true,
@@ -72,7 +72,7 @@
   },
   "critique_history": [
     {
-      "clip_score": null,
+      "clip_score": 0.3000660240650177,
       "clip_threshold": null,
       "vlm_verdict": null,
       "safe": true,
@@ -87,22 +87,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.04031487600059336,
+      "time_s": 0.04092833000004248,
       "summary": "route=domain_style"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 6.8816004269992845,
+      "time_s": 6.880004175000067,
       "summary": "caption='An orange tabby cat rests comfortably on a colorful blanket '"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000010703000043577049,
+      "time_s": 0.000028078000013920246,
       "summary": "Turn my cat into a Pokemon-style creature, (starting image: An orange tabby cat "
     },
     {
       "agent": "Image Generation",
-      "time_s": 8.389726592999978,
+      "time_s": 7.483259510000153,
       "summary": "stable-diffusion-v1-5 + itzmnv/data266-lab2-sd15-pokemon-lora-r32 seed=266"
     }
   ]

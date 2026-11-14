@@ -52,12 +52,12 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.048430778999318136,
+      "time_s": 0.048015870999734034,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 11.104316665000624,
+      "time_s": 10.846665890999702,
       "summary": "caption='A modern kitchen with a wooden island, black countertop, and'"
     }
   ]

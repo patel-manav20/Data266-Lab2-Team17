@@ -96,8 +96,12 @@ def _run_pipeline(state: AgentState, *, vlm_call, generate_fn, classifier_fn,
         state.log("Image Generation", time.perf_counter() - t0, f"{gen.model} seed={seed}")
 
         if not critique_enabled:
-            state.critique = critique_mod.CritiqueResult(safe=not gen.nsfw_flagged,
-                                                           decision="accept" if not gen.nsfw_flagged else "reject")
+            # still compute the CLIP score for the with/without-critique comparison --
+            # just never use it to decide anything, since the loop is off
+            clip_score = clip_score_fn(gen.output_path, prompt) if clip_score_fn else None
+            state.critique = critique_mod.CritiqueResult(
+                clip_score=clip_score, safe=not gen.nsfw_flagged,
+                decision="accept" if not gen.nsfw_flagged else "reject")
             state.critique_history.append(state.critique)
             break
 
@@ -121,7 +125,20 @@ def _run_pipeline(state: AgentState, *, vlm_call, generate_fn, classifier_fn,
         if strategy["rephrase"]:
             prompt = pe.apply_revision(prompt, result.revision_instruction)
 
-    state.final_image_path = gen.output_path if gen else None
+    if state.critique and state.critique.decision == "stopped_at_cap":
+        # not an accept: pick the best (highest-CLIP, safe) attempt seen across every
+        # try, which may not be the last one generated
+        best_gen, best_clip = None, None
+        for g, c in zip(state.generation_history, state.critique_history):
+            if c.safe and c.clip_score is not None and (best_clip is None or c.clip_score > best_clip):
+                best_gen, best_clip = g, c.clip_score
+        state.generation = best_gen
+        state.final_image_path = best_gen.output_path if best_gen else None
+    elif state.critique and state.critique.decision == "reject":
+        state.final_image_path = None
+    else:
+        state.final_image_path = gen.output_path if gen else None
+
     state.final_message = _final_message(state)
 
 
@@ -130,8 +147,11 @@ def _final_message(state: AgentState) -> str:
         return "Done."
     if state.critique.decision == "reject":
         return "The result did not pass the safety check, so no image is shown."
-    if state.revision_count >= critique_mod.MAX_REVISIONS and state.critique.decision == "accept":
-        return f"Here is the result after {state.revision_count} revision(s) (reached the revision limit)."
+    if state.critique.decision == "stopped_at_cap":
+        if state.final_image_path:
+            return (f"Here is the closest attempt after {state.revision_count} revisions; "
+                     "it may not fully match what you asked for.")
+        return "None of the attempts passed the safety check, so no image is shown."
     if state.revision_count > 0:
         return f"Here is the result after {state.revision_count} revision(s)."
     return "Here is the result."

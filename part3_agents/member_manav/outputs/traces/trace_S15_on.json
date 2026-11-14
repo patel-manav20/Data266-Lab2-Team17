@@ -37,12 +37,12 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.002000812999540358,
+      "time_s": 0.002062957999896753,
       "summary": "route=caption_question"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 0.00031992300046113087,
+      "time_s": 0.0002901739999288111,
       "summary": "caption='The image is too small to describe with confidence. Please p'"
     }
   ]

@@ -40,12 +40,12 @@
     "prompt": "Add a small party hat on the cat, (starting image: A gray cat sits on a yellow blanket atop a red couch, gazing out a window with fallen leaves outside.)",
     "negative_prompt": "blurry, low quality, distorted, extra limbs, watermark, text artifacts",
     "seed": 266,
-    "steps": null,
+    "steps": 30,
     "strength": null,
     "image_guidance_scale": 1.6,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0015.png",
-    "time_s": 30.45373960699999,
+    "time_s": 9.42950416299982,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -55,17 +55,17 @@
       "prompt": "Add a small party hat on the cat, (starting image: A gray cat sits on a yellow blanket atop a red couch, gazing out a window with fallen leaves outside.)",
       "negative_prompt": "blurry, low quality, distorted, extra limbs, watermark, text artifacts",
       "seed": 266,
-      "steps": null,
+      "steps": 30,
       "strength": null,
       "image_guidance_scale": 1.6,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0015.png",
-      "time_s": 30.45373960699999,
+      "time_s": 9.42950416299982,
       "nsfw_flagged": false
     }
   ],
   "critique": {
-    "clip_score": null,
+    "clip_score": 0.3327513039112091,
     "clip_threshold": null,
     "vlm_verdict": null,
     "safe": true,
@@ -74,7 +74,7 @@
   },
   "critique_history": [
     {
-      "clip_score": null,
+      "clip_score": 0.3327513039112091,
       "clip_threshold": null,
       "vlm_verdict": null,
       "safe": true,
@@ -89,22 +89,22 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.02894720899985259,
+      "time_s": 0.02970495999988998,
       "summary": "route=edit"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.754469152000638,
+      "time_s": 7.608805845999996,
       "summary": "caption='A gray cat sits on a yellow blanket atop a red couch, gazing'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000010091000149259344,
+      "time_s": 0.000011128000096505275,
       "summary": "Add a small party hat on the cat, (starting image: A gray cat sits on a yellow b"
     },
     {
       "agent": "Image Generation",
-      "time_s": 30.454059575999963,
+      "time_s": 9.429832771999827,
       "summary": "timbrooks/instruct-pix2pix seed=266"
     }
   ]

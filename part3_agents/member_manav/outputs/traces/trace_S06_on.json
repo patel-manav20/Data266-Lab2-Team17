@@ -45,7 +45,7 @@
     "image_guidance_scale": null,
     "guidance_scale": 7.5,
     "output_path": "/content/p3_outputs/images/gen_0006.png",
-    "time_s": 9.122128555000018,
+    "time_s": 8.133124205000058,
     "nsfw_flagged": false
   },
   "generation_history": [
@@ -60,7 +60,7 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0005.png",
-      "time_s": 7.949284739999712,
+      "time_s": 6.986473184999795,
       "nsfw_flagged": false
     },
     {
@@ -74,13 +74,13 @@
       "image_guidance_scale": null,
       "guidance_scale": 7.5,
       "output_path": "/content/p3_outputs/images/gen_0006.png",
-      "time_s": 9.122128555000018,
+      "time_s": 8.133124205000058,
       "nsfw_flagged": false
     }
   ],
   "critique": {
     "clip_score": 0.36772656440734863,
-    "clip_threshold": 0.15,
+    "clip_threshold": 0.178,
     "vlm_verdict": "yes",
     "safe": true,
     "decision": "accept",
@@ -89,7 +89,7 @@
   "critique_history": [
     {
       "clip_score": 0.2881508469581604,
-      "clip_threshold": 0.15,
+      "clip_threshold": 0.178,
       "vlm_verdict": "no",
       "safe": true,
       "decision": "revise",
@@ -97,7 +97,7 @@
     },
     {
       "clip_score": 0.36772656440734863,
-      "clip_threshold": 0.15,
+      "clip_threshold": 0.178,
       "vlm_verdict": "yes",
       "safe": true,
       "decision": "accept",
@@ -111,37 +111,37 @@
   "trace": [
     {
       "agent": "Planner",
-      "time_s": 0.059878066000237595,
+      "time_s": 0.06319491500016738,
       "summary": "route=style_change"
     },
     {
       "agent": "Vision Understanding",
-      "time_s": 7.761430775999543,
+      "time_s": 7.538460278999992,
       "summary": "caption='A serene night scene at a marina with sailboats anchored und'"
     },
     {
       "agent": "Prompt Engineering",
-      "time_s": 0.000010578999535937328,
+      "time_s": 0.000011675000223476673,
       "summary": "Change the style to an oil painting with thick brush strokes, (starting image: A"
     },
     {
       "agent": "Image Generation",
-      "time_s": 7.949632738999753,
+      "time_s": 6.98678150700016,
       "summary": "stable-diffusion-v1-5 (img2img) seed=266"
     },
     {
       "agent": "Critique",
-      "time_s": 0.43951577200004976,
+      "time_s": 0.3772306559999379,
       "summary": "decision=revise clip=0.2881508469581604"
     },
     {
       "agent": "Image Generation",
-      "time_s": 9.122470249999424,
+      "time_s": 8.133433158000116,
       "summary": "stable-diffusion-v1-5 (img2img) seed=267"
     },
     {
       "agent": "Critique",
-      "time_s": 0.43509596600051736,
+      "time_s": 0.38226268099970184,
       "summary": "decision=accept clip=0.36772656440734863"
     }
   ]
