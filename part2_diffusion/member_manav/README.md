@@ -60,14 +60,17 @@ by the training loss.
 ## Evaluation
 
 120 images generated (base, rank 8, rank 32 x 20 fixed prompts x seeds 0 and 1), fixed sampler settings
-(PNDM scheduler, 30 steps, guidance 7.5, 512x512, fp16) for every model. KID is computed over 20 in-domain
-generations vs. **all 82 test images** (subset_size 20, 100 subsets, seed 266); every number below except
+(PNDM scheduler, 30 steps, guidance 7.5, 512x512, fp16) for every model. KID is computed vs. **all 82 test
+images** (100 subsets, seed 266), with a single shared `subset_size` across all three models in each pass
+-- capped at 20, and shrunk to the smallest generation count any one model has available that pass, so the
+three KID numbers are always compared on the same subset size (20 for the "all images" row below, 16 for
+"without flagged", since rank 8 has only 16 non-flagged in-domain generations); every number below except
 the "all images" KID/CLIP columns excludes images the safety checker returned as a black placeholder (see
 Safety below) -- nothing is ever regenerated or replaced, the flag just isn't allowed to corrupt a metric.
 
 | metric | rank 8 | rank 32 | base |
 |---|---|---|---|
-| KID, without flagged (used by the rule) | 0.0642 +/- 0.0101 (n=16) | 0.0347 +/- 0.0066 (n=17) | 0.0909 +/- 0.0091 (n=20) |
+| KID, without flagged (used by the rule) | 0.0642 +/- 0.0101 (n=16) | 0.0349 +/- 0.0074 (n=17) | 0.0909 +/- 0.0091 (n=20) |
 | KID, all images | 0.0896 +/- 0.0084 | 0.0472 +/- 0.0063 | 0.0909 +/- 0.0091 |
 | CLIP score, without flagged (mean, all 20 prompts) | 27.94 | 28.23 | 29.24 |
 | LPIPS, without flagged pairs (seed 0 vs. seed 1, mean) | 0.7670 | 0.7517 | 0.8132 |
@@ -93,7 +96,7 @@ two KID means differ by less than the larger of their standard deviations, the r
 CLIP score over all 20 prompts is final instead; if that CLIP difference is also under 0.005, rank 8 is
 chosen (fewer parameters). The rule uses the "without flagged" numbers above.
 
-**Result: rank 32 is FINAL.** KID differs by 0.0294 (0.0642 vs. 0.0347), which is outside the larger
+**Result: rank 32 is FINAL.** KID differs by 0.0293 (0.0642 vs. 0.0349), which is outside the larger
 standard deviation (0.0101), so the rule resolves at step 1 without needing CLIP or the parameter
 tie-break -- the same winner as before the NSFW correction, just with a smaller (and now non-trivial,
 since KID is computed against all 82 test images instead of 20) margin. Rank 8 is the comparison run.
