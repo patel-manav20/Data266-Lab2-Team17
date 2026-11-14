@@ -1,9 +1,18 @@
 torch
-diffusers
-transformers
-accelerate
-peft
+torchvision
+# Qwen3-VL support was not yet in a released transformers version at the time this was
+# written -- check huggingface.co/Qwen/Qwen3-VL-4B-Instruct and swap in a pinned release
+# once one includes it.
+git+https://github.com/huggingface/transformers.git
+diffusers==0.42.1
+accelerate==1.15.0
+peft==0.21.2
+torchao==0.18.0
 huggingface_hub
+pydantic==2.7.1
+opencv-python-headless
+datasets
+imagehash==4.3.2
 torchmetrics
 gradio
 pillow
