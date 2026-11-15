@@ -1,0 +1,27 @@
+{
+  "dataset": "reach-vb/pokemon-blip-captions",
+  "split": "90/10 with seed 266 after removing corrupted and duplicate images; in-domain prompts are test-set captions copied exactly",
+  "seeds": [0, 1],
+  "prompts": [
+    {"pid": "P01", "type": "in_domain", "test_file": "00035.png", "prompt": "a red fish with a gold crown on its head"},
+    {"pid": "P02", "type": "in_domain", "test_file": "00107.png", "prompt": "a green turtle with a yellow flower on its head"},
+    {"pid": "P03", "type": "in_domain", "test_file": "00261.png", "prompt": "a drawing of a green and yellow dragon"},
+    {"pid": "P04", "type": "in_domain", "test_file": "00332.png", "prompt": "a blue and orange fish with its mouth open"},
+    {"pid": "P05", "type": "in_domain", "test_file": "00399.png", "prompt": "a drawing of a yellow and black bee"},
+    {"pid": "P06", "type": "in_domain", "test_file": "00570.png", "prompt": "a red and black dragon standing in front of a white background"},
+    {"pid": "P07", "type": "in_domain", "test_file": "00608.png", "prompt": "a cartoon deer with a yellow bow on its head"},
+    {"pid": "P08", "type": "in_domain", "test_file": "00655.png", "prompt": "a stylized image of a blue and brown robot"},
+    {"pid": "P09", "type": "in_domain", "test_file": "00715.png", "prompt": "a green butterfly with red and black wings"},
+    {"pid": "P10", "type": "in_domain", "test_file": "00771.png", "prompt": "a drawing of a blue bird with a yellow crown on its head"},
+    {"pid": "P11", "type": "out_of_domain", "prompt": "a photograph of a busy city street at night with taxis and neon signs"},
+    {"pid": "P12", "type": "out_of_domain", "prompt": "a bowl of ramen on a wooden table, food photography"},
+    {"pid": "P13", "type": "out_of_domain", "prompt": "an oil painting of a lighthouse on a cliff during a storm"},
+    {"pid": "P14", "type": "out_of_domain", "prompt": "a red sports car parked in front of a modern glass building"},
+    {"pid": "P15", "type": "out_of_domain", "prompt": "a portrait photo of an elderly fisherman wearing a yellow raincoat"},
+    {"pid": "P16", "type": "compositional", "prompt": "two cartoon creatures, one red and one blue, standing side by side"},
+    {"pid": "P17", "type": "compositional", "prompt": "a small yellow bird sitting on the head of a large green turtle"},
+    {"pid": "P18", "type": "compositional", "prompt": "a purple cat on the left and an orange fish on the right"},
+    {"pid": "P19", "type": "compositional", "prompt": "three pink cartoon characters in a row, the middle one wearing a blue hat"},
+    {"pid": "P20", "type": "compositional", "prompt": "a cartoon dragon holding a red umbrella in the rain"}
+  ]
+}
