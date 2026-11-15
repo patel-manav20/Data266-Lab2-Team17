@@ -115,6 +115,9 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
 | v4 (commit `9c770c2`) | Full fresh figure transcription (585 s, all complete and accurate), then GPU out-of-memory on question 7. Qwen3-14B uses 11.6 GB, so long evidence prompts do not fit. |
 | v5 (commit `ae950b6`) | Pushed with `USE_FIG_CACHE=True`: compacted transcriptions ("2012=11.4"), evidence capped at 2500 chars per item and 12000 in total, retry on out-of-memory with 5 shorter items, cache freed after each call |
 
+| v6 (commit `cf1b13f`) | **First complete run** with Qwen3-8B: 22.6 min for 40 questions (33.7 s median), validator passed. Golden set: baseline 14/25 correct (Recall@5 0.958, citation accuracy 0.692); final 11/25 (Recall@5 1.000, citation accuracy 0.925). Most public figure questions are now right. Main failures: answers leave out the numbers they rely on, columns misread in unlabelled tables, forecast vs outturn wrongly called a conflict, missed DOC1/DOC3 conflicts. |
+| v7 (commit `5131c49`) | Tables rendered as `row: column=value` (year labels used only when the years run in order; Table A-2's bracketed value is labelled "fall-2011 forecast"); prompt rules: forecast vs outturn is not a conflict, DOC3 vs DOC1/DOC2 is a conflict, check the premise first, write per-document values in "work"; numbers in "work" that are missing from the answer are added as "Working: ...". Pushed. |
+
 The figure-cache dataset `pramodsatyad/data266-p1-figcache` now holds the **full, untruncated** v4 transcriptions, so it is safe for development runs.
 
 **Next steps:**
