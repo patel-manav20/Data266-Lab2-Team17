@@ -46,7 +46,10 @@ pipe.set_progress_bar_config(disable=True)
 
 meta = []
 for m in MODELS:
-    pipe.unload_lora_weights()
+    try:
+        pipe.unload_lora_weights()
+    except Exception:
+        pass
     if m != "base":
         pipe.load_lora_weights(ADAPTERS[m])
     os.makedirs(f"{GEN}/{m}", exist_ok=True)
@@ -58,7 +61,7 @@ for m in MODELS:
             f = f"{m}/{p['pid']}_s{s}.png"
             r.images[0].save(f"{GEN}/{f}")
             meta.append({"file_name": f, "model": m, "pid": p["pid"], "type": p["type"], "prompt": p["prompt"], "seed": s,
-                         "steps": STEPS, "guidance": GUIDANCE, "scheduler": "DPMSolverMultistep", "nsfw_flagged": bool(r.nsfw_content_detected[0])})
+                         "steps": STEPS, "guidance": GUIDANCE, "scheduler": "DPMSolverMultistep", "nsfw_flagged": bool(r.nsfw_content_detected and r.nsfw_content_detected[0])})
     print(m, "seconds per image: %.2f" % ((time.time() - t0) / (len(PROMPTS) * len(SEEDS))), flush=True)
 meta_df = pd.DataFrame(meta)
 meta_df.to_csv(f"{GEN}/metadata.csv", index=False)
@@ -203,6 +206,46 @@ if ratings_path:
     print("raters:", rt.rater.nunique(), "judgements:", len(rt), "final-run win rate:", summary)
 else:
     print("human_ratings.csv not found yet")"""),
+
+md("## Model card for the final run (written from the computed results)"),
+code("""tr = train_df.set_index("run").loc[FINAL] if FINAL in set(train_df.get("run", [])) else None
+mr = metrics.set_index("model")
+card = f\"\"\"---
+license: other
+license_name: creativeml-openrail-m-and-cc-by-nc-sa-4.0
+base_model: {BASE_MODEL}
+tags: [stable-diffusion, lora, text-to-image, diffusers]
+---
+# DATA 266 Lab 2, Part 2: {FINAL} (Team 17)
+
+LoRA adapter for Stable Diffusion 1.5, fine-tuned on Pokemon-style BLIP-captioned artwork for non-commercial research and coursework.
+
+**Base model:** {BASE_MODEL} (CreativeML OpenRAIL-M).
+**Data:** reach-vb/pokemon-blip-captions (CC-BY-NC-SA-4.0), corrupted and duplicate images removed, 90/10 train/test split with seed 266, 512x512.
+**Training:** diffusers train_text_to_image_lora.py, {FINAL}{"" if tr is None else f", trainable parameters {int(tr.trainable_params):,}, learning rate {tr.learning_rate}, {int(tr.steps)} steps, batch {int(tr.batch_size)} x gradient accumulation {int(tr.grad_accum)}, peak GPU memory {tr.peak_gpu_mem_gb} GB, {tr.gpu_hours} GPU-hours on {tr.gpu}"}.
+
+**Results** (20 fixed prompts x 2 seeds, DPM-Solver++ 30 steps, guidance 7.5):
+
+| Model | KID in-domain (lower is better) | CLIP score | LPIPS diversity |
+|---|---|---|---|
+| base | {mr.loc['base','KID_in_domain_mean']:.4f} | {mr.loc['base','CLIP_all']:.2f} | {mr.loc['base','LPIPS_diversity']:.3f} |
+| {FINAL} | {mr.loc[FINAL,'KID_in_domain_mean']:.4f} | {mr.loc[FINAL,'CLIP_all']:.2f} | {mr.loc[FINAL,'LPIPS_diversity']:.3f} |
+
+KID with 20 generated images is noisy.
+
+**Limitations:** strongly biased to the flat cartoon-creature style of the training set, weaker on photographic and out-of-domain prompts, weak at multi-object composition and counting; captions are machine-generated (BLIP) and short.
+
+**License and use:** the training images depict copyrighted characters, so this adapter is for non-commercial research and education only. Do not use it to reproduce existing named characters.
+\"\"\"
+open(f"{OUT}/MODEL_CARD.md", "w").write(card)
+print(card)
+if secret("HF_TOKEN"):
+    from huggingface_hub import HfApi, login
+    login(token=secret("HF_TOKEN")); api = HfApi(); user = api.whoami()["name"]
+    repo = f"{user}/data266-p2-pokemon-{FINAL}"
+    api.create_repo(repo, exist_ok=True)
+    api.upload_file(path_or_fileobj=f"{OUT}/MODEL_CARD.md", path_in_repo="README.md", repo_id=repo)
+    print("model card pushed to", f"https://huggingface.co/{repo}")"""),
 
 md("## Upload images to a Hugging Face dataset (prompt, seed and model in the metadata)"),
 code("""from huggingface_hub import HfApi, login

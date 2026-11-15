@@ -37,7 +37,7 @@ VLM_ID = "Qwen/Qwen2.5-VL-7B-Instruct"
 SD_ID = "stable-diffusion-v1-5/stable-diffusion-v1-5"
 P2P_ID = "timbrooks/instruct-pix2pix"
 CLIP_ID = "openai/clip-vit-large-patch14"
-LORA_REPO = os.environ.get("LORA_REPO", "")
+LORA_REPO = os.environ.get("LORA_REPO", "pramodsatyad/data266-p2-pokemon-lora_r32")
 LORA_FILE = os.environ.get("LORA_FILE", "pytorch_lora_weights.safetensors")
 LORA_LOCAL = (glob.glob("/kaggle/input/**/adapters/lora_r32.safetensors", recursive=True) + glob.glob("/kaggle/input/**/adapters/lora_r4.safetensors", recursive=True) + [""])[0]
 MAX_REVISIONS = 2
@@ -63,16 +63,21 @@ proc = AutoProcessor.from_pretrained(VLM_ID, min_pixels=256 * 28 * 28, max_pixel
 img2img = StableDiffusionImg2ImgPipeline.from_pretrained(SD_ID, torch_dtype=torch.float16).to("cuda")
 img2img.scheduler = DPMSolverMultistepScheduler.from_config(img2img.scheduler.config)
 img2img.set_progress_bar_config(disable=True)
-if LORA_REPO:
-    img2img.load_lora_weights(LORA_REPO, weight_name=LORA_FILE, adapter_name="domain")
-    LORA_SOURCE = f"hf://{LORA_REPO}/{LORA_FILE}"
-else:
-    img2img.load_lora_weights(LORA_LOCAL, adapter_name="domain")
-    LORA_SOURCE = LORA_LOCAL
-img2img.disable_lora()
+img2img.enable_attention_slicing()
+LORA_SOURCE = None
+for src, kw in [(LORA_REPO, {"weight_name": LORA_FILE}), (LORA_LOCAL, {})]:
+    if src and LORA_SOURCE is None:
+        try:
+            img2img.load_lora_weights(src, adapter_name="domain", **kw)
+            LORA_SOURCE = f"hf://{src}/{LORA_FILE}" if kw else src
+        except Exception as e:
+            print("LoRA not loaded from", src, "-", type(e).__name__, str(e)[:150])
+if LORA_SOURCE:
+    img2img.disable_lora()
 txt2img = StableDiffusionPipeline(**img2img.components)
 
-p2p = StableDiffusionInstructPix2PixPipeline.from_pretrained(P2P_ID, torch_dtype=torch.float16, safety_checker=None).to("cuda")
+p2p = StableDiffusionInstructPix2PixPipeline.from_pretrained(P2P_ID, torch_dtype=torch.float16, safety_checker=None)
+p2p.enable_model_cpu_offload()
 p2p.scheduler = EulerAncestralDiscreteScheduler.from_config(p2p.scheduler.config)
 p2p.set_progress_bar_config(disable=True)
 
@@ -162,7 +167,9 @@ BLOCK = {
     "graphic violence": r"\\b(gore|gory|bleed\\w*|blood\\w*|mutilat\\w*|dismember\\w*|decapitat\\w*|corpse|injured|wounds?)\\b",
     "deceptive edit of a real person": r"(face ?swap|swap (this|his|her|their|the) (\\w+ )?face|deep ?fake|as real news|look like a real (photo|news)|post it as real|fake (news|evidence)|so (people|everyone) believe)",
 }
-REAL_PERSON = r"\\b(senator|president|prime minister|politician|celebrity|minister|governor|ceo|actor|actress|singer|[A-Z][a-z]+ [A-Z][a-z]+'s face)\\b"
+REAL_PERSON_TITLE = r"\\b(senator|president|prime minister|politician|celebrity|minister|governor|mayor|ceo|actor|actress|singer|famous|real person)\\b"
+REAL_PERSON_NAME = r"\\b[A-Z][a-z]+ [A-Z][a-z]+(?:'s)?\\b"
+VAGUE = r"^\\s*(please\\s+)?(make it|make this|improve it|improve this|fix it|fix this|change it|do something|make it look)\\s*(better|nicer|good|cool|great|different|with it)?\\s*[.!?]*\\s*$"
 DECEPTIVE = r"\\b(drunk|arrest\\w*|crime|crim\\w+|scandal|steal\\w*|naked|kiss\\w*|caught|real photo|real news|evidence)\\b"
 
 ROUTES = ["caption_question", "style_change", "edit", "domain_style", "unsupported", "ambiguous"]
@@ -191,9 +198,12 @@ def planner(s):
         if re.search(pat, s.request, re.I):
             s.status, s.message = "refused", f"Request refused by the Planner: it asks for {why}, which this system does not produce."
             return {"route": "refused", "rule": why}
-    if re.search(REAL_PERSON, s.request) and re.search(DECEPTIVE, s.request, re.I):
+    if (re.search(REAL_PERSON_TITLE, s.request, re.I) or re.search(REAL_PERSON_NAME, s.request)) and re.search(DECEPTIVE, s.request, re.I):
         s.status, s.message = "refused", "Request refused by the Planner: it asks for a deceptive edit of a real, identifiable person."
         return {"route": "refused", "rule": "deceptive edit of a real person"}
+    if re.match(VAGUE, s.request, re.I):
+        s.status, s.message, s.route = "clarify", "Your request is ambiguous. Do you want a style change (e.g. watercolor), a specific edit (e.g. add snow), or a description of the image?", "ambiguous"
+        return {"route": "ambiguous", "rule": "vague request"}
     j = parse_json(vlm_call(PLANNER_PROMPT.format(request=s.request), img, 120), {"route": "ambiguous", "safe": True, "reason": "", "image_has_instructions": False})
     route = j["route"] if j["route"] in ROUTES else "ambiguous"
     if any("blank" in n for n in notes) and route in ("edit", "style_change", "domain_style"):
@@ -251,7 +261,14 @@ def prompt_engineering(s):
     j["strength"] = float(min(0.85, max(0.35, float(j.get("strength") or 0.6))))
     return j
 
+def lora_off():
+    if LORA_SOURCE:
+        img2img.disable_lora()
+
 def image_generation(s):
+    if s.route == "domain_style" and not LORA_SOURCE:
+        s.status, s.message = "error", "The Part 2 domain-style model could not be loaded, so domain-style generation is unavailable right now."
+        return {"error": "LoRA not loaded"}
     seed = 266 + s.revisions
     g = torch.Generator("cuda").manual_seed(seed)
     p = s.prompt
@@ -262,12 +279,12 @@ def image_generation(s):
         if s.route == "domain_style":
             img2img.enable_lora(); img2img.set_adapters(["domain"], [1.0])
         else:
-            img2img.disable_lora()
+            lora_off()
         strength = max(p["strength"], 0.65) if s.route == "domain_style" else p["strength"]
         r = img2img(p["prompt"], image=s.image, negative_prompt=p["negative_prompt"], strength=strength, num_inference_steps=STEPS, guidance_scale=7.5, generator=g)
         out, nsfw = r.images[0], bool(r.nsfw_content_detected and r.nsfw_content_detected[0])
         model = f"{SD_ID} + LoRA {LORA_SOURCE}" if s.route == "domain_style" else SD_ID
-        img2img.disable_lora()
+        lora_off()
     path = f"{OUT}/{s.rid}_try{s.revisions}.png"
     out.save(path)
     s.output = out
@@ -368,7 +385,7 @@ def make_images(spec):
         p = f"{IMG_DIR}/{name}.png"
         k = sp["make"]
         if k == "sd_base":
-            img2img.disable_lora()
+            lora_off()
             txt2img(sp["prompt"], num_inference_steps=STEPS, generator=torch.Generator("cuda").manual_seed(sp["seed"])).images[0].save(p)
         elif k == "text_card":
             im = Image.new("RGB", (512, 512), "white"); d = ImageDraw.Draw(im)

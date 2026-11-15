@@ -118,6 +118,24 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
 | v6 (commit `cf1b13f`) | **First complete run** with Qwen3-8B: 22.6 min for 40 questions (33.7 s median), validator passed. Golden set: baseline 14/25 correct (Recall@5 0.958, citation accuracy 0.692); final 11/25 (Recall@5 1.000, citation accuracy 0.925). Most public figure questions are now right. Main failures: answers leave out the numbers they rely on, columns misread in unlabelled tables, forecast vs outturn wrongly called a conflict, missed DOC1/DOC3 conflicts. |
 | v7 (commit `5131c49`) | Tables rendered as `row: column=value` (year labels used only when the years run in order; Table A-2's bracketed value is labelled "fall-2011 forecast"); prompt rules: forecast vs outturn is not a conflict, DOC3 vs DOC1/DOC2 is a conflict, check the premise first, write per-document values in "work"; numbers in "work" that are missing from the answer are added as "Working: ...". Pushed. |
 
+
+**Review pass after v7 (not yet run on GPU), commit below:**
+- **Part 1:**
+  - `safe_answer()`: a failing question yields a valid `not_found` row instead of crashing the graded run (tested with injected failures).
+  - Explicit per-conversation `user_values` memory: "assume / suppose / for this chat ..." questions are stored in the conversation and shown to the model, never written to the vector database.
+  - The answer budget is 420 tokens.
+  - The golden-set evaluation runs only if 55 minutes or less have passed (`EVAL_BUDGET_MIN`), so a larger hidden set still finishes within 90 minutes.
+- **Part 2 evaluation:**
+  - LoRA unloading and the NSFW flag are guarded.
+  - A model card is generated from the computed metrics and the training table, saved as `MODEL_CARD.md` and pushed as `README.md` to `pramodsatyad/data266-p2-pokemon-<FINAL>` (tested with sample numbers).
+- **Part 3:**
+  - The LoRA loads from the Hugging Face repo `pramodsatyad/data266-p2-pokemon-lora_r32` by default (`LORA_REPO` environment variable), falls back to the attached Kaggle output, and otherwise gives a clear "domain-style unavailable" message instead of crashing.
+  - Real-person detection is case-insensitive for titles plus "First Last" names.
+  - A `VAGUE` rule sends "make it better"-type requests to clarification.
+  - instruct-pix2pix uses CPU offload, and img2img uses attention slicing, to stay within T4 memory.
+  - All 25 scenario and red-team requests were checked against the rules locally: R04–R07 are refused by rule, S13 goes to clarification, and broken, empty and text files give clear errors.
+  - **If the final Part 2 run is `lora_r4`, set `LORA_REPO` accordingly.**
+
 The figure-cache dataset `pramodsatyad/data266-p1-figcache` now holds the **full, untruncated** v4 transcriptions, so it is safe for development runs.
 
 **Next steps:**

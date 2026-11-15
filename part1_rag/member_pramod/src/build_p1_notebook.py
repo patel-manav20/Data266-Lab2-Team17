@@ -65,6 +65,8 @@ VLM_ID = "Qwen/Qwen2.5-VL-7B-Instruct"
 LLM_ID = "unsloth/Qwen3-8B-unsloth-bnb-4bit"
 EMB_ID = "BAAI/bge-base-en-v1.5"
 TOP_K = 8
+NOTEBOOK_START = time.time()
+EVAL_BUDGET_MIN = 55
 K_OBJ, K_TXT = 4, 4
 CITE_OBJECT_PAGE = False
 OUT = f"{WORK}/p1_out"
@@ -485,19 +487,25 @@ def build_refs(used_ids, status, question):
             cites.append(f"{it['doc_id']}:p{it['page']}")
     return list(dict.fromkeys(cites)), list(dict.fromkeys(figs))
 
+USER_VALUE_RE = re.compile(r"\\b(assume|assuming|suppose|supposing|for this (chat|conversation)|in this (chat|conversation)|for the rest of (this|the) (chat|conversation)|new data point|let'?s say|hypothetically|imagine)\\b", re.I)
+
 class Conversation:
     def __init__(self, mode="final"):
-        self.mode, self.turns = mode, []
+        self.mode, self.turns, self.user_values = mode, [], []
 
     def answer(self, question):
         t0 = time.time()
+        if USER_VALUE_RE.search(question):
+            self.user_values.append(question)
         history_q = " ".join(t["question"] for t in self.turns[-2:])
         ids = retrieve(question, history_q, self.mode)
         hist = "\\n".join(f"User: {t['question']}\\nAssistant: {t['answer']} (status {t['status']})" for t in self.turns)
         head = f"Conversation so far:\\n{hist}\\n\\n" if hist else ""
+        if self.user_values:
+            head += "User-supplied values for this conversation only (not in the documents, never change the knowledge base):\\n" + "\\n".join(f"- {v}" for v in self.user_values) + "\\n\\n"
         raw = None
         try:
-            raw = llm_call(SYSTEM, head + f"Evidence:\\n{evidence_block(ids)}\\n\\nQuestion: {question}", 500)
+            raw = llm_call(SYSTEM, head + f"Evidence:\\n{evidence_block(ids)}\\n\\nQuestion: {question}", 420)
         except torch.OutOfMemoryError:
             pass
         if raw is None:
@@ -520,7 +528,17 @@ class Conversation:
         return res
 
 def new_conversation(mode="final"):
-    return Conversation(mode)"""),
+    return Conversation(mode)
+
+def safe_answer(chat, question):
+    try:
+        return chat.answer(question)
+    except Exception as e:
+        gc.collect(); torch.cuda.empty_cache()
+        print("answer failed:", type(e).__name__, str(e)[:200])
+        res = {"answer": "The system could not answer this question from the documents.", "status": "not_found", "citations": [], "figure_references": [], "retrieved": [], "seconds": 0.0, "raw": ""}
+        chat.turns.append({"question": question, **res})
+        return res"""),
 
 md("""## 1.5 Kaggle submission
 
@@ -531,7 +549,7 @@ t_all = time.time()
 for conv_id, turns in q.groupby("conversation_id", sort=False):
     chat = new_conversation()
     for _, r in turns.sort_values("turn", key=lambda t: t.astype(int)).iterrows():
-        a = chat.answer(r["question"])
+        a = safe_answer(chat, r["question"])
         rows.append({"id": r["id"], "conversation_id": conv_id, "question_id": r["question_id"],
                      "answer": " ".join(a["answer"].split()),
                      "figure_references": ",".join(a["figure_references"]) or "NONE",
@@ -548,6 +566,7 @@ md("""## 1.4 Evaluation on our golden set (25 questions, committed before tuning
 * **Primary**: answer correctness out of 25: every required number within ±1% (sign ignored, so "fell by 0.7%" matches -0.7) and the status must match.
 * **Secondary**: Recall@5 (a gold page, table or figure is among the top 5 retrieved items) and citation accuracy (share of our citations that are gold sources, counting a figure's page as the figure).
 * **Efficiency**: median seconds per question.
+* The evaluation is skipped automatically if more than 55 minutes have passed, so a larger hidden question set still finishes inside Kaggle's 90-minute limit.
 * **Baseline**: dense retrieval only (no BM25, no table-row index, no label lookup, no balanced slots); the same answer model and prompt."""),
 code(f"""GOLDEN = {json.dumps(golden, indent=1)}
 
@@ -570,7 +589,7 @@ def run_golden(mode):
     for cid in dict.fromkeys(g["conversation_id"] for g in GOLDEN):
         chat = new_conversation(mode)
         for g in sorted([g for g in GOLDEN if g["conversation_id"] == cid], key=lambda g: g["turn"]):
-            a = chat.answer(g["question"])
+            a = safe_answer(chat, g["question"])
             gold = set(g["citations"])
             gold_pages = {{c.split(":")[0] + ":p" + str(ITEM[i]["page"]) for c in gold for i in ITEM if ITEM[i]["kind"] in ("figure", "table") and f"{{ITEM[i]['doc_id']}}:{{ITEM[i]['figure_id']}}" == c}}
             top5 = set().union(*[sources_of(i) for i in a["retrieved"][:5]]) if a["retrieved"] else set()
@@ -584,24 +603,28 @@ def run_golden(mode):
     df["correct"] = df.status_ok & df.facts_ok
     return df
 
-gold_base, gold_final = run_golden("baseline"), run_golden("final")
+RUN_EVAL = (time.time() - NOTEBOOK_START) / 60 <= EVAL_BUDGET_MIN
 def summary(df, name):
     return {{"system": name, "correct_of_25": int(df.correct.sum()), "status_ok": int(df.status_ok.sum()),
             "recall_at_5": round(df.recall5.dropna().mean(), 3), "citation_accuracy": round(df.cited_ok.sum() / max(df.cited.sum(), 1), 3),
             "median_seconds": round(df.seconds.median(), 2)}}
-p1_results = pd.DataFrame([summary(gold_base, "baseline (dense only)"), summary(gold_final, "final (hybrid + rows + labels)")])
-gold_final.to_csv(f"{{OUT}}/golden_final.csv", index=False); gold_base.to_csv(f"{{OUT}}/golden_baseline.csv", index=False)
-p1_results.to_csv(f"{{OUT}}/p1_results_table.csv", index=False)
-print(gold_final[["gid", "category", "status", "correct", "recall5", "answer"]].to_string(max_colwidth=90))
-p1_results"""),
-code("""sheet = gold_final[["gid", "answer", "citations"]].assign(question=[next(g["question"] for g in GOLDEN if g["gid"] == x) for x in gold_final.gid], member1="", member2="")
-sheet.to_csv(f"{OUT}/p1_groundedness_sheet.csv", index=False)
+if RUN_EVAL:
+    gold_base, gold_final = run_golden("baseline"), run_golden("final")
+    p1_results = pd.DataFrame([summary(gold_base, "baseline (dense only)"), summary(gold_final, "final (hybrid + rows + labels)")])
+    gold_final.to_csv(f"{{OUT}}/golden_final.csv", index=False); gold_base.to_csv(f"{{OUT}}/golden_baseline.csv", index=False)
+    p1_results.to_csv(f"{{OUT}}/p1_results_table.csv", index=False)
+    print(gold_final[["gid", "category", "status", "correct", "recall5", "answer"]].to_string(max_colwidth=90))
+    display(p1_results)
+else:
+    print(f"Golden-set evaluation skipped: {{EVAL_BUDGET_MIN}} minutes have passed; submission.csv is already written.")"""),
+code("""if RUN_EVAL:
+    sheet = gold_final[["gid", "answer", "citations"]].assign(question=[next(g["question"] for g in GOLDEN if g["gid"] == x) for x in gold_final.gid], member1="", member2="")
+    sheet.to_csv(f"{OUT}/p1_groundedness_sheet.csv", index=False)
+    print("rating sheet written to", f"{OUT}/p1_groundedness_sheet.csv")
 hr = next(iter(glob.glob("/kaggle/input/**/p1_human_ratings.csv", recursive=True) + glob.glob("p1_human_ratings.csv")), None)
 if hr:
     h = pd.read_csv(hr)
-    print("groundedness mean (1-5): %.2f, agreement within one point: %.2f" % (h[["member1", "member2"]].mean().mean(), ((h.member1 - h.member2).abs() <= 1).mean()))
-else:
-    print("rating sheet written to", f"{OUT}/p1_groundedness_sheet.csv")"""),
+    print("groundedness mean (1-5): %.2f, agreement within one point: %.2f" % (h[["member1", "member2"]].mean().mean(), ((h.member1 - h.member2).abs() <= 1).mean()))"""),
 ]
 
 nb = nbf.v4.new_notebook(cells=cells, metadata={"kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"}, "language_info": {"name": "python"}})
