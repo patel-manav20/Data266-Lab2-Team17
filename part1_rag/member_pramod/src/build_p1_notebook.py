@@ -9,7 +9,7 @@ md("""# Part 1: Multimodal RAG over a Read-Only Knowledge Base
 
 Runs end to end on a Kaggle T4 (or Colab T4) with no manual step: reads `QUESTIONS_PATH` (default `Questions.csv`), writes `submission.csv`, and checks it with `validate_submission.py`.
 
-Pipeline: PyMuPDF ingestion (text chunks, tables rebuilt from word positions, figure crops) → Qwen2.5-VL-7B (4-bit) transcribes every figure into text → ChromaDB (bge-base embeddings) + BM25, fused with reciprocal rank fusion, plus exact-label lookup → Qwen3-14B (4-bit, Apache-2.0) writes a JSON answer from numbered evidence → citations and figure labels are built from the evidence the model used and checked against the label set of the knowledge base."""),
+Pipeline: PyMuPDF ingestion (text chunks, tables rebuilt from word positions, figure crops) → Qwen2.5-VL-7B (4-bit) transcribes every figure into text → ChromaDB (bge-base embeddings) + BM25, fused with reciprocal rank fusion, plus exact-label lookup → Qwen3-8B (4-bit, Apache-2.0) writes a JSON answer from numbered evidence → citations and figure labels are built from the evidence the model used and checked against the label set of the knowledge base."""),
 
 code("""import os, subprocess, sys
 STAMP = ""
@@ -62,7 +62,7 @@ QUESTIONS_PATH = os.environ.get("QUESTIONS_PATH", "Questions.csv")
 if not os.path.exists(QUESTIONS_PATH):
     QUESTIONS_PATH = f"{DATA_DIR}/Questions.csv"
 VLM_ID = "Qwen/Qwen2.5-VL-7B-Instruct"
-LLM_ID = "unsloth/Qwen3-14B-unsloth-bnb-4bit"
+LLM_ID = "unsloth/Qwen3-8B-unsloth-bnb-4bit"
 EMB_ID = "BAAI/bge-base-en-v1.5"
 TOP_K = 8
 K_OBJ, K_TXT = 4, 4
@@ -413,7 +413,7 @@ Rules:
 
 Reply with JSON only, with "work" first: {{"work": "short calculation or reasoning, max 60 words", "answer": "...", "status": "answered|not_found|conflict|false_premise|session_override", "evidence": [numbers of the evidence items you used]}}\"\"\"
 
-def evidence_block(ids, cap=2500, total=12000):
+def evidence_block(ids, cap=2500, total=10000):
     out, used = [], 0
     for n, i in enumerate(ids, 1):
         it = ITEM[i]
@@ -471,10 +471,13 @@ class Conversation:
         ids = retrieve(question, history_q, self.mode)
         hist = "\\n".join(f"User: {t['question']}\\nAssistant: {t['answer']} (status {t['status']})" for t in self.turns)
         head = f"Conversation so far:\\n{hist}\\n\\n" if hist else ""
+        raw = None
         try:
             raw = llm_call(SYSTEM, head + f"Evidence:\\n{evidence_block(ids)}\\n\\nQuestion: {question}", 500)
         except torch.OutOfMemoryError:
-            torch.cuda.empty_cache()
+            pass
+        if raw is None:
+            gc.collect(); torch.cuda.empty_cache()
             ids = ids[:5]
             raw = llm_call(SYSTEM, head + f"Evidence:\\n{evidence_block(ids, 1200, 6000)}\\n\\nQuestion: {question}", 400)
         j = parse_json(raw)

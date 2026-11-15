@@ -48,7 +48,7 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
 
 - **Part 1 models:** open models only, so graders can re-run with no API keys.
   - Qwen2.5-VL-7B-Instruct (4-bit NF4) transcribes every figure into text.
-  - `unsloth/Qwen3-14B-unsloth-bnb-4bit` (Apache-2.0, run without thinking mode) writes the answers.
+  - `unsloth/Qwen3-8B-unsloth-bnb-4bit` (Apache-2.0, run without thinking mode; 14B ran out of memory on the T4) writes the answers.
   - `BAAI/bge-base-en-v1.5` produces the embeddings.
   - ChromaDB, BM25 (`rank-bm25`) and PyMuPDF are used for storage, keyword search and ingestion.
 - **Part 1 retrieval:**
