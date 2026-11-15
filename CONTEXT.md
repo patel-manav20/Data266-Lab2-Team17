@@ -121,7 +121,7 @@ The figure-cache dataset `pramodsatyad/data266-p1-figcache` now holds the **full
 1. Download v4's output and read all 40 answers against the documents.
 2. Check the golden results table: baseline vs final correctness out of 25, Recall@5, citation accuracy, median seconds.
 3. Fix general weaknesses only, never question-specific rules.
-4. Refresh the figure cache from v4.
+4. Before the final run, set `USE_FIG_CACHE = False` (the repo default) so graders get a full from-scratch run.
 
 **Known facts in the documents** that the hidden questions will probe:
 - **Revision:** U.S. 2010 output growth is 3.0, revised to 2.4 (DOC2 p3 revision notice).
