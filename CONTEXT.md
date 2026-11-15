@@ -94,8 +94,7 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
   - Download results: `kaggle kernels output pramodsatyad/data266-p1-rag -p <dir>`. This gives the log plus `submission.csv` and `p1_out/`.
   - Live log: `kaggle kernels logs -f pramodsatyad/data266-p1-rag`
 - **Development shortcut:** `USE_FIG_CACHE = False` in the repo. Setting it to `True` in a pushed copy reuses `fig_cache.json` from the private Kaggle dataset `pramodsatyad/data266-p1-figcache` and skips about 12 minutes.
-  - **Warning:** the cache currently in that dataset holds figure transcriptions **truncated at 600 characters**, which caused wrong answers.
-  - Refresh it from a full run's `p1_out/fig_cache.json` with `kaggle datasets version -p <dir> -m "full cache"` before using the cache again.
+  - The cache was refreshed from v4 with full transcriptions (see section 7).
   - Final and graded runs must use `False`.
 - **Testing locally first.** Kaggle runs cost 25–50 minutes, so test locally before pushing:
   - Run the CPU parts locally: settings, ingestion, objects, index, retrieval, submission writing and the validator.
@@ -113,7 +112,10 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
 | v1 | Package conflict |
 | v2 | Chroma collection name too short (fixed) |
 | v3 | Ran end to end: 4.4 minutes for 40 questions, 6.7 s median, validator passed. About 15 answers were wrong (weak 7B answer model, truncated figure cache). |
-| v4 (commit `9c770c2`) | Pushed and queued on Kaggle: Qwen3-14B answers, full fresh figure transcription, golden-set evaluation |
+| v4 (commit `9c770c2`) | Full fresh figure transcription (585 s, all complete and accurate), then GPU out-of-memory on question 7. Qwen3-14B uses 11.6 GB, so long evidence prompts do not fit. |
+| v5 (commit `ae950b6`) | Pushed with `USE_FIG_CACHE=True`: compacted transcriptions ("2012=11.4"), evidence capped at 2500 chars per item and 12000 in total, retry on out-of-memory with 5 shorter items, cache freed after each call |
+
+The figure-cache dataset `pramodsatyad/data266-p1-figcache` now holds the **full, untruncated** v4 transcriptions, so it is safe for development runs.
 
 **Next steps:**
 1. Download v4's output and read all 40 answers against the documents.
