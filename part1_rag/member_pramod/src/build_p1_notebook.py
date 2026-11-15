@@ -421,7 +421,7 @@ SYSTEM = f\"\"\"You answer questions using only a read-only knowledge base of th
 How to decide the status (check in this order):
 A. The user supplies, assumes or changes a value for this conversation, or asks to change/update/save the documents or knowledge base: "session_override".
 B. The question assumes something the evidence contradicts (e.g. asks why something happened that did not happen, or calls a fall a rise): "false_premise"; give the correct facts. Check the premise against the evidence before anything else.
-C. The evidence does not contain what is asked (other countries, other years, other topics): "not_found".
+C. The evidence does not contain what is asked (other countries, other years, other topics): "not_found". Use not_found only when no evidence item is relevant. General questions about the crisis, growth, unemployment, inflation, prices and how they relate are covered by DOC1: answer them from the text.
 D. Two documents report different values for the same variable and year and no revision, erratum or forecast/outturn relationship explains it: "conflict". A DOC1 value for 2011 or 2012 differing from a DOC2 value is NOT a conflict: the DOC2 outturn replaces the DOC1 forecast. A DOC3 value differing from DOC1 or DOC2 (with no erratum) IS a conflict.
 E. Otherwise: "answered" (this includes using a revised value or an outturn that replaces a forecast).
 
@@ -487,6 +487,7 @@ def build_refs(used_ids, status, question):
             cites.append(f"{it['doc_id']}:p{it['page']}")
     return list(dict.fromkeys(cites)), list(dict.fromkeys(figs))
 
+PERMANENT_RE = re.compile(r"\\b(permanent\\w*|update|change|edit|modify|overwrite|save|write|store|correct)\\b.{0,60}\\b(knowledge base|documents?|database|source|records?|index)\\b|\\b(knowledge base|documents?|database)\\b.{0,40}\\b(permanent\\w*|from now on|for (all|every|future) (chats?|conversations?|users?))", re.I)
 USER_VALUE_RE = re.compile(r"\\b(assume|assuming|suppose|supposing|for this (chat|conversation)|in this (chat|conversation)|for the rest of (this|the) (chat|conversation)|new data point|let'?s say|hypothetically|imagine)\\b", re.I)
 
 class Conversation:
@@ -514,16 +515,23 @@ class Conversation:
             raw = llm_call(SYSTEM, head + f"Evidence:\\n{evidence_block(ids, 1200, 6000)}\\n\\nQuestion: {question}", 400)
         j = parse_json(raw)
         status = j.get("status") if j.get("status") in STATUSES else "answered"
+        rule = None
+        if PERMANENT_RE.search(question):
+            status, rule = "session_override", "permanent change request: refused, knowledge base is read-only"
+        elif USER_VALUE_RE.search(question) and status != "not_found":
+            status, rule = "session_override", "user-supplied value for this conversation"
         nums = [int(n) for n in j.get("evidence", []) if str(n).isdigit() and 1 <= int(n) <= len(ids)]
         used = [ids[n - 1] for n in nums] or ([] if status == "not_found" else ids[:1])
         cites, figs = build_refs(used, status, question)
         answer = str(j.get("answer", "")).strip() or "The documents do not support an answer."
+        if rule and rule.startswith("permanent") and "read-only" not in answer.lower():
+            answer = "The knowledge base is read-only, so it cannot be changed permanently; any value you give applies only to this conversation. " + answer
         work = str(j.get("work", "")).strip()
         if status != "not_found" and work and set(re.findall(r"\\d+(?:\\.\\d+)?", work)) - set(re.findall(r"\\d+(?:\\.\\d+)?", answer)):
             answer = f"{answer} Working: {work}"
         answer = " ".join(answer.split()[:120])
         res = {"answer": answer, "status": status, "citations": cites, "figure_references": figs,
-               "retrieved": ids, "seconds": time.time() - t0, "raw": raw}
+               "retrieved": ids, "seconds": time.time() - t0, "raw": raw, "status_rule": rule}
         self.turns.append({"question": question, **res})
         return res
 

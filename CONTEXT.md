@@ -17,7 +17,7 @@ Last updated: Nov 15, 2026 (Pramod's branch `member_pramod`). Read this together
 ## 2. Blockers that need people, not code
 
 1. **GitHub push is blocked (403).** Pramod's GitHub account `pramodsatyad` is not a collaborator on `patel-manav20/Data266-Lab2-Team17`. Manav must add him: Settings → Collaborators. Until then every commit on `member_pramod` exists **only locally** on Pramod's Mac. Push with `git push origin member_pramod` as soon as access exists.
-2. **Kaggle team.** Team `Pair_Programming_Team_17` (rank 22, public score 0.828 as of Nov 15) currently has only Manav (`manavpatel2025`). Pramod's account (`pramodsatyad`) must join before anything is submitted from it. **Do not submit to the leaderboard from Pramod's account until he is on the team.**
+2. **Kaggle team.** Done: Pramod has joined Team 17. Before the deadline, choose the final selected submission together; it must come from the Kaggle notebook at tag `p1-v1.0`.
 3. **Manav's Part 1 code** (which scored 0.828) is not on GitHub. Both branches were empty when this work started.
 4. **Kaggle runs one GPU session at a time** on Pramod's account. A second queued GPU notebook blocks the first.
 
@@ -135,6 +135,12 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
   - instruct-pix2pix uses CPU offload, and img2img uses attention slicing, to stay within T4 memory.
   - All 25 scenario and red-team requests were checked against the rules locally: R04–R07 are refused by rule, S13 goes to clarification, and broken, empty and text files give clear errors.
   - **If the final Part 2 run is `lora_r4`, set `LORA_REPO` accordingly.**
+
+| v8 (commit `0fc093a`) | Full from-scratch run, no errors: charts 566 s, 40 questions in 26.8 min (41 s median). Golden set: **final 19/25** (baseline 18/25), Recall@5 0.958, citation accuracy 0.745. **Public leaderboard 0.701**, lower than v6 (0.728), because of status and citation regressions on public questions (e.g. a user-supplied value answered as `answered`, a conceptual question answered `not_found`, a wrong citation for the Lehman date). |
+| Experiment | v8 answers with the "Working:" text removed scored **0.680**, lower than 0.701, so the Working text helps (it supplies facts). **Keep it.** |
+| v9 | **Rule 1**, deterministic statuses: `PERMANENT_RE` (requests to change, update or save the knowledge base or documents) gives `session_override` plus a read-only refusal sentence; `USER_VALUE_RE` (assume / suppose / for this chat / new data point) gives `session_override` unless the model said `not_found`. The prompt says not_found is only for when no evidence is relevant, since DOC1 covers general economics questions. Checked on all public and golden questions: the rules match only questions 35, 37 and 39 and golden G15, G17 and G18. |
+
+Kaggle team: Pramod has joined Team 17 (`manavpatel2025, pramodsatyad`). Leaderboard submissions from Pramod: v6 0.728, v8 0.701, v8 without Working 0.680. The team's best remains 0.828 (Manav's system).
 
 The figure-cache dataset `pramodsatyad/data266-p1-figcache` now holds the **full, untruncated** v4 transcriptions, so it is safe for development runs.
 
