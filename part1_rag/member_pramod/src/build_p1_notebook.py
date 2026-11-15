@@ -261,23 +261,47 @@ def obj_text(o):
 
 NUM = re.compile(r"-?\\d+(?:\\.\\d+)?\\*?(?: \\(-?\\d+(?:\\.\\d+)?\\))?%?")
 
-def table_rows(o):
+YEARCOL = re.compile(r"(?:19|20)\\d\\d(?:\\s*-\\s*(?:19|20)\\d\\d)?\\*?(?:\\s+(?:forecast|outturn)\\*?)?")
+is_year = lambda c: bool(re.fullmatch(r"(19|20)\\d\\d\\*?", c))
+
+def label_table(o):
     lines = [l for l in o["content"].split("\\n") if l.strip()]
-    is_row = lambda l: sum(bool(NUM.fullmatch(c.strip())) and not re.fullmatch(r"(19|20)\\d\\d\\*?", c.strip()) for c in l.split("|")) >= 2
+    is_row = lambda l: sum(bool(NUM.fullmatch(c.strip())) and not is_year(c.strip()) for c in l.split("|")) >= 2
     data = [l for l in lines if is_row(l)]
     if not data:
-        return []
-    header = " ".join(lines[:lines.index(data[0])])
+        return o["content"], []
+    first = lines.index(data[0])
+    head_lines, notes = lines[:first], [l for l in lines[first:] if not is_row(l)]
+    header = " ".join(head_lines)
+    bracket = re.search(r"\\(([^()]*?) in brackets\\)", o["title"])
     width = max(len(l.split("|")) for l in data)
-    rows, entity = [], ""
+    out, entity = [], ""
     for l in data:
         cells = [c.strip() for c in l.split("|")]
-        if len(cells) == width and not NUM.fullmatch(cells[0]) and width > 2 and not NUM.fullmatch(cells[1]):
+        if len(cells) == width and width > 2 and not NUM.fullmatch(cells[0]) and not NUM.fullmatch(cells[1]):
             entity = cells[0]
         elif len(cells) < width and entity:
             cells = [entity] + cells
-        rows.append(" | ".join(cells))
-    return [f"{o['figure_id']} ({o['doc_id']}): {o['title']}. Columns: {header}. Row: {r}" for r in rows]
+        k = 0
+        while k < len(cells) and (not NUM.fullmatch(cells[k]) or (k == 0 and is_year(cells[k]))):
+            k += 1
+        name, vals = " ".join(cells[:k]), cells[k:]
+        if bracket:
+            vals = [re.sub(r"^(\\S+) \\((-?[\\d.]+)\\)$", r"\\1 (" + bracket.group(1) + r" \\2)", v) for v in vals]
+        cols = YEARCOL.findall(header)
+        starts = [int(c[:4]) for c in cols]
+        if len(cols) != len(vals) or starts != sorted(starts) or len(set(cols)) != len(cols):
+            hc = [c.strip() for c in head_lines[-1].split("|")] if len(head_lines) == 1 else []
+            cols = hc[-len(vals):] if len(hc) == len(vals) + 1 else None
+        out.append(f"{name}: " + ("; ".join(f"{c}={v}" for c, v in zip(cols, vals)) if cols else " | ".join(vals)))
+    return "\\n".join([f"Columns: {header}"] + out + notes), out
+
+for o in objects.values():
+    if o["kind"] == "table":
+        o["content"], o["rows"] = label_table(o)
+
+def table_rows(o):
+    return [f"{o['figure_id']} ({o['doc_id']}): {o['title']}. {r}" for r in o.get("rows", [])]
 
 items = [dict(c, id=f"t{i}") for i, c in enumerate(chunks)]
 for i, o in enumerate(objects.values()):
@@ -394,9 +418,9 @@ SYSTEM = f\"\"\"You answer questions using only a read-only knowledge base of th
 
 How to decide the status (check in this order):
 A. The user supplies, assumes or changes a value for this conversation, or asks to change/update/save the documents or knowledge base: "session_override".
-B. The question assumes something the evidence contradicts (e.g. asks why something happened that did not happen): "false_premise"; give the correct facts.
+B. The question assumes something the evidence contradicts (e.g. asks why something happened that did not happen, or calls a fall a rise): "false_premise"; give the correct facts. Check the premise against the evidence before anything else.
 C. The evidence does not contain what is asked (other countries, other years, other topics): "not_found".
-D. Two documents report different values for the same variable and year and no revision, erratum or forecast/outturn relationship explains it: "conflict".
+D. Two documents report different values for the same variable and year and no revision, erratum or forecast/outturn relationship explains it: "conflict". A DOC1 value for 2011 or 2012 differing from a DOC2 value is NOT a conflict: the DOC2 outturn replaces the DOC1 forecast. A DOC3 value differing from DOC1 or DOC2 (with no erratum) IS a conflict.
 E. Otherwise: "answered" (this includes using a revised value or an outturn that replaces a forecast).
 
 Rules:
@@ -407,11 +431,11 @@ Rules:
 5. If the user supplies or changes a value ("assume...", "for this chat...", "suppose..."), use it only in this conversation, compute what they ask, also state what the documents report, and use status "session_override". A request to change, update or save values into the knowledge base or documents permanently must be refused politely: say the knowledge base is read-only, restate the documented value, and use status "session_override".
 6. Otherwise use status "answered".
 7. When a question names a figure or table, read values only from that exact figure or table. Similar-looking figures differ in vintage, base date or year; say which one you used.
-8. For a value question, look at every evidence item that reports that variable and year (tables, figures and text in all documents) before answering.
+8. For a value question, look at every evidence item that reports that variable and year (tables, figures and text in all documents) before answering. In "work", write the value each document reports, e.g. "DOC1 Table 1-2: 9.6; DOC3 Table B-2: 9.8", then decide the status.
 9. Answer in at most 80 words. Include every number you rely on, with units and years, and the figure/table it comes from. Compute differences step by step and double-check signs and which value is larger.
 10. List in "evidence" only the items whose content you actually used.
 
-Reply with JSON only, with "work" first: {{"work": "short calculation or reasoning, max 60 words", "answer": "...", "status": "answered|not_found|conflict|false_premise|session_override", "evidence": [numbers of the evidence items you used]}}\"\"\"
+Reply with JSON only, with "work" first: {{"work": "values found per document and the calculation, max 60 words", "answer": "...", "status": "answered|not_found|conflict|false_premise|session_override", "evidence": [numbers of the evidence items you used]}}\"\"\"
 
 def evidence_block(ids, cap=2500, total=10000):
     out, used = [], 0
@@ -485,7 +509,11 @@ class Conversation:
         nums = [int(n) for n in j.get("evidence", []) if str(n).isdigit() and 1 <= int(n) <= len(ids)]
         used = [ids[n - 1] for n in nums] or ([] if status == "not_found" else ids[:1])
         cites, figs = build_refs(used, status, question)
-        answer = " ".join(str(j.get("answer", "")).split()[:120]) or "The documents do not support an answer."
+        answer = str(j.get("answer", "")).strip() or "The documents do not support an answer."
+        work = str(j.get("work", "")).strip()
+        if status != "not_found" and work and set(re.findall(r"\\d+(?:\\.\\d+)?", work)) - set(re.findall(r"\\d+(?:\\.\\d+)?", answer)):
+            answer = f"{answer} Working: {work}"
+        answer = " ".join(answer.split()[:120])
         res = {"answer": answer, "status": status, "citations": cites, "figure_references": figs,
                "retrieved": ids, "seconds": time.time() - t0, "raw": raw}
         self.turns.append({"question": question, **res})
