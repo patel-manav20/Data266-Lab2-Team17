@@ -798,32 +798,39 @@ Policy:
 7. A "Value check" line, when present, was computed from the tables and text by code: trust it.
 
 Reply with JSON only, in this form:
-{{"facts": [{{"src": <evidence number>, "value": "<number or short phrase as written in the evidence>", "about": "<what it is, with the year>"}}],
+{{"answer": "<2 to 4 sentences: the direct answer first, every value with its year and document; write {{result}} where the computed number goes>",
  "check": "direct | forecast_replaced | revised | conflict | false_premise | not_in_documents | user_value | refuse_change",
  "expression": "<arithmetic using only numbers, e.g. 11.4 - 9.9, or empty>",
- "answer": "<2 to 4 sentences: the direct answer first, every value with its year and document; write {{result}} where the computed number goes>"}}
+ "facts": [{{"src": <evidence number>, "value": "<number or short phrase as written in the evidence>", "about": "<what it is, with the year, under 10 words>"}}]}}
+List at most 4 facts. A fall, decline or contraction of X% is a growth rate of -X, and a difference between two rates is in percentage points.
 
 Examples (invented data, for format only):
 
 Evidence: [1] (DOCX Table 1, trust high) Norland rainfall: 2019=410; 2020=455 (forecast) [2] (DOCY Table 2, trust high) Norland rainfall: 2020=470
 Question: How much rain fell in Norland in 2020?
-{{"facts": [{{"src": 2, "value": "470", "about": "Norland rainfall 2020 outturn"}}, {{"src": 1, "value": "455", "about": "Norland rainfall 2020 forecast"}}], "check": "forecast_replaced", "expression": "", "answer": "Norland received 470 mm in 2020 (DOCY Table 2), the outturn that replaces the forecast of 455 mm (DOCX Table 1)."}}
+{{"answer": "Norland received 470 mm in 2020 (DOCY Table 2), the outturn that replaces the forecast of 455 mm (DOCX Table 1).", "check": "forecast_replaced", "expression": "", "facts": [{{"src": 2, "value": "470", "about": "Norland rainfall 2020 outturn"}}, {{"src": 1, "value": "455", "about": "Norland rainfall 2020 forecast"}}]}}
 
 Evidence: [1] (DOCX Table 1, trust high) Vesta rainfall: 2019=380 [2] (DOCZ p4, trust medium) Vesta had 395 mm of rain in 2019.
 Question: What was Vesta's rainfall in 2019?
-{{"facts": [{{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}, {{"src": 2, "value": "395", "about": "Vesta rainfall 2019"}}], "check": "conflict", "expression": "", "answer": "The documents disagree: DOCX Table 1 (high trust) reports 380 mm and DOCZ p4 (medium trust) reports 395 mm for 2019; the higher-trust 380 mm is preferred."}}
+{{"answer": "The documents disagree: DOCX Table 1 (high trust) reports 380 mm and DOCZ p4 (medium trust) reports 395 mm for 2019; the higher-trust 380 mm is preferred.", "check": "conflict", "expression": "", "facts": [{{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}, {{"src": 2, "value": "395", "about": "Vesta rainfall 2019"}}]}}
 
 Evidence: [1] (DOCX Table 1, trust high) Norland rainfall: 2019=410
 Question: For this chat, assume Norland had 500 mm in 2019. How much more is that than the documents say?
-{{"facts": [{{"src": 1, "value": "410", "about": "Norland rainfall 2019"}}], "check": "user_value", "expression": "500 - 410", "answer": "Under your assumption of 500 mm, Norland's 2019 rainfall would be {{result}} mm above the 410 mm the documents report (DOCX Table 1). The documents are unchanged."}}
+{{"answer": "Under your assumption of 500 mm, Norland's 2019 rainfall would be {{result}} mm above the 410 mm the documents report (DOCX Table 1). The documents are unchanged.", "check": "user_value", "expression": "500 - 410", "facts": [{{"src": 1, "value": "410", "about": "Norland rainfall 2019"}}]}}
+
+Evidence: [1] (DOCX Table 1, trust high) Harvest growth, percent: Norland 2019=-1.0; Vesta 2019=-2.5
+Question: Suppose Norland's harvest fell by 4.0% in 2019. What would its gap to Vesta be?
+{{"answer": "Under your assumption Norland's harvest growth would be -4.0% in 2019, {{result}} percentage points below Vesta's -2.5% (DOCX Table 1); the documents report -1.0% for Norland. The documents are unchanged.", "check": "user_value", "expression": "-2.5 - (-4.0)", "facts": [{{"src": 1, "value": "-2.5", "about": "Vesta harvest growth 2019"}}, {{"src": 1, "value": "-1.0", "about": "Norland harvest growth 2019"}}]}}
 
 Evidence: [1] (DOCX Table 1, trust high) Vesta rainfall: 2018=350; 2019=380
 Question: Why did Vesta's rainfall fall in 2019?
-{{"facts": [{{"src": 1, "value": "350", "about": "Vesta rainfall 2018"}}, {{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}], "check": "false_premise", "expression": "380 - 350", "answer": "False premise: Vesta's rainfall did not fall in 2019; it rose from 350 mm in 2018 to 380 mm in 2019, an increase of {{result}} mm (DOCX Table 1)."}}
+{{"answer": "False premise: Vesta's rainfall did not fall in 2019; it rose from 350 mm in 2018 to 380 mm in 2019, an increase of {{result}} mm (DOCX Table 1).", "check": "false_premise", "expression": "380 - 350", "facts": [{{"src": 1, "value": "350", "about": "Vesta rainfall 2018"}}, {{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}]}}
 
 Evidence: [1] (DOCX p2, trust high) Rainfall is measured with gauges and reported in millimetres.
 Question: What was the snowfall in Kalia in 2019?
-{{"facts": [], "check": "not_in_documents", "expression": "", "answer": "The documents do not report snowfall for Kalia."}}"""
+{{"answer": "The documents do not report snowfall for Kalia.", "check": "not_in_documents", "expression": "", "facts": []}}"""
+
+PLAIN_SYSTEM = SYSTEM.split("Reply with JSON only")[0] + """Answer in 2 to 4 plain sentences (no JSON): the direct answer first, then every relevant value with its year and its document and table, figure or page."""
 
 REWRITE_SYSTEM = """Rewrite the user's latest message as one standalone question, using the earlier turns of this conversation to resolve words like "it", "that year", "its", "what about the year after?". Keep every number and assumption the user gives. Do not answer. Reply with the question only."""
 
@@ -848,10 +855,12 @@ def parse_json(s):
         j = json.loads(m.group(0))
         return j if isinstance(j, dict) else {}
     except Exception:
-        an = re.search(r'"answer"\s*:\s*"(.*?)"\s*[,}]', s, re.S)
+        # truncated or malformed JSON: keep every field that is complete, and the answer even if it was cut off
+        an = re.search(r'"answer"\s*:\s*"((?:[^"\\]|\\.)*)', s, re.S)
         ck = re.search(r'"check"\s*:\s*"(\w+)"', s)
         ex = re.search(r'"expression"\s*:\s*"([^"]*)"', s)
-        return {"answer": an.group(1) if an else "", "check": ck.group(1) if ck else "direct", "expression": ex.group(1) if ex else "", "facts": []}
+        facts = [{"src": a, "value": b, "about": c} for a, b, c in re.findall(r'\{\s*"src"\s*:\s*(\d+)\s*,\s*"value"\s*:\s*"([^"]*)"\s*,\s*"about"\s*:\s*"([^"]*)"\s*\}', s)]
+        return {"answer": an.group(1).replace('\\"', '"') if an else "", "check": ck.group(1) if ck else "direct", "expression": ex.group(1) if ex else "", "facts": facts}
 
 NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
 
@@ -998,7 +1007,7 @@ class Conversation:
         qline = f"Question: {question}" + (f"\nStandalone form: {rq}" if rq != question else "")
         raw = None
         try:
-            raw = llm_call(SYSTEM, head + f"Evidence:\n{evidence_block(ids, 2000, 8000)}\n\n{extra}\n\n{qline}", 380)
+            raw = llm_call(SYSTEM, head + f"Evidence:\n{evidence_block(ids, 2000, 8000)}\n\n{extra}\n\n{qline}", 420)
         except torch.OutOfMemoryError:
             pass
         if raw is None:
@@ -1019,7 +1028,7 @@ class Conversation:
             status, rule = "false_premise", "question presumes the opposite direction"
         elif eng["fired"] and eng["verdict"] == "conflict" and not named and not DOC_NAMED.search(rq):
             status, rule = "conflict", "engine conflict"
-        elif check == "conflict" and not eng["fired"]:
+        elif check == "conflict" and not eng["fired"] and len({ITEM[f["id"]]["doc_id"] for f in facts}) >= 2:
             status = "conflict"
         elif check == "false_premise":
             status = "false_premise"
@@ -1043,6 +1052,14 @@ class Conversation:
             cites, figs = build_refs(used, status, rq)
 
         answer = str(j.get("answer", "")).strip()
+        if len(re.sub(r"\{result\}|\(.*?\)", " ", answer).split()) < 6:
+            # the JSON reply carried no usable sentence: ask once more for plain text from the same evidence
+            try:
+                plain = llm_call(PLAIN_SYSTEM, head + f"Evidence:\n{evidence_block(ids, 1500, 6000)}\n\n{extra}\n\n{qline}", 200).strip()
+            except Exception:
+                plain = ""
+            if len(plain.split()) >= 6 and not plain.lstrip().startswith("{"):
+                answer = plain
         res_val = safe_eval(j.get("expression", ""))
         if res_val is not None:
             if "{result}" in answer:
@@ -1050,7 +1067,8 @@ class Conversation:
             elif fmt(res_val) not in answer and fmt(abs(res_val)) not in answer:
                 answer += f" ({j.get('expression')} = {fmt(res_val)})"
         if "{result}" in answer:
-            answer = answer.replace("{result}", facts[0]["value"] if facts else "").strip()
+            fill = facts[0]["value"] if facts else (fmt(eng["groups"][0]["value"]) if eng["fired"] and eng["groups"] and eng["groups"][0]["value"] is not None else "")
+            answer = answer.replace("{result}", fill).strip()
         if rule == "year outside the documents":
             answer = f"No. The documents do not report values for {beyond_kb(rq)}; the latest year they cover is {MAX_YEAR}. Any value for that year comes only from this conversation."
         if not answer:
