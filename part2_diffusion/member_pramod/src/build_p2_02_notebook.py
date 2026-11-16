@@ -1,9 +1,11 @@
+import re
 import nbformat as nbf
 import sys, json
 
 md, code = nbf.v4.new_markdown_cell, nbf.v4.new_code_cell
 prompts = json.load(open(sys.argv[2]))["prompts"]
 setup = [c for c in nbf.read(sys.argv[3], 4).cells if c.cell_type == "code"][0].source
+setup = re.sub(r'^STAMP = ".*"$', 'STAMP = ""', setup, flags=re.M)
 
 cells = [
 md("""# Part 2.3 and 2.4: Image Generation, Evaluation and Safety

@@ -1,9 +1,11 @@
+import re
 import nbformat as nbf
 import sys, json
 
 md, code = nbf.v4.new_markdown_cell, nbf.v4.new_code_cell
 tests = json.load(open(sys.argv[2]))
 setup = [c for c in nbf.read(sys.argv[3], 4).cells if c.cell_type == "code"][0].source
+setup = re.sub(r'^STAMP = ".*"$', 'STAMP = ""', setup, flags=re.M)
 
 cells = [
 md("""# Part 3: Multimodal Multi-Agent System for Image Understanding and Generation
