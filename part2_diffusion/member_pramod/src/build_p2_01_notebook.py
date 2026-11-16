@@ -231,7 +231,7 @@ def train(name, rank):
                f"--train_batch_size={BATCH}", f"--gradient_accumulation_steps={GRAD_ACCUM}", "--gradient_checkpointing",
                f"--max_train_steps={STEPS}", f"--learning_rate={LR}", "--lr_scheduler=cosine", "--lr_warmup_steps=0",
                f"--rank={rank}", f"--seed={SEED}", f"--output_dir={out}", "--checkpointing_steps=250",
-               "--checkpoints_total_limit=2", "--resume_from_checkpoint=latest", "--dataloader_num_workers=2"]
+               "--checkpoints_total_limit=2", "--resume_from_checkpoint=latest", "--dataloader_num_workers=2", "--mixed_precision=fp16"]
         peak, done = [gpu_mem_mb()], threading.Event()
         log = f"{out}/train.log"
         t0 = time.time()
