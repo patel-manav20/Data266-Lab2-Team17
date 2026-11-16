@@ -1006,6 +1006,21 @@ def add_pages(cites):
             out.append(f"{c.split(':')[0]}:p{OBJ_PAGE[c]}")
     return list(dict.fromkeys(out))
 
+ANSWER_REF = re.compile(r"\bDOC([1-3])\W{0,3}((?:Table|Figure) (?:[12]|[A-C])-\d+(?: \(corrected\))?)")
+
+def answer_refs(text, ids, cites, k=2):
+    # a table or figure the answer names next to its document, and that was in the evidence shown to the model, is a source the answer used
+    shown = {(ITEM[i]["doc_id"], ITEM[i]["figure_id"]) for i in ids if ITEM[i]["figure_id"] and ITEM[i]["trust_level"] != "low"}
+    out = []
+    for m in ANSWER_REF.finditer(text):
+        c = f"DOC{m.group(1)}:{m.group(2)}"
+        if (f"DOC{m.group(1)}", m.group(2)) in shown and c not in cites and c not in out:
+            out.append(c)
+    return out[:k]
+
+CALC_Q = re.compile(r"\b(how much|how many|how far|differen\w*|differ|compar\w*|change[sd]?|gap|higher|lower|worse|better|more than|less than|errors?|minus|points?|rise|rose|fall|fell|increas\w*|decreas\w*|by what|exceed\w*|above|below|predict\w*|impl\w*|average|total|sum|ratio|share)\b", re.I)
+EXPLAIN_Q = re.compile(r"^\s*(why|how)\b", re.I)
+
 def engine_refs(eng):
     cites = []
     for c in eng["sources"]:
@@ -1151,7 +1166,8 @@ class Conversation:
             cites, figs = build_refs(used, status, rq)
 
         answer = str(j.get("answer", "")).strip()
-        if len(re.sub(r"\{result\}|\(.*?\)", " ", answer).split()) < 6:
+        n_words = len(re.sub(r"\{result\}|\(.*?\)", " ", answer).split())
+        if n_words < 6 or (n_words < 12 and EXPLAIN_Q.search(question) and status == "answered"):
             # the JSON reply carried no usable sentence: ask once more for plain text from the same evidence
             try:
                 plain = llm_call(PLAIN_SYSTEM, head + f"Evidence:\n{evidence_block(ids, 1500, 6000)}\n\n{extra}\n\n{qline}", 200).strip()
@@ -1182,7 +1198,7 @@ class Conversation:
         if res_val is not None:
             if "{result}" in answer:
                 answer = answer.replace("{result}", fmt(res_val))
-            elif fmt(res_val) not in answer and fmt(abs(res_val)) not in answer:
+            elif CALC_Q.search(rq) and fmt(res_val) not in answer and fmt(abs(res_val)) not in answer:
                 answer += f" ({j.get('expression')} = {fmt(res_val)})"
         if "{result}" in answer:
             fill = facts[0]["value"] if facts else (fmt(eng["groups"][0]["value"]) if eng["fired"] and eng["groups"] and eng["groups"][0]["value"] is not None else "")
@@ -1200,6 +1216,10 @@ class Conversation:
         if not self.user_values and rule != "permanent change request":
             answer = re.sub(r"\s*The documents (?:are|remain) unchanged\.", "", answer)
         if status != "not_found":
+            if not named:
+                more = answer_refs(answer, ids, cites)
+                cites += more
+                figs = list(dict.fromkeys(figs + [c.split(":", 1)[1] for c in more]))
             cites = add_pages(cites)
             if eng["fired"]:
                 answer += f" Values: {eng['summary']}"
