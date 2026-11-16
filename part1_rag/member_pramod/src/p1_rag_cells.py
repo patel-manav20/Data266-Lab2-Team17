@@ -72,7 +72,7 @@ LLM_ID = "unsloth/Qwen3-8B-unsloth-bnb-4bit"
 EMB_ID = "BAAI/bge-base-en-v1.5"
 TOP_K = 8
 NOTEBOOK_START = time.time()
-EVAL_BUDGET_MIN = 55
+EVAL_BUDGET_MIN = 75
 K_OBJ, K_TXT = 4, 4
 CITE_OBJECT_PAGE = False
 OUT = f"{WORK}/p1_out"
@@ -301,8 +301,8 @@ CANON = [
     (r"\bU\.S\.A?\.?|\bUSA\b|\bUS\b", "united states", 0),
     (r"\bamerica(n|ns)?\b", "united states", re.I),
     (r"\b(euro[- ]?zone|euro[- ]area|europe(an)?)\b", "euro area", re.I),
-    (r"\bemerging( and developing)?( market)? (economies|countries|markets)\b", "emerging and developing economies", re.I),
-    (r"\badvanced (economies|countries)\b", "advanced economies", re.I),
+    (r"\bemerging( and developing)?( market)?[- ](economy|economies|countries|markets)\b", "emerging and developing economies", re.I),
+    (r"\badvanced[- ](economy|economies|countries)\b", "advanced economies", re.I),
     (r"\bjobless(ness)?\b", "unemployment", re.I),
     (r"\b(gdp|economic) growth\b|\bgrowth (in|of) (gdp|output)\b|\bgr[eo]w(s|th|ing)?\b", "output growth", re.I),
     (r"\bdeficits?\b", "budget balance", re.I),
@@ -546,7 +546,7 @@ for q in ["Which country had the highest unemployment in Figure A-6?", "US budge
 # The verdict decides the status and the citations, and a one-line summary of the values is given to the answer model and appended to the answer. Figure transcriptions are approximate and are not used for conflict detection. Low-trust pages produce no facts.
 
 # %%
-DOC_NAMED = re.compile(r"\b(?:document|doc)\s*([123])\b", re.I)
+DOC_NAMED = re.compile(r"\b(?:according to|per)\s+(?:document|doc)\s*([123])\b|\b(?:document|doc)\s*([123])\s+(?:itself\s+|alone\s+|only\s+)?(?:reports?|says?|states?|shows?|gives?|lists?)\b", re.I)
 ORDER = ["consistent", "forecast_only", "forecast_replaced", "revised", "conflict"]
 
 def fact_cite(f):
@@ -610,7 +610,8 @@ def reconcile(question):
         return out
     Q = key_tokens(question) | ({"grow"} if GROWTH_VERB.search(question) else set())
     m = DOC_NAMED.search(question)
-    pool = [f for f in FACTS if f["trust"] != "low" and (not m or f["doc_id"] == f"DOC{m.group(1)}")]
+    named_doc = (m.group(1) or m.group(2)) if m else None
+    pool = [f for f in FACTS if f["trust"] != "low" and (not named_doc or f["doc_id"] == f"DOC{named_doc}")]
     ents = {f["ent_k"] for f in pool if f["ent_k"] and f["ent_k"] <= Q}
     ents = {e for e in ents if not any(e < x for x in ents)}
     groups = {}
@@ -700,6 +701,12 @@ def named_figures(question, k=2):
         if hits and (not years or any(y in t for y in years)):
             scored.append((hits, it["id"]))
     return [i for _, i in sorted(scored, key=lambda x: -x[0])[:k]]
+
+MAX_YEAR = max(int(y) for f in FACTS for y in YEAR.findall(f["period"]))
+
+def beyond_kb(question):
+    later = [int(y) for y in YEAR.findall(question) if int(y) > MAX_YEAR]
+    return str(min(later)) if later else None
 
 def source_items(cites, question=""):
     ids = []
@@ -930,7 +937,7 @@ def engine_refs(eng):
     for c in eng["sources"]:
         cites.append(c)
         doc, ref = c.split(":", 1)
-        if ref.startswith("p") and ref[1:].isdigit():
+        if eng["verdict"] == "revised" and ref.startswith("p") and ref[1:].isdigit():
             same_page = [o for o in objects.values() if o["doc_id"] == doc and o["page"] == int(ref[1:]) and o["kind"] == "table"]
             cites += [f"{doc}:{o['figure_id']}" for o in same_page]
     cites = list(dict.fromkeys(cites))
@@ -965,7 +972,7 @@ class Conversation:
         hist_labels = " ".join(t["question"] for t in self.turns[-2:]) if not labels_in(rq) else ""
         ids = retrieve(rq, hist_labels)
         prev_figs = label_items(self.turns[-1].get("figure_references", [])) if self.turns and not labels_in(rq) else []
-        ids = list(dict.fromkeys(source_items(eng["sources"], rq) + named_figures(rq) + prev_figs + ids))[:11]
+        ids = list(dict.fromkeys(source_items(eng["sources"], rq) + named_figures(rq) + prev_figs + ids))[:9]
         extra = []
         notes = related_notices(rq)
         if notes:
@@ -991,7 +998,7 @@ class Conversation:
         qline = f"Question: {question}" + (f"\nStandalone form: {rq}" if rq != question else "")
         raw = None
         try:
-            raw = llm_call(SYSTEM, head + f"Evidence:\n{evidence_block(ids)}\n\n{extra}\n\n{qline}", 450)
+            raw = llm_call(SYSTEM, head + f"Evidence:\n{evidence_block(ids, 2000, 8000)}\n\n{extra}\n\n{qline}", 380)
         except torch.OutOfMemoryError:
             pass
         if raw is None:
@@ -1016,8 +1023,10 @@ class Conversation:
             status = "conflict"
         elif check == "false_premise":
             status = "false_premise"
-        elif check == "not_in_documents" and not eng["fired"] and not facts:
+        elif check == "not_in_documents" and not eng["fired"]:
             status = "not_found"
+        elif beyond_kb(rq) and not eng["fired"]:
+            status, rule = "not_found", "year outside the documents"
         else:
             status = "answered"
 
@@ -1042,6 +1051,8 @@ class Conversation:
                 answer += f" ({j.get('expression')} = {fmt(res_val)})"
         if "{result}" in answer:
             answer = answer.replace("{result}", facts[0]["value"] if facts else "").strip()
+        if rule == "year outside the documents":
+            answer = f"No. The documents do not report values for {beyond_kb(rq)}; the latest year they cover is {MAX_YEAR}. Any value for that year comes only from this conversation."
         if not answer:
             answer = "The documents do not report this." if status == "not_found" else "See the values below."
         if rule == "permanent change request" and "read-only" not in answer.lower():
@@ -1105,7 +1116,7 @@ print(subprocess.run([sys.executable, f"{DATA_DIR}/validate_submission.py", "sub
 # * **Primary**: answer correctness out of 25: every required number within ±1% (sign ignored, so "fell by 0.7%" matches -0.7) and the status must match.
 # * **Secondary**: Recall@5 (a gold page, table or figure is among the top 5 retrieved items) and citation accuracy (share of our citations that are gold sources, counting a figure's page as the figure).
 # * **Efficiency**: median seconds per question.
-# * The evaluation is skipped automatically if more than 55 minutes have passed, so a larger hidden question set still finishes inside Kaggle's 90-minute limit.
+# * The evaluation is skipped automatically if more than 75 minutes have passed, so a larger hidden question set still finishes inside Kaggle's 90-minute limit.
 # * **Baseline**: dense retrieval only (no BM25, no table-row index, no label lookup, no reconciliation engine, no follow-up rewriting); the same answer model, prompt and post-processing.
 
 # %%
