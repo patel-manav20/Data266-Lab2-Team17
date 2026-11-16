@@ -148,35 +148,61 @@ class Part2Tests(unittest.TestCase):
                 self_test.assertEqual(sum(n for n, real in self.calls if not real), 20)
                 return torch.tensor(0.123456), torch.tensor(0.01)
 
-        class CLIP(Metric):
+        class LPIPS(Metric):
             def __init__(self, **kw):
                 pass
 
-            def __call__(self, image, prompt):
-                self_test.assertFalse(torch.is_grad_enabled())
-                return torch.tensor(25.0)
-
-            def reset(self):
-                pass
-
-        class LPIPS(CLIP):
             def __call__(self, a, b):
                 self_test.assertFalse(torch.is_grad_enabled())
                 return torch.tensor(0.3)
 
+        class Tower:
+            def __init__(self, vec):
+                self.vec = vec
+
+            def __call__(self, pixel_values=None, input_ids=None, attention_mask=None):
+                self_test.assertFalse(torch.is_grad_enabled())
+                n = len(pixel_values if pixel_values is not None else input_ids)
+                return types.SimpleNamespace(pooler_output=self.vec.repeat(n, 1))
+
+        class FakeCLIP(Metric):
+            # image and prompt embeddings with cosine 0.25, so the CLIP score is 25
+            vision_model, text_model = Tower(torch.tensor([[2.0, 0.0]])), Tower(torch.tensor([[0.25, 0.75 ** 0.5 * 1.25 ** 0.5]]))
+            visual_projection = text_projection = staticmethod(lambda e: e)
+
+            @classmethod
+            def from_pretrained(cls, *a, **kw):
+                return cls()
+
+        class Batch(dict):
+            def to(self, device):
+                return self
+
+            __getattr__ = dict.__getitem__
+
+        class FakeProcessor:
+            @classmethod
+            def from_pretrained(cls, *a, **kw):
+                return cls()
+
+            def __call__(self, images=None, text=None, **kw):
+                if images is not None:
+                    return Batch(pixel_values=torch.ones(len(images), 3, 4, 4))
+                return Batch(input_ids=torch.ones(len(text), 5, dtype=torch.long), attention_mask=torch.ones(len(text), 5, dtype=torch.long))
+
         self_test = self
-        modules = {name: types.ModuleType(name) for name in ["torchmetrics", "torchmetrics.image", "torchmetrics.image.kid", "torchmetrics.multimodal", "torchmetrics.multimodal.clip_score", "lpips"]}
+        modules = {name: types.ModuleType(name) for name in ["torchmetrics", "torchmetrics.image", "torchmetrics.image.kid", "transformers", "lpips"]}
         modules["torchmetrics.image.kid"].KernelInceptionDistance = KID
-        modules["torchmetrics.multimodal.clip_score"].CLIPScore = CLIP
+        modules["transformers"].CLIPModel, modules["transformers"].CLIPProcessor = FakeCLIP, FakeProcessor
         modules["lpips"].LPIPS = LPIPS
         ns.update(torch=torch, np=np, Image=Image, gc=gc, MODELS=models, GEN=str(gen), OUT=str(out), meta_df=pd.DataFrame(meta), SEED=266, display=lambda x: None)
         with patch.dict(os.sys.modules, modules):
             exec(cell(EVAL, "def update_kid").replace('.to("cuda")', '.to("cpu")'), ns)
         self.assertLessEqual(max(batches), 8)
         self.assertEqual(len(ns["metrics"]), 3)
-        self.assertTrue((ns["metrics"].CLIP_in_domain == 25).all())
+        self.assertTrue(np.allclose(ns["metrics"].CLIP_in_domain, 25))
         self.assertEqual(len(pd.read_csv(gen / "metadata.csv")), 120)
-        self.assertTrue((pd.read_csv(gen / "metadata.csv")["clip"] == 25).all())
+        self.assertTrue(np.allclose(pd.read_csv(gen / "metadata.csv")["clip"], 25))
         ns["metrics"].loc[ns["metrics"].model == "lora_r32", "KID_in_domain_mean"] -= 0.000001
         exec(cell(EVAL, "results = metrics.merge"), ns)
         self.assertEqual(ns["FINAL"], "lora_r32")
@@ -204,23 +230,25 @@ class Part2Tests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "timing.json"):
             ns["train"]("lora_r4", 4)
 
-    def test_clip_embedding_return_formats(self):
+    def test_clip_embeddings_use_projected_pooler_output(self):
         tree = ast.parse(cell(EVAL, "def img_emb"))
-        fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "img_emb")
+        fns = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in ("img_emb", "txt_emb")]
         paths = [str(self.base / "p2_data/train/train.png")]
 
         class Batch:
             pixel_values = torch.ones(1, 3, 32, 32)
+            input_ids = attention_mask = torch.ones(1, 5, dtype=torch.long)
 
             def to(self, device):
                 return self
 
-        for structured in [False, True]:
-            features = torch.tensor([[3.0, 4.0]])
-            value = types.SimpleNamespace(pooler_output=features) if structured else features
-            ns = dict(torch=torch, Image=Image, cp=lambda **kw: Batch(), cm=types.SimpleNamespace(get_image_features=lambda **kw: value))
-            exec(compile(ast.Module(body=[fn], type_ignores=[]), "embeddings", "exec"), ns)
-            torch.testing.assert_close(ns["img_emb"](paths), torch.tensor([[0.6, 0.8]]))
+        pooled = types.SimpleNamespace(pooler_output=torch.tensor([[1.5, 2.0]]))
+        cm = types.SimpleNamespace(vision_model=lambda **kw: pooled, text_model=lambda **kw: pooled,
+                                   visual_projection=lambda e: 2 * e, text_projection=lambda e: 2 * e)
+        ns = dict(torch=torch, Image=Image, cp=lambda **kw: Batch(), cm=cm)
+        exec(compile(ast.Module(body=fns, type_ignores=[]), "embeddings", "exec"), ns)
+        torch.testing.assert_close(ns["img_emb"](paths), torch.tensor([[0.6, 0.8]]))
+        torch.testing.assert_close(ns["txt_emb"](["a prompt"]), torch.tensor([[0.6, 0.8]]))
 
     def test_completed_run_survives_next_run_failure(self):
         source = cell(TRAIN, "def train(name, rank)")

@@ -90,12 +90,19 @@ print("Validated adapters, disjoint splits, held-out prompts and training summar
 md("## 2.3 Generate 40 images per model"),
 code("""from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
 
-pipe = StableDiffusionPipeline.from_pretrained(BASE_MODEL, torch_dtype=torch.float16).to("cuda")
-pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
-pipe.set_progress_bar_config(disable=True)
+# resume: a complete earlier generation on this Drive (same files, prompts and settings) is reused, not regenerated
+expected = {f"{m}/{p['pid']}_s{s}.png": p["prompt"] for m in MODELS for p in PROMPTS for s in SEEDS}
+done = pd.read_csv(f"{GEN}/metadata.csv") if os.path.isfile(f"{GEN}/metadata.csv") else pd.DataFrame()
+reuse = (len(done) == len(expected) and dict(zip(done.get("file_name", []), done.get("prompt", []))) == expected
+         and set(done.steps) == {STEPS} and set(done.guidance) == {GUIDANCE} and all(os.path.isfile(f"{GEN}/{f}") for f in expected))
+pipe = None
+if not reuse:
+    pipe = StableDiffusionPipeline.from_pretrained(BASE_MODEL, torch_dtype=torch.float16).to("cuda")
+    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+    pipe.set_progress_bar_config(disable=True)
 
 meta = []
-for m in MODELS:
+for m in (MODELS if not reuse else []):
     try:
         pipe.unload_lora_weights()
     except Exception:
@@ -113,8 +120,12 @@ for m in MODELS:
             meta.append({"file_name": f, "model": m, "pid": p["pid"], "type": p["type"], "prompt": p["prompt"], "seed": s,
                          "steps": STEPS, "guidance": GUIDANCE, "scheduler": "DPMSolverMultistep", "nsfw_flagged": bool(r.nsfw_content_detected and r.nsfw_content_detected[0])})
     print(m, "seconds per image: %.2f" % ((time.time() - t0) / (len(PROMPTS) * len(SEEDS))), flush=True)
-meta_df = pd.DataFrame(meta)
-meta_df.to_csv(f"{GEN}/metadata.csv", index=False)
+if reuse:
+    meta_df = done.drop(columns=[c for c in ["clip"] if c in done.columns])
+    print(f"reusing the {len(meta_df)} images already generated in {GEN}")
+else:
+    meta_df = pd.DataFrame(meta)
+    meta_df.to_csv(f"{GEN}/metadata.csv", index=False)
 print("NSFW flagged per model:", meta_df.groupby("model").nsfw_flagged.sum().to_dict())"""),
 
 code("""import gc
@@ -141,16 +152,34 @@ md("""## 2.4 Evaluation
 * **LPIPS diversity** (secondary): AlexNet LPIPS between the seed-0 and seed-1 images of each prompt, averaged."""),
 code("""import numpy as np
 from torchmetrics.image.kid import KernelInceptionDistance
-from torchmetrics.multimodal.clip_score import CLIPScore
+from transformers import CLIPModel, CLIPProcessor
 import lpips
 
 def load_u8(path):
     return torch.from_numpy(np.array(Image.open(path).convert("RGB").resize((299, 299)))).permute(2, 0, 1)
 
 test_paths = [f"{TRAIN_OUT}/p2_data/test/{r['file_name']}" for r in split_records["test"]]
-clip = CLIPScore(model_name_or_path="openai/clip-vit-large-patch14").to("cuda")
+# CLIP score as torchmetrics defines it, 100 * max(cos(image, prompt), 0), computed through the vision and text
+# towers plus their projections, which behave the same on every transformers version
+cm = CLIPModel.from_pretrained("openai/clip-vit-large-patch14", torch_dtype=torch.float16).to("cuda")
+cp = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 lp = lpips.LPIPS(net="alex", verbose=False).to("cuda")
-clip.eval(); lp.eval()
+cm.eval(); lp.eval()
+
+@torch.no_grad()
+def img_emb(paths, bs=32):
+    out = []
+    for i in range(0, len(paths), bs):
+        x = cp(images=[Image.open(p).convert("RGB") for p in paths[i:i + bs]], return_tensors="pt").to("cuda")
+        e = cm.visual_projection(cm.vision_model(pixel_values=x.pixel_values.half()).pooler_output)
+        out.append(torch.nn.functional.normalize(e.float(), dim=-1))
+    return torch.cat(out)
+
+@torch.no_grad()
+def txt_emb(texts):
+    x = cp(text=list(texts), return_tensors="pt", padding=True, truncation=True, max_length=77).to("cuda")
+    e = cm.text_projection(cm.text_model(input_ids=x.input_ids, attention_mask=x.attention_mask).pooler_output)
+    return torch.nn.functional.normalize(e.float(), dim=-1)
 
 @torch.inference_mode()
 def update_kid(metric, paths, real, batch_size=8):
@@ -173,12 +202,8 @@ for m in MODELS:
     kid_mean, kid_std = kid.compute()
     del kid
     gc.collect(); torch.cuda.empty_cache()
-    clip_scores = []
-    for _, r in sub.iterrows():
-        img = torch.from_numpy(np.array(Image.open(f"{GEN}/{r.file_name}").convert("RGB"))).permute(2, 0, 1).to("cuda")
-        with torch.inference_mode():
-            clip_scores.append(float(clip(img, r.prompt)))
-        clip.reset()
+    cos = (img_emb([f"{GEN}/{f}" for f in sub.file_name]) * txt_emb(sub.prompt)).sum(dim=-1)
+    clip_scores = (100 * cos.clamp(min=0)).cpu().tolist()
     sub = sub.assign(clip=clip_scores)
     meta_df.loc[sub.index, "clip"] = clip_scores
     with torch.no_grad():
@@ -189,7 +214,7 @@ for m in MODELS:
 metrics = pd.DataFrame(rows)
 metrics.to_csv(f"{OUT}/p2_metrics.csv", index=False)
 meta_df.to_csv(f"{GEN}/metadata.csv", index=False)
-del clip, lp
+del lp
 gc.collect(); torch.cuda.empty_cache()
 display(metrics.round(4))"""),
 
@@ -217,21 +242,7 @@ for p in PROMPTS:
 md("""## Safety: memorization check
 
 For the 10 in-domain prompts (final run, seed 0), find the most similar training image by CLIP image-embedding cosine similarity, and show the 3 closest pairs."""),
-code("""from transformers import CLIPModel, CLIPProcessor
-cm = CLIPModel.from_pretrained("openai/clip-vit-large-patch14", torch_dtype=torch.float16).to("cuda")
-cm.eval()
-cp = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
-
-@torch.no_grad()
-def img_emb(paths, bs=32):
-    out = []
-    for i in range(0, len(paths), bs):
-        x = cp(images=[Image.open(p).convert("RGB") for p in paths[i:i + bs]], return_tensors="pt").to("cuda")
-        e = cm.get_image_features(pixel_values=x.pixel_values.half())
-        e = getattr(e, "pooler_output", e)
-        out.append(torch.nn.functional.normalize(e.float(), dim=-1))
-    return torch.cat(out)
-
+code("""# same CLIP ViT-L/14 image embeddings (img_emb) as the CLIP score above
 train_paths = [f"{TRAIN_OUT}/p2_data/train/{r['file_name']}" for r in split_records["train"]]
 gen_paths = [f"{GEN}/{FINAL}/{p['pid']}_s0.png" for p in PROMPTS if p["type"] == "in_domain"]
 sim = img_emb(gen_paths) @ img_emb(train_paths).T
