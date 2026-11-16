@@ -699,7 +699,18 @@ def reconcile(question):
     out["fired"] = True
     out["verdict"] = max((g["verdict"] for g in asked), key=ORDER.index)
     out["sources"] = list(dict.fromkeys(fact_cite(f) for g in out["groups"] for f in g["sources"]))
-    out["summary"] = " ".join(f"{g['variable'] if g['variable'].lower().startswith(g['entity'].lower()) else g['entity'] + ' ' + g['variable'].lower()} {g['period']}: {g['line']}." for g in out["groups"])
+    gname = lambda g: g['variable'] if g['variable'].lower().startswith(g['entity'].lower()) else g['entity'] + ' ' + g['variable'].lower()
+    out["summary"] = " ".join(f"{gname(g)} {g['period']}: {g['line']}." for g in out["groups"])
+    # a "change in X" question also gets the actual change from the previous year, computed from the preferred values
+    m = CHANGE_IN.search(question)
+    target = key_tokens(m.group(0)) - {"rate", "chan"} if m and ctx_years else set()
+    for g in asked:
+        if not (set(g["var_k"]) & target):
+            continue
+        prev = next((c for c in out["groups"] if c["context"] and c["var_k"] == g["var_k"] and c["entity"] == g["entity"] and c["value"] is not None), None)
+        if prev and g["value"] is not None:
+            d = round(g["value"] - prev["value"], 2)
+            out["summary"] += f" Actual change in {gname(g)} from {prev['period']} to {g['period']}: {fmt(prev['value'])} -> {fmt(g['value'])} = {'+' if d > 0 else ''}{fmt(d)} percentage points."
     return out
 
 PREMISE_FRAME = re.compile(r"\b(why|what (drove|caused|made|explains?|policies)|how did .{0,40} manage|what led)\b", re.I)
@@ -862,7 +873,7 @@ Question: Suppose Norland's harvest fell by 4.0% in 2019. What would its gap to 
 {{"facts": [{{"src": 1, "value": "-2.5", "about": "Vesta harvest growth 2019"}}, {{"src": 1, "value": "-1.0", "about": "Norland harvest growth 2019"}}], "check": "user_value", "expression": "-2.5 - (-4.0)", "answer": "Under your assumption Norland's harvest growth would be -4.0% in 2019, {{result}} percentage points below Vesta's -2.5% (DOCX Table 1); the documents report -1.0% for Norland. The documents are unchanged."}}
 
 Evidence: [1] (DOCX p3, trust high) Each 10 mm of rainfall above 400 mm raises the harvest index by about 2 points; at 400 mm the index stays flat. [2] (DOCY Table 2, trust high) Norland rainfall: 2020=450; Norland harvest index: 2019=10.0; 2020=19.0
-Question: Apply the DOCX rule to Norland's 2020 rainfall. What harvest change does it imply for 2020, and how does that compare with the real change?
+Question: Apply the DOCX rule to Norland's 2020 rainfall. What harvest change does it imply for 2020, and how far is it from the real change?
 {{"facts": [{{"src": 1, "value": "2 points per 10 mm above 400 mm", "about": "rainfall-harvest rule"}}, {{"src": 2, "value": "450", "about": "Norland rainfall 2020"}}, {{"src": 2, "value": "10.0", "about": "Norland harvest index 2019"}}, {{"src": 2, "value": "19.0", "about": "Norland harvest index 2020"}}], "check": "direct", "expression": "2 * (450 - 400) / 10", "answer": "The DOCX rule (DOCX p3) implies a rise of {{result}} points in 2020, since 2020 rainfall was 450 mm (DOCY Table 2). The index actually rose from 10.0 in 2019 to 19.0 in 2020, 9.0 points, slightly less than the rule implies."}}
 
 Evidence: [1] (DOCX Table 1, trust high) Vesta rainfall: 2018=350; 2019=380
@@ -1007,7 +1018,7 @@ def engine_refs(eng):
     figs = [c.split(":", 1)[1] for c in cites if c.split(":", 1)[1] in KNOWN_LABELS]
     return cites, list(dict.fromkeys(figs))
 
-COMPARATIVE = r"(?: percentage points?| points?| pp)?\s+(?:worse|lower|less|below|smaller|weaker|slower|higher|more|above|larger|greater|bigger|better|stronger|faster)\b"
+COMPARATIVE = r"%?(?: percentage points?| points?| pp)?\s+(?:worse|lower|less|below|smaller|weaker|slower|higher|more|above|larger|greater|bigger|better|stronger|faster)\b"
 FORECAST_ERROR = re.compile(r"\bforecast errors?\b|\bminus the (?:[\w-]+ )?(?:forecast|projection)\b", re.I)
 
 def tidy_numbers(answer, question, eng):
@@ -1026,6 +1037,13 @@ def tidy_numbers(answer, question, eng):
     return answer
 
 PERMANENT_RE = re.compile(r"\b(permanent\w*|update|change|edit|modify|overwrite|save|write|store|correct)\b.{0,60}\b(knowledge base|documents?|database|source|records?|index)\b|\b(knowledge base|documents?|database)\b.{0,40}\b(permanent\w*|from now on|for (all|every|future) (chats?|conversations?|users?))", re.I)
+USER_FALL_RE = re.compile(r"\b(?:fell|fall|falls|falling|declined?|dropped|drop|contracted|contract|shr[aiu]nk|decreased?)\s+(?:by\s+)?(\d+(?:\.\d+)?)\s*(?:%|percent)", re.I)
+HEDGE_RE = re.compile(r"\b(?:not (?:directly )?(?:reported|provided|available|given|stated)|cannot be (?:determined|calculated|computed)|do(?:es)? not (?:report|provide|contain|include|give))\b", re.I)
+
+def user_falls(user_values):
+    # "output fell by 6.0%" is a growth rate of -6.0
+    return {float(x) for v in user_values for x in USER_FALL_RE.findall(v)}
+
 USER_VALUE_RE = re.compile(r"\b(assume|assuming|suppose|supposing|for this (chat|conversation)|in this (chat|conversation)|for the rest of (this|the) (chat|conversation)|new data point|let'?s say|hypothetically|imagine)\b", re.I)
 REFUSAL = "The knowledge base is read-only, so it cannot be changed permanently; any value you give applies only to this conversation."
 
@@ -1100,7 +1118,7 @@ class Conversation:
             status, rule = "false_premise", "question presumes the opposite direction"
         elif eng["fired"] and eng["verdict"] == "conflict" and not named and not DOC_NAMED.search(rq):
             status, rule = "conflict", "engine conflict"
-        elif check == "conflict" and not eng["fired"] and len({ITEM[f["id"]]["doc_id"] for f in facts}) >= 2:
+        elif check == "conflict" and not eng["fired"] and not named and len({ITEM[f["id"]]["doc_id"] for f in facts}) >= 2:
             status = "conflict"
         elif check == "false_premise":
             status = "false_premise"
@@ -1110,6 +1128,10 @@ class Conversation:
             status, rule = "not_found", "year outside the documents"
         else:
             status = "answered"
+        first = re.split(r"(?<=[.!?])\s", str(j.get("answer", "")).strip(), 1)[0]
+        if status == "answered" and not eng["fired"] and not named and not self.user_values and HEDGE_RE.search(first):
+            # the answer opens by saying the documents do not report it, so nothing answers the question
+            status, rule = "not_found", "answer says not reported"
 
         if status == "not_found":
             cites, figs = [], []
@@ -1138,18 +1160,25 @@ class Conversation:
             if len(plain.split()) >= 6 and not plain.lstrip().startswith("{"):
                 answer = plain
         expr = str(j.get("expression", "") or "")
+        model_val = safe_eval(expr) if expr else None
         if eng["fired"] and expr and status in ("answered", "conflict"):
             # policy 2: a calculation on a variable the documents disagree about uses the preferred (higher-trust) value
-            model_val = safe_eval(expr)
             for g in eng["groups"]:
                 if g["verdict"] == "conflict" and g["value"] is not None:
                     for alt in {f["value"] for f in g["sources"] if abs(f["value"] - g["value"]) > 0.049}:
                         expr = re.sub(r"(?<![\d.])" + re.escape(fmt(alt)) + r"(?![\d])", fmt(g["value"]), expr)
-            new_val = safe_eval(expr)
-            if model_val is not None and new_val is not None and new_val != model_val:
-                answer = re.sub(r"(?<![\d.])" + re.escape(fmt(abs(model_val))) + r"(?![\d])", fmt(abs(new_val)), answer)
-            j["expression"] = expr
-        res_val = safe_eval(j.get("expression", ""))
+        falls = user_falls(self.user_values) if status == "session_override" else set()
+        if falls:
+            # a user-stated fall enters the calculation as a negative growth rate, and the answer states it with its sign
+            neg = lambda m: f"(-{m.group(0)})" if float(m.group(0)) in falls else m.group(0)
+            expr = re.sub(r"(?<![\d.\-])\d+(?:\.\d+)?(?!\.?\d)", neg, expr)
+            answer = re.sub(r"(assum\w*(?: of| that| is| at)?\s+)(\d+(?:\.\d+)?)(?!\.?\d)",
+                            lambda m: m.group(1) + ("-" if float(m.group(2)) in falls else "") + m.group(2), answer)
+        new_val = safe_eval(expr) if expr else None
+        if model_val is not None and new_val is not None and new_val != model_val:
+            answer = re.sub(r"(?<![\d.])-?" + re.escape(fmt(abs(model_val))) + r"(?![\d])", fmt(abs(new_val)), answer)
+        j["expression"] = expr
+        res_val = safe_eval(j.get("expression", "")) if rule != "permanent change request" else None
         if res_val is not None:
             if "{result}" in answer:
                 answer = answer.replace("{result}", fmt(res_val))
@@ -1168,6 +1197,8 @@ class Conversation:
             g = premise_conflict(rq, eng)
             answer = f"False premise: the documents report {g['entity']} {g['variable'].lower()} of {fmt(g['value'])}% in {g['period']}. " + answer
         answer = tidy_numbers(answer, rq, eng)
+        if not self.user_values and rule != "permanent change request":
+            answer = re.sub(r"\s*The documents (?:are|remain) unchanged\.", "", answer)
         if status != "not_found":
             cites = add_pages(cites)
             if eng["fired"]:
