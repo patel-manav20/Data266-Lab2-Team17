@@ -77,7 +77,7 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
 ## 6. How the notebooks are built and run
 
 - **Source of truth:** the builder scripts under `part*/member_pramod/src/build_*_notebook.py`. They write the `.ipynb` files. Edit the builder and rebuild, rather than hand-editing the JSON:
-  - `python part1_rag/member_pramod/src/build_p1_notebook.py part1_rag/member_pramod/notebooks/p1_rag.ipynb tests/p1_golden_pramod.json`
+  - Part 1 is different: its source of truth is `part1_rag/member_pramod/src/p1_rag_cells.py` (percent format, `# %%` cells, `GOLDEN = __GOLDEN__` placeholder). Build with `python part1_rag/member_pramod/src/build_p1_notebook.py part1_rag/member_pramod/src/p1_rag_cells.py part1_rag/member_pramod/notebooks/p1_rag.ipynb tests/p1_golden_pramod.json`
   - `python part2_diffusion/member_pramod/src/build_p2_01_notebook.py part2_diffusion/member_pramod/notebooks/p2_01_data_and_training.ipynb`
   - `python part2_diffusion/member_pramod/src/build_p2_02_notebook.py part2_diffusion/member_pramod/notebooks/p2_02_generate_and_evaluate.ipynb tests/p2_prompts_pramod.json part2_diffusion/member_pramod/notebooks/p2_01_data_and_training.ipynb`
   - `python part3_agents/member_pramod/src/build_p3_notebook.py part3_agents/member_pramod/notebooks/p3_agents.ipynb tests/p3_scenarios_pramod.json part2_diffusion/member_pramod/notebooks/p2_01_data_and_training.ipynb`
@@ -140,7 +140,12 @@ Judgement call: G17 (refusing a permanent knowledge-base change) expects status 
 | Experiment | v8 answers with the "Working:" text removed scored **0.680**, lower than 0.701, so the Working text helps (it supplies facts). **Keep it.** |
 | v9 | **Rule 1**, deterministic statuses: `PERMANENT_RE` (requests to change, update or save the knowledge base or documents) gives `session_override` plus a read-only refusal sentence; `USER_VALUE_RE` (assume / suppose / for this chat / new data point) gives `session_override` unless the model said `not_found`. The prompt says not_found is only for when no evidence is relevant, since DOC1 covers general economics questions. Checked on all public and golden questions: the rules match only questions 35, 37 and 39 and golden G15, G17 and G18. |
 
-Kaggle team: Pramod has joined Team 17 (`manavpatel2025, pramodsatyad`). Leaderboard submissions from Pramod: v6 0.728, v8 0.701, v8 without Working 0.680. The team's best remains 0.828 (Manav's system).
+| v9 leaderboard | 0.721 |
+| v10 (commit `e13f0a4`-era redesign) | **Redesign** (plan in `~/.claude/plans/serialized-noodling-backus.md`): cell-level table parsing into a fact store, a code-only reconciliation engine (revised / outturn replaces forecast / conflict with trust preference), premise check, follow-up rewriting, structured JSON answers with fact verification, code arithmetic and rule-based status and citations. Golden: final 21/25 (baseline 16), status 25/25, Recall@5 1.0, citation accuracy 0.686. |
+| v11 (commit `7a71f0c`) | Fixes for advanced-economy mapping, document restriction only for "Document N reports" phrasing, `not_found` for years after 2013, revision-only same-page table citations, shorter evidence. Golden: **final 22/25** (baseline 16), status 25/25, Recall@5 1.0, **citation accuracy 0.814**, 35 min for 40 questions. Remaining misses G10, G18, G19. Public answers showed 5 bare-arithmetic answers (JSON cut off before "answer") and 2 single-document "conflicts". |
+| v12 (commit `45418ad`) | Answer-first JSON, truncation-tolerant parser, plain-text retry when no sentence comes back, model-only conflict needs two documents, negative-rate example, 420-token budget. Running. |
+
+Kaggle team: Pramod has joined Team 17 (`manavpatel2025, pramodsatyad`). Leaderboard submissions from Pramod: v6 0.728, v8 0.701, v8 without Working 0.680, v9 0.721. **Ask Pramod before every leaderboard submission.** The team's best remains 0.828 (Manav's system).
 
 The figure-cache dataset `pramodsatyad/data266-p1-figcache` now holds the **full, untruncated** v4 transcriptions, so it is safe for development runs.
 
@@ -168,23 +173,20 @@ The figure-cache dataset `pramodsatyad/data266-p1-figcache` now holds the **full
 
 ### Part 2 (`part2_diffusion/member_pramod/notebooks/`)
 
-- `p2_01_data_and_training.ipynb`:
-  - Data cleaning and split, both LoRA runs, the training table, and adapters saved to `adapters/`, with Hugging Face upload if `HF_TOKEN` is set.
-  - On Colab everything goes to Google Drive under `MyDrive/data266_p2/` (runs, adapters, `p2_data`, outputs), and training resumes from checkpoints.
-  - **Not yet run on a GPU.** Pramod was asked to run it on Colab (T4). The earlier Kaggle training notebook was deleted, because it blocked the single GPU slot.
+- **Training is done** (Colab T4). The committed `p2_01_data_and_training.ipynb` is the executed Colab notebook (both LoRA runs, measured training table).
+  - Colab fixes in the builder: `%pip uninstall -y torchao`, and `--mixed_precision=fp16` passed to the diffusers script itself.
+  - Adapters on Hugging Face (public): `pramodsatyad/data266-p2-pokemon-lora_r4`, `pramodsatyad/data266-p2-pokemon-lora_r32`.
+  - Private dataset `pramodsatyad/data266-p2-pokemon-splits`: `train/`, `test/` (with `metadata.jsonl`) and `outputs/p2_training_runs.csv`.
 - `p2_02_generate_and_evaluate.ipynb`:
-  - 3 models × 20 prompts × 2 seeds, an 8-prompt grid, KID (in-domain vs test, subset 20), CLIP score (ViT-L/14), LPIPS diversity, NSFW counts, failure modes and the memorization top-3.
-  - Also writes 25 blinded pairs plus a key for human rating (at least 3 raters, one from outside the team; ratings go in `human_ratings.csv`) and uploads the images to a Hugging Face dataset.
-  - `FINAL` is the run with the lowest in-domain KID.
-  - **Not yet run.**
-- Still to do after the runs:
-  - Upload both adapters to Hugging Face (`pramodsatyad/data266-p2-pokemon-lora_r4` and `..._r32`).
-  - Write the model card: base model, data, settings, results, limitations, non-commercial licence.
+  - 3 models × 20 prompts × 2 seeds, an 8-prompt grid, KID, CLIP score (ViT-L/14), LPIPS diversity, NSFW counts, failure modes, memorization top-3, 25 blinded pairs plus key for human rating (≥3 raters, one external; `human_ratings.csv`), model card pushed as `README.md` to the final adapter repo.
+  - If the adapters are not on this account's Drive, it downloads both adapters, the split and the training table from Hugging Face with `HF_TOKEN` (tested: 94 s, validation cell passes), so it runs on any Colab account.
+  - **Being run by Pramod on a second Colab account.** Commit the executed notebook afterwards.
+- Codex's CPU tests: `python part2_diffusion/member_pramod/src/test_part2_notebooks.py` (9 tests; the builder check ignores the `STAMP` line).
 
 ### Part 3 (`part3_agents/member_pramod/notebooks/p3_agents.ipynb`)
 
-- Built but **not yet run.**
-  - Loads the LoRA from Hugging Face if the `LORA_REPO` environment variable is set; otherwise from attached Kaggle input.
+- Built but **not yet run.** Run it on Colab (T4) after the Part 2 evaluation.
+  - Loads the LoRA from Hugging Face (`LORA_REPO`, default `pramodsatyad/data266-p2-pokemon-lora_r32`), so it works on any account.
   - Contains the 5 agents, the revise loop (at most 2 revisions), JSON traces and the error handling.
   - Builds the test images from their recipes, runs the 15 scenarios with and without the critique loop and the 10 red-team cases, produces the results table, and builds the Gradio app (`share=True`).
 - Needs the Part 2 adapter first.
