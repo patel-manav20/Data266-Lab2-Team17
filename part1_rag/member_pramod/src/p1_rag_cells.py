@@ -825,7 +825,7 @@ Evidence: [1] (DOCX p2, trust high) Rainfall is measured with gauges and reporte
 Question: What was the snowfall in Kalia in 2019?
 {{"facts": [], "check": "not_in_documents", "expression": "", "answer": "The documents do not report snowfall for Kalia."}}"""
 
-REWRITE_SYSTEM = """Rewrite the user's latest message as one standalone question, using the earlier turns of this conversation to resolve words like "it", "that year", "its", "and in 2013?". Keep every number and assumption the user gives. Do not answer. Reply with the question only."""
+REWRITE_SYSTEM = """Rewrite the user's latest message as one standalone question, using the earlier turns of this conversation to resolve words like "it", "that year", "its", "what about the year after?". Keep every number and assumption the user gives. Do not answer. Reply with the question only."""
 
 def item_where(i):
     it = ITEM[i]
