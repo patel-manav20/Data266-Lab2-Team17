@@ -798,37 +798,37 @@ Policy:
 7. A "Value check" line, when present, was computed from the tables and text by code: trust it.
 
 Reply with JSON only, in this form:
-{{"answer": "<2 to 4 sentences: the direct answer first, every value with its year and document; write {{result}} where the computed number goes>",
+{{"facts": [{{"src": <evidence number>, "value": "<number or short phrase as written in the evidence>", "about": "<what it is, with the year, under 10 words>"}}],
  "check": "direct | forecast_replaced | revised | conflict | false_premise | not_in_documents | user_value | refuse_change",
  "expression": "<arithmetic using only numbers, e.g. 11.4 - 9.9, or empty>",
- "facts": [{{"src": <evidence number>, "value": "<number or short phrase as written in the evidence>", "about": "<what it is, with the year, under 10 words>"}}]}}
-List at most 4 facts. A fall, decline or contraction of X% is a growth rate of -X, and a difference between two rates is in percentage points.
+ "answer": "<2 to 4 sentences: the direct answer first, every value with its year and document; write {{result}} where the computed number goes>"}}
+List at most 4 facts, then decide the check, then write the answer from those facts. A fall, decline or contraction of X% is a growth rate of -X, and a difference between two rates is in percentage points.
 
 Examples (invented data, for format only):
 
 Evidence: [1] (DOCX Table 1, trust high) Norland rainfall: 2019=410; 2020=455 (forecast) [2] (DOCY Table 2, trust high) Norland rainfall: 2020=470
 Question: How much rain fell in Norland in 2020?
-{{"answer": "Norland received 470 mm in 2020 (DOCY Table 2), the outturn that replaces the forecast of 455 mm (DOCX Table 1).", "check": "forecast_replaced", "expression": "", "facts": [{{"src": 2, "value": "470", "about": "Norland rainfall 2020 outturn"}}, {{"src": 1, "value": "455", "about": "Norland rainfall 2020 forecast"}}]}}
+{{"facts": [{{"src": 2, "value": "470", "about": "Norland rainfall 2020 outturn"}}, {{"src": 1, "value": "455", "about": "Norland rainfall 2020 forecast"}}], "check": "forecast_replaced", "expression": "", "answer": "Norland received 470 mm in 2020 (DOCY Table 2), the outturn that replaces the forecast of 455 mm (DOCX Table 1)."}}
 
 Evidence: [1] (DOCX Table 1, trust high) Vesta rainfall: 2019=380 [2] (DOCZ p4, trust medium) Vesta had 395 mm of rain in 2019.
 Question: What was Vesta's rainfall in 2019?
-{{"answer": "The documents disagree: DOCX Table 1 (high trust) reports 380 mm and DOCZ p4 (medium trust) reports 395 mm for 2019; the higher-trust 380 mm is preferred.", "check": "conflict", "expression": "", "facts": [{{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}, {{"src": 2, "value": "395", "about": "Vesta rainfall 2019"}}]}}
+{{"facts": [{{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}, {{"src": 2, "value": "395", "about": "Vesta rainfall 2019"}}], "check": "conflict", "expression": "", "answer": "The documents disagree: DOCX Table 1 (high trust) reports 380 mm and DOCZ p4 (medium trust) reports 395 mm for 2019; the higher-trust 380 mm is preferred."}}
 
 Evidence: [1] (DOCX Table 1, trust high) Norland rainfall: 2019=410
 Question: For this chat, assume Norland had 500 mm in 2019. How much more is that than the documents say?
-{{"answer": "Under your assumption of 500 mm, Norland's 2019 rainfall would be {{result}} mm above the 410 mm the documents report (DOCX Table 1). The documents are unchanged.", "check": "user_value", "expression": "500 - 410", "facts": [{{"src": 1, "value": "410", "about": "Norland rainfall 2019"}}]}}
+{{"facts": [{{"src": 1, "value": "410", "about": "Norland rainfall 2019"}}], "check": "user_value", "expression": "500 - 410", "answer": "Under your assumption of 500 mm, Norland's 2019 rainfall would be {{result}} mm above the 410 mm the documents report (DOCX Table 1). The documents are unchanged."}}
 
 Evidence: [1] (DOCX Table 1, trust high) Harvest growth, percent: Norland 2019=-1.0; Vesta 2019=-2.5
 Question: Suppose Norland's harvest fell by 4.0% in 2019. What would its gap to Vesta be?
-{{"answer": "Under your assumption Norland's harvest growth would be -4.0% in 2019, {{result}} percentage points below Vesta's -2.5% (DOCX Table 1); the documents report -1.0% for Norland. The documents are unchanged.", "check": "user_value", "expression": "-2.5 - (-4.0)", "facts": [{{"src": 1, "value": "-2.5", "about": "Vesta harvest growth 2019"}}, {{"src": 1, "value": "-1.0", "about": "Norland harvest growth 2019"}}]}}
+{{"facts": [{{"src": 1, "value": "-2.5", "about": "Vesta harvest growth 2019"}}, {{"src": 1, "value": "-1.0", "about": "Norland harvest growth 2019"}}], "check": "user_value", "expression": "-2.5 - (-4.0)", "answer": "Under your assumption Norland's harvest growth would be -4.0% in 2019, {{result}} percentage points below Vesta's -2.5% (DOCX Table 1); the documents report -1.0% for Norland. The documents are unchanged."}}
 
 Evidence: [1] (DOCX Table 1, trust high) Vesta rainfall: 2018=350; 2019=380
 Question: Why did Vesta's rainfall fall in 2019?
-{{"answer": "False premise: Vesta's rainfall did not fall in 2019; it rose from 350 mm in 2018 to 380 mm in 2019, an increase of {{result}} mm (DOCX Table 1).", "check": "false_premise", "expression": "380 - 350", "facts": [{{"src": 1, "value": "350", "about": "Vesta rainfall 2018"}}, {{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}]}}
+{{"facts": [{{"src": 1, "value": "350", "about": "Vesta rainfall 2018"}}, {{"src": 1, "value": "380", "about": "Vesta rainfall 2019"}}], "check": "false_premise", "expression": "380 - 350", "answer": "False premise: Vesta's rainfall did not fall in 2019; it rose from 350 mm in 2018 to 380 mm in 2019, an increase of {{result}} mm (DOCX Table 1)."}}
 
 Evidence: [1] (DOCX p2, trust high) Rainfall is measured with gauges and reported in millimetres.
 Question: What was the snowfall in Kalia in 2019?
-{{"answer": "The documents do not report snowfall for Kalia.", "check": "not_in_documents", "expression": "", "facts": []}}"""
+{{"facts": [], "check": "not_in_documents", "expression": "", "answer": "The documents do not report snowfall for Kalia."}}"""
 
 PLAIN_SYSTEM = SYSTEM.split("Reply with JSON only")[0] + """Answer in 2 to 4 plain sentences (no JSON): the direct answer first, then every relevant value with its year and its document and table, figure or page."""
 
@@ -1007,7 +1007,7 @@ class Conversation:
         qline = f"Question: {question}" + (f"\nStandalone form: {rq}" if rq != question else "")
         raw = None
         try:
-            raw = llm_call(SYSTEM, head + f"Evidence:\n{evidence_block(ids, 2000, 8000)}\n\n{extra}\n\n{qline}", 420)
+            raw = llm_call(SYSTEM, head + f"Evidence:\n{evidence_block(ids, 2000, 8000)}\n\n{extra}\n\n{qline}", 450)
         except torch.OutOfMemoryError:
             pass
         if raw is None:
