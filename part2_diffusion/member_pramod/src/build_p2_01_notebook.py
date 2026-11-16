@@ -74,7 +74,7 @@ if ON_COLAB:
 else:
     KEEP = WORK
 ROOT = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
-OUT = f"{ROOT}/part2_diffusion/member_pramod/outputs" if ROOT else f"{KEEP}/outputs"
+OUT = f"{KEEP}/outputs" if ON_COLAB or not ROOT else f"{ROOT}/part2_diffusion/member_pramod/outputs"
 RUNS_DIR = f"{KEEP}/runs"
 DATA = f"{WORK}/p2_data"
 os.makedirs(OUT, exist_ok=True)
@@ -91,7 +91,7 @@ md("""## 2.1 Data preparation
 
 An image is **corrupted** if it fails to decode, is smaller than 64 px, or has an empty caption.
 An image is a **duplicate** if its pixels match an earlier image exactly, or its perceptual hash (pHash) matches one."""),
-code("""import io, json, hashlib, collections, imagehash, pandas as pd
+code("""import io, json, hashlib, collections, shutil, imagehash, pandas as pd
 from datasets import load_dataset, Image as HFImage
 from PIL import Image
 
@@ -118,7 +118,10 @@ for i, r in enumerate(raw):
     md5s.add(md5); phashes.add(ph)
     records.append({"src_idx": i, "text": r["text"].strip(), "img": img})
 
-print({"loaded": len(raw), "kept": len(records), **{k: removed[k] for k in ["corrupted", "exact_duplicate", "near_duplicate"]}})"""),
+data_summary = {"dataset": DATASET, "loaded": len(raw), "kept": len(records), **{k: removed[k] for k in ["corrupted", "exact_duplicate", "near_duplicate"]}}
+if len(records) < 500:
+    raise ValueError("The cleaned dataset must contain at least 500 images.")
+print(data_summary)"""),
 
 md("Split 90% train / 10% test with seed 266, then resize the short side to 512 and center-crop to 512×512."),
 code("""rng = np.random.default_rng(SEED)
@@ -135,6 +138,10 @@ def to_res(img):
 for split, ids in split_idx.items():
     d = f"{DATA}/{split}"
     os.makedirs(d, exist_ok=True)
+    expected = {f"{records[k]['src_idx']:05d}.png" for k in ids}
+    for name in os.listdir(d):
+        if name.endswith(".png") and name not in expected:
+            os.remove(f"{d}/{name}")
     with open(f"{d}/metadata.jsonl", "w") as f:
         for k in ids:
             name = f"{records[k]['src_idx']:05d}.png"
@@ -142,8 +149,19 @@ for split, ids in split_idx.items():
             f.write(json.dumps({"file_name": name, "text": records[k]["text"]}) + "\\n")
 
 test_caps = [{"file_name": f"{records[k]['src_idx']:05d}.png", "text": records[k]["text"]} for k in split_idx["test"]]
-json.dump(test_caps, open(f"{OUT}/p2_test_captions.json", "w"), indent=1)
-print({s: len(v) for s, v in split_idx.items()})"""),
+with open(f"{OUT}/p2_test_captions.json", "w") as f:
+    json.dump(test_caps, f, indent=1)
+data_summary.update({s: len(v) for s, v in split_idx.items()})
+data_summary.update(seed=SEED, resolution=RES)
+with open(f"{OUT}/p2_data_summary.json", "w") as f:
+    json.dump(data_summary, f, indent=1)
+if KEEP != WORK:
+    for split in split_idx:
+        target = f"{KEEP}/p2_data/{split}"
+        if os.path.isdir(target):
+            shutil.rmtree(target)
+        shutil.copytree(f"{DATA}/{split}", target)
+print(data_summary)"""),
 
 md("### Dataset description"),
 code("""sizes = collections.Counter(f"{r['img'].width}x{r['img'].height}" for r in records)
@@ -175,7 +193,7 @@ else:
 md("""## 2.2 Fine-tuning
 
 Both runs use the diffusers example script `train_text_to_image_lora.py` (same version as the installed diffusers), the same data, the same 1500 optimizer steps and the same settings. The only difference is the LoRA rank (4 vs 32).
-Peak GPU memory is sampled from `nvidia-smi` every 2 s while training runs, minus the memory in use before the run starts.
+Peak total GPU memory is sampled from `nvidia-smi` every 2 s while training runs.
 Checkpoints are saved every 250 steps (on Colab they go to Google Drive). Training time is written to disk every minute. If a session dies, run all cells again: training resumes from the last checkpoint and the time adds to the total."""),
 code("""import threading, time, urllib.request
 from safetensors.torch import load_file
@@ -198,7 +216,13 @@ def train(name, rank):
     out = f"{RUNS_DIR}/{name}"
     os.makedirs(out, exist_ok=True)
     timing_file = f"{out}/timing.json"
-    timing = json.load(open(timing_file)) if os.path.exists(timing_file) else {"seconds": 0, "peak_mb": 0}
+    weights = f"{out}/pytorch_lora_weights.safetensors"
+    if os.path.exists(weights) and not os.path.exists(timing_file):
+        raise RuntimeError(f"{name}: weights exist but timing.json is missing; restore the measured training log before reporting results.")
+    timing = {"seconds": 0, "peak_mb": 0}
+    if os.path.exists(timing_file):
+        with open(timing_file) as f:
+            timing = json.load(f)
     if not os.path.exists(f"{out}/pytorch_lora_weights.safetensors"):
         cmd = ["accelerate", "launch", "--num_processes=1", "--mixed_precision=fp16", SCRIPT,
                f"--pretrained_model_name_or_path={BASE_MODEL}", f"--train_data_dir={DATA}/train",
@@ -207,26 +231,31 @@ def train(name, rank):
                f"--max_train_steps={STEPS}", f"--learning_rate={LR}", "--lr_scheduler=cosine", "--lr_warmup_steps=0",
                f"--rank={rank}", f"--seed={SEED}", f"--output_dir={out}", "--checkpointing_steps=250",
                "--checkpoints_total_limit=2", "--resume_from_checkpoint=latest", "--dataloader_num_workers=2"]
-        base, peak, done = gpu_mem_mb(), [0], threading.Event()
+        peak, done = [gpu_mem_mb()], threading.Event()
         log = f"{out}/train.log"
         t0 = time.time()
         def save_timing():
-            json.dump({"seconds": timing["seconds"] + time.time() - t0, "peak_mb": max(timing["peak_mb"], peak[0])}, open(timing_file, "w"))
+            with open(timing_file + ".tmp", "w") as f:
+                json.dump({"seconds": timing["seconds"] + time.time() - t0, "peak_mb": max(timing["peak_mb"], peak[0])}, f)
+            os.replace(timing_file + ".tmp", timing_file)
         def watch():
             last_print = last_save = time.time()
             while not done.is_set():
-                peak[0] = max(peak[0], gpu_mem_mb() - base)
+                peak[0] = max(peak[0], gpu_mem_mb())
                 if time.time() - last_save > 60:
                     save_timing(); last_save = time.time()
                 if time.time() - last_print > 300:
                     print(name, last_progress(log), flush=True); last_print = time.time()
-                time.sleep(2)
+                done.wait(2)
         with open(log, "a") as f:
             th = threading.Thread(target=watch, daemon=True); th.start()
-            p = subprocess.run(cmd, stdout=f, stderr=subprocess.STDOUT)
-        done.set(); th.join()
-        save_timing()
-        timing = json.load(open(timing_file))
+            try:
+                p = subprocess.run(cmd, stdout=f, stderr=subprocess.STDOUT)
+            finally:
+                done.set(); th.join()
+                save_timing()
+        with open(timing_file) as f:
+            timing = json.load(f)
         if p.returncode:
             print("".join(open(log).readlines()[-40:]))
             raise RuntimeError(f"{name} failed")
@@ -237,8 +266,14 @@ def train(name, rank):
             "gpu_hours": round(timing["seconds"] / 3600, 3), "gpu": torch.cuda.get_device_name(0)}
 
 rows = []
+os.makedirs(f"{KEEP}/adapters", exist_ok=True)
 for name, rank in RUNS.items():
     rows.append(train(name, rank))
+    shutil.copy(f"{RUNS_DIR}/{name}/pytorch_lora_weights.safetensors", f"{KEEP}/adapters/{name}.safetensors")
+    pd.DataFrame(rows).to_csv(f"{OUT}/p2_training_runs.csv", index=False)
+    if os.path.abspath(OUT) != os.path.abspath(f"{KEEP}/outputs"):
+        os.makedirs(f"{KEEP}/outputs", exist_ok=True)
+        shutil.copy(f"{OUT}/p2_training_runs.csv", f"{KEEP}/outputs/p2_training_runs.csv")
     print(rows[-1], flush=True)
 runs_df = pd.DataFrame(rows)
 runs_df.to_csv(f"{OUT}/p2_training_runs.csv", index=False)
@@ -248,8 +283,6 @@ md("## Save both LoRA adapters and push them to Hugging Face"),
 code("""import shutil
 links = {}
 os.makedirs(f"{KEEP}/adapters", exist_ok=True)
-if KEEP != WORK:
-    shutil.copytree(DATA, f"{KEEP}/p2_data", dirs_exist_ok=True)
 for name in RUNS:
     shutil.copy(f"{RUNS_DIR}/{name}/pytorch_lora_weights.safetensors", f"{KEEP}/adapters/{name}.safetensors")
     if not api:
