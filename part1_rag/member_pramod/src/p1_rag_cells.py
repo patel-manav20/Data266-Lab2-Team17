@@ -1060,6 +1060,18 @@ class Conversation:
                 plain = ""
             if len(plain.split()) >= 6 and not plain.lstrip().startswith("{"):
                 answer = plain
+        expr = str(j.get("expression", "") or "")
+        if eng["fired"] and expr and status in ("answered", "conflict"):
+            # policy 2: a calculation on a variable the documents disagree about uses the preferred (higher-trust) value
+            model_val = safe_eval(expr)
+            for g in eng["groups"]:
+                if g["verdict"] == "conflict" and g["value"] is not None:
+                    for alt in {f["value"] for f in g["sources"] if abs(f["value"] - g["value"]) > 0.049}:
+                        expr = re.sub(r"(?<![\d.])" + re.escape(fmt(alt)) + r"(?![\d])", fmt(g["value"]), expr)
+            new_val = safe_eval(expr)
+            if model_val is not None and new_val is not None and new_val != model_val:
+                answer = re.sub(r"(?<![\d.])" + re.escape(fmt(abs(model_val))) + r"(?![\d])", fmt(abs(new_val)), answer)
+            j["expression"] = expr
         res_val = safe_eval(j.get("expression", ""))
         if res_val is not None:
             if "{result}" in answer:
