@@ -13,6 +13,7 @@ Inputs: the processed train/test split and the two LoRA adapters produced by `p2
 Same sampler settings for every model: DPM-Solver++ multistep, 30 steps, guidance 7.5, 512×512, fp16, seeds 0 and 1. The built-in Stable Diffusion safety checker is the NSFW filter: flagged outputs are blacked out and counted."""),
 code(setup),
 code("""%pip install -q diffusers peft torchmetrics torch-fidelity lpips accelerate
+%pip uninstall -y -q torchao
 import importlib.metadata as md
 print({p: md.version(p) for p in ["torch", "diffusers", "transformers", "peft", "torchmetrics", "torch-fidelity", "lpips"]})"""),
 

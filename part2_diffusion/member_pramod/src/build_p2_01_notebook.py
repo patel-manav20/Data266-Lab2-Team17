@@ -54,6 +54,7 @@ print({"commit": commit, "python": sys.version.split()[0], "torch": torch.__vers
        "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu", "seed": SEED})"""),
 
 code("""%pip install -q diffusers peft datasets imagehash tensorboard accelerate
+%pip uninstall -y -q torchao
 import importlib.metadata as md
 print({p: md.version(p) for p in ["torch", "diffusers", "transformers", "accelerate", "peft", "datasets", "huggingface_hub", "imagehash"]})"""),
 

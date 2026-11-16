@@ -23,6 +23,7 @@ Caption and question requests stop after Vision Understanding. Unsafe requests a
 | Critique score | `openai/clip-vit-large-patch14` cosine similarity; output safety = Stable Diffusion safety checker + VLM check |"""),
 code(setup),
 code("""%pip install -q diffusers peft bitsandbytes qwen-vl-utils gradio accelerate
+%pip uninstall -y -q torchao
 import importlib.metadata as md
 print({p: md.version(p) for p in ["torch", "diffusers", "transformers", "accelerate", "peft", "bitsandbytes", "qwen-vl-utils", "gradio"]})"""),
 
