@@ -254,6 +254,38 @@ def compact(t):
     t = re.sub(r"[ \t]*\n\s*", "\n", re.sub(r"[*#`]+", "", t))
     return re.sub(r"x\d+=\s*([^,;=\n]+?),\s*y\d+=", r"\1=", t).strip()
 
+YR = r"(?:19|20)\d\d"
+NUMV = re.compile(r"(?:<?x\d+>?\s*=\s*)?~?(-?\d+(?:\.\d+)?)")
+
+def pair_years(t, title):
+    """Give bare chart values their years when their count matches the year axis (an axis line, or the year range in the title)."""
+    lines = t.split("\n")
+    axis, axis_i, axis_name = None, None, ""
+    for i, l in enumerate(lines):
+        head, _, body = l.rpartition(":") if ":" in l else ("", "", l)
+        ys = re.findall(rf"(?<!\d)({YR})(?!\d)", body)
+        if len(ys) >= 4 and len(re.findall(r"-?\d+(?:\.\d+)?", re.sub(r"x\d+", "", body))) == len(ys):
+            axis, axis_i, axis_name = ys, i, head.strip()
+    if not axis:
+        m = re.search(rf"({YR})\s*[-\u2013]\s*({YR})", title)
+        if m and int(m.group(2)) > int(m.group(1)):
+            axis = [str(y) for y in range(int(m.group(1)), int(m.group(2)) + 1)]
+    if not axis:
+        return t
+    out = []
+    for i, l in enumerate(lines):
+        if i == axis_i:
+            continue
+        name, sep, body = l.partition(":")
+        if sep and not re.search(rf"{YR}\s*=|=\s*~?{YR}", body) and re.fullmatch(r"[\s,;<>x\d=~.\-]+", body):
+            vals = NUMV.findall(body)
+            if len(vals) == len(axis):
+                label = f"{axis_name} ({name.strip()})" if axis_name and axis_name.lower() not in name.lower() else name.strip()
+                out.append(f"{label}: " + "; ".join(f"{y}={v}" for y, v in zip(axis, vals)))
+                continue
+        out.append(l)
+    return "\n".join(out)
+
 USE_FIG_CACHE = False
 cache_files = glob.glob("/kaggle/input/**/fig_cache.json", recursive=True)
 fig_cache = json.load(open(cache_files[0])) if USE_FIG_CACHE and cache_files else {}
@@ -262,12 +294,12 @@ for key, o in objects.items():
     if o["kind"] != "figure" or o["trust_level"] == "low":
         continue
     if f"{o['doc_id']}|{o['figure_id']}" in fig_cache:
-        o["content"] = compact(fig_cache[f"{o['doc_id']}|{o['figure_id']}"])
+        o["content"] = pair_years(compact(fig_cache[f"{o['doc_id']}|{o['figure_id']}"]), o["title"])
         continue
     where = "is a page that contains" if o.get("full_page") else "is"
     msg = [{"role": "user", "content": [{"type": "image", "image": o["image"]},
             {"type": "text", "text": FIG_PROMPT.format(where=where, label=o["figure_id"], doc_id=o["doc_id"], title=o["title"][:200])}]}]
-    o["content"] = compact(generate(msg, 800))
+    o["content"] = pair_years(compact(generate(msg, 800)), o["title"])
     print(f"--- {o['doc_id']} {o['figure_id']} ({time.time() - t0:.0f}s)\n{o['content']}\n", flush=True)
 FIG_SECONDS = time.time() - t0
 json.dump({f"{d}|{l}": o["content"] for (d, l), o in objects.items() if o["kind"] == "figure" and o["content"]}, open(f"{OUT}/fig_cache.json", "w"), indent=1)
@@ -601,6 +633,7 @@ def judge(fs):
     srcs = list({fact_cite(f): f for f in best}.values())
     return "consistent", srcs[:2], f"{fmt(best[0]['value'])} (" + ", ".join(fact_where(f) for f in srcs[:2]) + ")"
 
+CHANGE_IN = re.compile(r"\bchange in (?:the )?(?:[\w.-]+ ){0,2}(?:unemployment|jobless|inflation|deficit|debt|balance|rate)\b", re.I)
 GROWTH_VERB = re.compile(r"\b(chang\w*|fell|fall\w*|rose|ris(e|es|ing)|declin\w*|contract\w*|expan\w*|shr[aiu]nk\w*|increas\w*|decreas\w*|grew|grow\w*)\b", re.I)
 
 def reconcile(question):
@@ -608,6 +641,8 @@ def reconcile(question):
     years = set(YEAR.findall(question))
     if not years:
         return out
+    # "the change in unemployment in 2012" needs the 2011 level too; those values are context only and never set the verdict
+    ctx_years = {str(int(y) - 1) for y in years} - years if len(years) == 1 and CHANGE_IN.search(question) else set()
     Q = key_tokens(question) | ({"grow"} if GROWTH_VERB.search(question) else set())
     m = DOC_NAMED.search(question)
     named_doc = (m.group(1) or m.group(2)) if m else None
@@ -641,12 +676,12 @@ def reconcile(question):
                 if f["var_k"] != v:
                     continue
                 py = YEAR.findall(f["period"])
-                if not py or not set(py) <= years or (len(py) == 1 and "-" in f["period"]):
+                if not py or not set(py) <= years | ctx_years or (len(py) == 1 and "-" in f["period"]):
                     continue
                 groups.setdefault((e, gv, f["period"]), []).append(f)
     if not groups:
         return out
-    ranked = sorted(groups.items(), key=lambda kv: -(len(kv[0][0] & Q) + len(kv[0][1] & Q)))[:4]
+    ranked = sorted(groups.items(), key=lambda kv: (kv[0][2] in ctx_years, -(len(kv[0][0] & Q) + len(kv[0][1] & Q))))[:4 + 2 * bool(ctx_years)]
     for (e, v, period), fs in ranked:
         seen, uniq = set(), []
         for f in fs:
@@ -656,9 +691,13 @@ def reconcile(question):
         verdict, srcs, line = judge(uniq)
         vname = short_name(v) if v in NAME else min((short_name(f["var_k"]) for f in uniq), key=len)
         out["groups"].append({"entity": short_name(e), "variable": vname, "var_k": v, "period": period, "verdict": verdict, "line": line, "sources": srcs,
-                              "value": srcs[0]["value"] if srcs else None})
+                              "value": srcs[0]["value"] if srcs else None, "context": period in ctx_years})
+    asked = [g for g in out["groups"] if not g["context"]]
+    if not asked:
+        return {"fired": False, "verdict": None, "groups": [], "sources": [], "summary": ""}
+    out["groups"] = asked + [g for g in out["groups"] if g["context"]]
     out["fired"] = True
-    out["verdict"] = max((g["verdict"] for g in out["groups"]), key=ORDER.index)
+    out["verdict"] = max((g["verdict"] for g in asked), key=ORDER.index)
     out["sources"] = list(dict.fromkeys(fact_cite(f) for g in out["groups"] for f in g["sources"]))
     out["summary"] = " ".join(f"{g['variable'] if g['variable'].lower().startswith(g['entity'].lower()) else g['entity'] + ' ' + g['variable'].lower()} {g['period']}: {g['line']}." for g in out["groups"])
     return out
@@ -671,7 +710,7 @@ def premise_conflict(question, eng):
     if not eng["fired"] or not PREMISE_FRAME.search(question):
         return None
     for g in eng["groups"]:
-        if g["value"] is None or not ({"grow", "outp"} & set(g["var_k"])):
+        if g.get("context") or g["value"] is None or not ({"grow", "outp"} & set(g["var_k"])):
             continue
         if DIR_UP.search(question) and not DIR_DOWN.search(question) and g["value"] < 0:
             return g
@@ -802,7 +841,7 @@ Reply with JSON only, in this form:
  "check": "direct | forecast_replaced | revised | conflict | false_premise | not_in_documents | user_value | refuse_change",
  "expression": "<arithmetic using only numbers, e.g. 11.4 - 9.9, or empty>",
  "answer": "<2 to 4 sentences: the direct answer first, every value with its year and document; write {{result}} where the computed number goes>"}}
-List at most 4 facts, then decide the check, then write the answer from those facts. A fall, decline or contraction of X% is a growth rate of -X, and a difference between two rates is in percentage points.
+List at most 6 facts, then decide the check, then write the answer from those facts. A fall, decline or contraction of X% is a growth rate of -X, and a difference between two rates is in percentage points.
 
 Examples (invented data, for format only):
 
@@ -821,6 +860,10 @@ Question: For this chat, assume Norland had 500 mm in 2019. How much more is tha
 Evidence: [1] (DOCX Table 1, trust high) Harvest growth, percent: Norland 2019=-1.0; Vesta 2019=-2.5
 Question: Suppose Norland's harvest fell by 4.0% in 2019. What would its gap to Vesta be?
 {{"facts": [{{"src": 1, "value": "-2.5", "about": "Vesta harvest growth 2019"}}, {{"src": 1, "value": "-1.0", "about": "Norland harvest growth 2019"}}], "check": "user_value", "expression": "-2.5 - (-4.0)", "answer": "Under your assumption Norland's harvest growth would be -4.0% in 2019, {{result}} percentage points below Vesta's -2.5% (DOCX Table 1); the documents report -1.0% for Norland. The documents are unchanged."}}
+
+Evidence: [1] (DOCX p3, trust high) Each 10 mm of rainfall above 400 mm raises the harvest index by about 2 points; at 400 mm the index stays flat. [2] (DOCY Table 2, trust high) Norland rainfall: 2020=450; Norland harvest index: 2019=10.0; 2020=19.0
+Question: Apply the DOCX rule to Norland's 2020 rainfall. What harvest change does it imply for 2020, and how does that compare with the real change?
+{{"facts": [{{"src": 1, "value": "2 points per 10 mm above 400 mm", "about": "rainfall-harvest rule"}}, {{"src": 2, "value": "450", "about": "Norland rainfall 2020"}}, {{"src": 2, "value": "10.0", "about": "Norland harvest index 2019"}}, {{"src": 2, "value": "19.0", "about": "Norland harvest index 2020"}}], "check": "direct", "expression": "2 * (450 - 400) / 10", "answer": "The DOCX rule (DOCX p3) implies a rise of {{result}} points in 2020, since 2020 rainfall was 450 mm (DOCY Table 2). The index actually rose from 10.0 in 2019 to 19.0 in 2020, 9.0 points, slightly less than the rule implies."}}
 
 Evidence: [1] (DOCX Table 1, trust high) Vesta rainfall: 2018=350; 2019=380
 Question: Why did Vesta's rainfall fall in 2019?
@@ -941,6 +984,17 @@ def build_refs(used_ids, status, question):
             cites.append(f"{it['doc_id']}:p{it['page']}")
     return list(dict.fromkeys(cites)), list(dict.fromkeys(figs))
 
+OBJ_PAGE = {f"{o['doc_id']}:{o['figure_id']}": o["page"] for o in objects.values() if o.get("figure_id")}
+
+def add_pages(cites):
+    # the competition's citation format names a table together with its page (e.g. DOC1:Table 1-1,DOC1:p1), as figures already are
+    out = []
+    for c in cites:
+        out.append(c)
+        if ":Table " in c and c in OBJ_PAGE:
+            out.append(f"{c.split(':')[0]}:p{OBJ_PAGE[c]}")
+    return list(dict.fromkeys(out))
+
 def engine_refs(eng):
     cites = []
     for c in eng["sources"]:
@@ -952,6 +1006,24 @@ def engine_refs(eng):
     cites = list(dict.fromkeys(cites))
     figs = [c.split(":", 1)[1] for c in cites if c.split(":", 1)[1] in KNOWN_LABELS]
     return cites, list(dict.fromkeys(figs))
+
+COMPARATIVE = r"(?: percentage points?| points?| pp)?\s+(?:worse|lower|less|below|smaller|weaker|slower|higher|more|above|larger|greater|bigger|better|stronger|faster)\b"
+FORECAST_ERROR = re.compile(r"\bforecast errors?\b|\bminus the (?:[\w-]+ )?(?:forecast|projection)\b", re.I)
+
+def tidy_numbers(answer, question, eng):
+    # a gap stated with a comparative word is a positive amount ("2.3 points worse", not "-2.3 points worse")
+    answer = re.sub(r"(?<![\d.\w])-(\d+(?:\.\d+)?)(?=" + COMPARATIVE + ")", r"\1", answer)
+    # a forecast error is outturn minus forecast, with its sign
+    if FORECAST_ERROR.search(question) and eng["fired"]:
+        for g in eng["groups"]:
+            if g["verdict"] == "forecast_replaced" and len(g["sources"]) == 2 and not g.get("context"):
+                err = g["sources"][0]["value"] - g["sources"][1]["value"]
+                e = fmt(round(err, 2))
+                if not re.search(r"(?<![\d.])" + re.escape(e) + r"(?![\d])", answer):
+                    hit = re.search(r"(?<![\d.\-])" + re.escape(fmt(abs(round(err, 2)))) + r"(?![\d])", answer)
+                    answer = answer[:hit.start()] + e + answer[hit.end():] if hit else answer + f" Forecast error = {fmt(g['sources'][0]['value'])} - ({fmt(g['sources'][1]['value'])}) = {e} percentage points."
+                break
+    return answer
 
 PERMANENT_RE = re.compile(r"\b(permanent\w*|update|change|edit|modify|overwrite|save|write|store|correct)\b.{0,60}\b(knowledge base|documents?|database|source|records?|index)\b|\b(knowledge base|documents?|database)\b.{0,40}\b(permanent\w*|from now on|for (all|every|future) (chats?|conversations?|users?))", re.I)
 USER_VALUE_RE = re.compile(r"\b(assume|assuming|suppose|supposing|for this (chat|conversation)|in this (chat|conversation)|for the rest of (this|the) (chat|conversation)|new data point|let'?s say|hypothetically|imagine)\b", re.I)
@@ -1042,10 +1114,15 @@ class Conversation:
         if status == "not_found":
             cites, figs = [], []
         elif eng["fired"] and not named:
+            # the engine's sources are the citations; the model's facts add at most one text page that holds a value the engine does not cover
             cites, figs = engine_refs(eng)
-            fc, ff = build_refs(list(dict.fromkeys(f["id"] for f in facts)), status, rq)
-            cites = list(dict.fromkeys(cites + [c for c in fc if c not in cites]))[:max(4, len(cites))]
-            figs = list(dict.fromkeys(figs + [x for x in ff if any(c.endswith(":" + x) for c in cites)]))
+            eng_nums = {fmt(f["value"]).lstrip("-") for g in eng["groups"] for f in g["sources"]}
+            for f in facts:
+                it = ITEM[f["id"]]
+                nums = {n.lstrip("-") for n in NUM_RE.findall(f["value"].replace(",", ""))}
+                if it["kind"] == "text" and not (nums & eng_nums) and f"{it['doc_id']}:p{it['page']}" not in cites:
+                    cites.append(f"{it['doc_id']}:p{it['page']}")
+                    break
         else:
             pinned = label_items(named) if named else []
             used = list(dict.fromkeys(pinned + [f["id"] for f in facts])) or ids[:1]
@@ -1090,7 +1167,9 @@ class Conversation:
         if rule == "question presumes the opposite direction" and "premise" not in answer.lower():
             g = premise_conflict(rq, eng)
             answer = f"False premise: the documents report {g['entity']} {g['variable'].lower()} of {fmt(g['value'])}% in {g['period']}. " + answer
+        answer = tidy_numbers(answer, rq, eng)
         if status != "not_found":
+            cites = add_pages(cites)
             if eng["fired"]:
                 answer += f" Values: {eng['summary']}"
             elif facts:
