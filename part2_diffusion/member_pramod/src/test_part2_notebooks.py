@@ -4,6 +4,7 @@ import gc
 import glob
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -72,7 +73,8 @@ class Part2Tests(unittest.TestCase):
             dest = self.base / original.name
             subprocess.run([os.sys.executable, str(MEMBER / "src" / builder), str(dest), *args], check=True)
             rebuilt = nbformat.read(dest, 4)
-            self.assertEqual([(c.cell_type, c.source) for c in notebook.cells], [(c.cell_type, c.source) for c in rebuilt.cells])
+            unstamp = lambda src: re.sub(r'^STAMP = ".*"$', 'STAMP = ""', src, flags=re.M)
+            self.assertEqual([(c.cell_type, unstamp(c.source)) for c in notebook.cells], [(c.cell_type, unstamp(c.source)) for c in rebuilt.cells])
 
     def test_preflight_and_bad_inputs(self):
         self.assertEqual(len(self.preflight()["test_captions"]), 20)

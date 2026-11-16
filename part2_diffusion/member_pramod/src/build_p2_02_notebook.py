@@ -18,7 +18,7 @@ import importlib.metadata as md
 print({p: md.version(p) for p in ["torch", "diffusers", "transformers", "peft", "torchmetrics", "torch-fidelity", "lpips"]})"""),
 
 md("## Settings and fixed prompts\n\nThe 20 prompts are copied from `tests/p2_prompts_pramod.json`, committed before training finished. The 10 in-domain prompts are test-set captions."),
-code(f"""import glob, json, time, collections
+code(f"""import glob, json, time, collections, shutil
 import pandas as pd
 from PIL import Image
 
@@ -28,6 +28,17 @@ if ON_COLAB:
     from google.colab import drive
     drive.mount("/content/drive")
 TRAIN_OUT = os.environ.get("TRAIN_OUT") or os.path.dirname(os.path.dirname((glob.glob("/kaggle/input/**/adapters/lora_r4.safetensors", recursive=True) + glob.glob("/content/drive/MyDrive/data266_p2/adapters/lora_r4.safetensors") + [f"{{WORK}}/adapters/x"])[0]))
+if not os.path.isfile(f"{{TRAIN_OUT}}/adapters/lora_r4.safetensors"):
+    from huggingface_hub import hf_hub_download, snapshot_download
+    TRAIN_OUT = f"{{WORK}}/train_out"
+    os.makedirs(f"{{TRAIN_OUT}}/adapters", exist_ok=True)
+    for name in ["lora_r4", "lora_r32"]:
+        src = hf_hub_download(f"pramodsatyad/data266-p2-pokemon-{{name}}", "pytorch_lora_weights.safetensors", token=secret("HF_TOKEN"))
+        shutil.copy(src, f"{{TRAIN_OUT}}/adapters/{{name}}.safetensors")
+    snapshot_download("pramodsatyad/data266-p2-pokemon-splits", repo_type="dataset", local_dir=f"{{TRAIN_OUT}}/p2_data", token=secret("HF_TOKEN"))
+    os.makedirs(f"{{TRAIN_OUT}}/outputs", exist_ok=True)
+    shutil.move(f"{{TRAIN_OUT}}/p2_data/outputs/p2_training_runs.csv", f"{{TRAIN_OUT}}/outputs/p2_training_runs.csv")
+    print("training artifacts not on this Drive: downloaded adapters, split and training table from Hugging Face")
 ADAPTERS = {{"lora_r4": f"{{TRAIN_OUT}}/adapters/lora_r4.safetensors", "lora_r32": f"{{TRAIN_OUT}}/adapters/lora_r32.safetensors"}}
 MODELS = ["base", "lora_r4", "lora_r32"]
 SEEDS = [0, 1]
