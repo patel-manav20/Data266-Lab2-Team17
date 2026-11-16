@@ -156,14 +156,25 @@ reply failed to be a clean choice 0 of 36 times, in two separate runs of that pr
 
 **Kaggle history.** v2 (first submission) 0.637 -> v17 (refusal policy, explanatory questions, chart
 values) 0.751 -> v21/v22 0.784 -> v29/v30 0.808 -> the four board-tested conventions (0.808-0.819) -> v31
-(three of those four, adopted as general rules). Full table with what changed at each version in
-`p1_eval.ipynb`, section (e).
+(three of those four, adopted as general rules) 0.818 -> v34 0.828 (byte-identical to v32) -> **v35 0.853
+(current): an A2 rulebook answerer (`READER_A2`, on by default) blends a short Qwen3-8B-generated
+passage (4-bit; Qwen3-VL-4B-Instruct text-only fallback) ahead of the extractive route's own chosen
+sentences, for explanatory questions that fall through to the raw sentence-splice route -- status,
+citations and figure_references are always inherited from the extractive route's own output, never
+taken from the model. Gate-tested on two non-overlapping 120-item samples before adoption (+0.0209 and
++0.0431 composite, zero per-set drops either time). 11 of 40 real rows changed, all the same trigger
+class, zero metadata changes.** A second piece (per-question chart reading, `READER_A2_CHARTS`) was
+built and gate-tested the same way but showed no measurable gain (the gate's own test sets have only
+1-2 chart-reading-eligible questions), so it stays off by default. Full table with what changed at each
+version in `p1_eval.ipynb`, section (e).
 
-**Run time.** Kaggle, version 31, all datasets and the vision model, diagnostics off: about 12.7 minutes
-total (490s building the index and the fact store, 170s loading the models, 92s answering the 40 questions
-and writing the submission, 9s for the (skipped) diagnostics check), 0 errors, validator passes. On a Mac
-with no GPU and every diagnostic on, loading the pipeline and answering the golden set once more took about
-8 minutes.
+**Run time.** Kaggle, version 35 (current, A2 on), diagnostics off: about 20 minutes total for the real
+40-question run (the one-time index/model-load cost is unchanged from earlier versions; the new A2
+answerer pass added 259s for 11 generated answers, 23.6s/call), 0 errors, validator passes. Version 31's
+numbers (all datasets and the vision model, diagnostics off): about 12.7 minutes total (490s building
+the index and the fact store, 170s loading the models, 92s answering the 40 questions and writing the
+submission, 9s for the (skipped) diagnostics check). On a Mac with no GPU and every diagnostic on,
+loading the pipeline and answering the golden set once more took about 8 minutes.
 
 ## Limitations
 
@@ -192,7 +203,8 @@ with no GPU and every diagnostic on, loading the pipeline and answering the gold
 | BAAI/bge-small-en-v1.5 (sentence-transformers) | Dense text embeddings (Mac / baseline retrieval) | MIT |
 | BAAI/bge-base-en-v1.5 (sentence-transformers) | Dense text embeddings (hybrid retrieval, Kaggle) | MIT |
 | Qwen/Qwen3-Reranker-4B (transformers) | Text-route reranking (Kaggle, GPU only) | Apache-2.0 |
-| Qwen/Qwen3-VL-4B-Instruct (transformers) | Names chart series/categories where the legend or caption can't (Kaggle, GPU only); never writes an answer | Apache-2.0 |
+| Qwen/Qwen3-VL-4B-Instruct (transformers) | Names chart series/categories where the legend or caption can't (Kaggle, GPU only); fallback for the A2 answerer below if Qwen3-8B can't load; per-question chart reading (`READER_A2_CHARTS`, off by default) | Apache-2.0 |
+| Qwen/Qwen3-8B (transformers, 4-bit) | A2 rulebook answerer (`READER_A2`, on by default): a short grounded passage for explanatory questions, blended with the extractive route's own sentences -- never the sole source of status/citations/figure_references | Apache-2.0 |
 | `lab2-offline-wheels` (my own Kaggle dataset) | Offline pip wheels for the packages above, since the Kaggle kernel has no internet access | same as each wrapped package |
 
 No hosted API is used. Seed is 266. Links to the Kaggle notebook, datasets and models are in the repo
@@ -201,9 +213,12 @@ root's `links.txt`.
 ## Notebooks
 
 - `notebooks/p1_rag.ipynb`: the Kaggle notebook. It builds the full index, answers every question and
-  writes `submission.csv`. All code is inside the notebook; logic is frozen (commit `ffe1f01`). Its
-  saved outputs are from Kaggle version 34 -- a single T4 by default (`CUDA_VISIBLE_DEVICES=0`, the
-  reranker never targets a second GPU), 681.6s total, `submission.csv` byte-identical to version 32's.
+  writes `submission.csv`. All code is inside the notebook. Current default settings (`READER_A2=True`,
+  `READER_A2_CHARTS=False`) match **Kaggle version 35** (`manavpatel2025/lab2-part1-run`), public score
+  **0.853** -- a single T4 by default (`CUDA_VISIBLE_DEVICES=0`, the reranker never targets a second
+  GPU), ~20 minutes total, 11 of 40 rows changed vs. version 34's `submission.csv` (0.828, itself
+  byte-identical to version 32's), all 11 the same single trigger class (an A2 answer) with unchanged
+  status/citations/figure_references.
 - `notebooks/p1_eval.ipynb`: runs the frozen pipeline (by executing `p1_rag.ipynb`'s own cells, not a copy
   of its code) and produces every number in the Results section above, plus the blank groundedness-rating
   sheets in `outputs/`.
