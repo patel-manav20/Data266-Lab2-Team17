@@ -106,9 +106,10 @@ def parse_json(s, default):
 
 @torch.inference_mode()
 def clip_sim(image, text):
-    x = clip_p(text=[text], images=[image], return_tensors="pt", padding=True, truncation=True).to("cuda")
-    i = clip_m.get_image_features(pixel_values=x.pixel_values.half())
-    t = clip_m.get_text_features(input_ids=x.input_ids, attention_mask=x.attention_mask)
+    # projected pooled outputs: the same embeddings on every transformers version (get_*_features changed type in v5)
+    x = clip_p(text=[text], images=[image], return_tensors="pt", padding=True, truncation=True, max_length=77).to("cuda")
+    i = clip_m.visual_projection(clip_m.vision_model(pixel_values=x.pixel_values.half()).pooler_output)
+    t = clip_m.text_projection(clip_m.text_model(input_ids=x.input_ids, attention_mask=x.attention_mask).pooler_output)
     return float(torch.nn.functional.cosine_similarity(i.float(), t.float()).item())
 
 @torch.inference_mode()
