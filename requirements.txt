@@ -7,8 +7,8 @@
 # whole repo. If two parts pin the same package to different versions, install per-part instead --
 # installing this file into one environment will keep only one of them.
 
-# --- Part 1 (Kaggle, python 3.11.18) ---
-torch==2.15.0
+# --- Part 1 (Kaggle, python 3.13.16) ---
+torch==2.11.0+cu130
 transformers==5.20.2
 accelerate
 sentence-transformers
@@ -17,7 +17,7 @@ rank_bm25==0.2.2
 pdfplumber==0.11.10
 pypdfium2==5.14.0
 pillow
-numpy==2.4.6
+numpy==2.1.3
 pandas
 scipy
 matplotlib
