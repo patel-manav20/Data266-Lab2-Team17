@@ -995,17 +995,6 @@ def build_refs(used_ids, status, question):
             cites.append(f"{it['doc_id']}:p{it['page']}")
     return list(dict.fromkeys(cites)), list(dict.fromkeys(figs))
 
-OBJ_PAGE = {f"{o['doc_id']}:{o['figure_id']}": o["page"] for o in objects.values() if o.get("figure_id")}
-
-def add_pages(cites):
-    # the competition's citation format names a table together with its page (e.g. DOC1:Table 1-1,DOC1:p1), as figures already are
-    out = []
-    for c in cites:
-        out.append(c)
-        if ":Table " in c and c in OBJ_PAGE:
-            out.append(f"{c.split(':')[0]}:p{OBJ_PAGE[c]}")
-    return list(dict.fromkeys(out))
-
 CALC_Q = re.compile(r"\b(how much|how many|how far|differen\w*|differ|compar\w*|change[sd]?|gap|higher|lower|worse|better|more than|less than|errors?|minus|points?|rise|rose|fall|fell|increas\w*|decreas\w*|by what|exceed\w*|above|below|predict\w*|impl\w*|average|total|sum|ratio|share)\b", re.I)
 EXPLAIN_Q = re.compile(r"^\s*(why|how)\b", re.I)
 
@@ -1204,7 +1193,6 @@ class Conversation:
         if not self.user_values and rule != "permanent change request":
             answer = re.sub(r"\s*The documents (?:are|remain) unchanged\.", "", answer)
         if status != "not_found":
-            cites = add_pages(cites)
             if eng["fired"]:
                 answer += f" Values: {eng['summary']}"
             elif facts:
