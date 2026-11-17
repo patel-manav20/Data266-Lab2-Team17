@@ -141,31 +141,48 @@ board tests (C2) now cite only the current source, so those three items' citatio
 components score lower than they would against the old convention -- this is the adopted behaviour working
 as intended, not a regression. The golden items themselves were not changed.
 
-**Golden set on Kaggle, v35 (A2 on), three configurations -- the reranker bonus.** Measured on
-`manavpatel2025/lab2-p1-finaleval` version 3 (single T4, the same sources as v35), read directly from its
-log and saved CSVs, not retyped from memory:
+**Golden set on Kaggle, v35 (A2 on), four configurations -- the reranker bonus.** Measured on
+`manavpatel2025/lab2-p1-finaleval` version 4 (single T4, the same sources as v35), read directly from its
+log and saved CSVs, not retyped from memory. (Version 3's "dense-only baseline" had a real bug -- it left
+the strong reranker loaded, so `text_answer()` took the reranked path regardless of which retrieval
+function a global name was swapped to; `text_route()` only consults that name, and `text_route()` only
+runs when no reranker is loaded. Fixed as an evaluation-harness change only, not a pipeline-code change --
+confirmed in version 4's own log that no reranker was loaded for the no-reranker configurations below.)
 
 | configuration | score | answer | status | figure F1 | citations | A2 used |
 |---|---|---|---|---|---|---|
-| (a) dense-only baseline (A2 off) | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 | 0/25 |
+| (a) dense-only baseline, no reranker (A2 off) | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 | 0/25 |
+| (d) hybrid dense + BM25, no reranker at all | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 | 0/25 |
 | (b) final minus the strong reranker (BAAI/bge-reranker-v2-m3) | **0.7967** | 0.7033 | 1.00 | 0.8267 | 0.75 | 0/25 |
 | (c) final v35, current default (Qwen3-Reranker-4B) | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 | 0/25 |
 
-A2 never fired on any of the 25 golden items in any configuration -- none of them reach `route=="text"`
-with an explanatory classification, so (a) and (c) score identically (nothing in this set is sensitive to
-which retrieval pipeline resolves the text route, because none of them use it). The reranker bonus, **(c)
-minus (b) = -0.0274** on this golden set -- the weaker bge-reranker-v2-m3 fallback scores *higher* than
-the strong Qwen3-Reranker-4B default, measurable on only 4 of 25 items (the ones that do take the text
-route: G01, G05, G09, G22; the strong reranker wins only G09). This is the opposite direction from the
-Recall@k/MRR retrieval metrics just below, which favor hybrid retrieval generally -- with only 4
-retrieval-sensitive golden items, this is a small-sample result about this specific set, not a general
-verdict on the reranker. Per-category numbers are in `p1_eval.ipynb` section (h) and
-`outputs/p1_eval_golden_kaggle_3config_by_category.csv`.
+A2 never fires on this set in any configuration (none of the 25 items reach `route=="text"` explanatory);
+for (a) and (d) it is additionally structurally impossible, since `build_answer()`'s A2 hook requires a
+reranker to be loaded and both deliberately run without one. **(a), (d) and (c) are not just equal in
+score -- they produce byte-identical answer text on all 25 items**, verified directly, not inferred: three
+different retrieval paths (dense-only; dense+BM25 unranked; dense+BM25 reranked by Qwen3) converge on the
+same final answer every time on this set.
 
-**Two pipeline bugs found while reviewing these golden failures** (documented here and in Limitations,
-not fixed -- Part 1 code is frozen): a label-route entity mismatch (G10, G11) and an Okun's-law parameter
-precision gap (G07). Golden is not treated as a clean held-out measure for exactly this reason -- see
-Limitations for the detail on each.
+**The lab's bonus, (d) vs (c), reported plainly: zero improvement.** Adding Qwen3-Reranker-4B over no
+reranker at all changes nothing here -- same score, same answer on every item, same per-category
+breakdown. **No bonus is claimed.** Per-item and per-category numbers are in `p1_eval.ipynb` section (h)
+and `outputs/p1_eval_golden_kaggle_3config_by_category.csv`.
+
+**(b) vs (c) -- reranker *choice* (not reranker vs none) does matter here, and it is negative for the
+strong reranker**: 0.7967 (b) vs 0.7693 (c), measurable on only 4/25 items (G01, G05, G09, G22 -- the
+only ones reaching the text route); the weak reranker wins 3 of those 4. This and the (d) vs (c) result
+are not a contradiction -- no reranker does as well as the strong one (zero bonus), while the *other*
+reranker happens to do better than the strong one, on this specific 25-item set.
+
+**Context, a different measure, not the golden-set bonus**: the Recall@k/MRR retrieval metrics just below
+favor hybrid retrieval generally, on far more items (25, 100) than the 4 that are retrieval-sensitive in
+the golden-set score comparison above -- that measures whether the right source is retrieved at all, not
+whether the final score changes, and the two are not in tension.
+
+**Two pipeline bugs found while reviewing golden items, not fixed because the code was frozen at the
+selected Kaggle version (v35)** (documented here and in Limitations): a label-route entity mismatch (G10,
+G11) and an Okun's-law parameter precision gap (G07). Golden is not treated as a clean held-out measure
+for exactly this reason -- see Limitations for the detail on each.
 
 **Retrieval (Recall@k, MRR).** On the golden set, hybrid retrieval beats dense-only (MRR 0.844 vs 0.778,
 R@1 0.76 vs 0.68); on the auto-generated drop-clause questions (100, made from the corpus's own sentences)
@@ -220,8 +237,8 @@ and answering the golden set once more took about 8 minutes.
   Figure B-2 each have one name but three colors (no caption or legend to tell them apart), and Figure B-5
   only matches the table on 3 of its 4 printed labels. The chart reader still gives a value in each case,
   just with a lower confidence the name is right.
-- **Two pipeline bugs, found reviewing golden failures on the v35/A2 Kaggle probe (not fixed -- Part 1
-  code is frozen).** (1) Label-route entity mismatch: a question naming a figure and asking for a specific
+- **Two pipeline bugs, found while reviewing golden items on the v35/A2 Kaggle probe. Not fixed because
+  the code was frozen at the selected Kaggle version (v35).** (1) Label-route entity mismatch: a question naming a figure and asking for a specific
   entity's own value (golden G10 "According to Figure 1-6, what was China's population..."; G11 the same
   for the Euro area) gets the figure's subject right ("Figure 1-6 (DOC1) shows: China") but then reports
   an unrelated fact for the wrong entity and variable in both cases -- the identical filler "4.0% for the
@@ -266,4 +283,6 @@ root's `links.txt`.
   status/citations/figure_references.
 - `notebooks/p1_eval.ipynb`: runs the frozen pipeline (by executing `p1_rag.ipynb`'s own cells, not a copy
   of its code) and produces every number in the Results section above, plus the blank groundedness-rating
-  sheets in `outputs/`.
+  sheets in `outputs/` -- each as a CSV and as a simple standalone HTML page
+  (`p1_eval_groundedness_{manav,pramod}.html`) with a 1-5 dropdown per item and a "Download CSV" button,
+  so each member can rate without editing a CSV by hand (same pattern as the Part 2/3 rating packs).
