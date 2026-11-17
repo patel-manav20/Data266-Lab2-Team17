@@ -24,6 +24,10 @@ Caption and question requests stop after Vision Understanding. Unsafe requests a
 | Edit | `timbrooks/instruct-pix2pix` |
 | Critique score | `openai/clip-vit-large-patch14` cosine similarity; output safety = Stable Diffusion safety checker + VLM check |"""),
 code(setup),
+code("""# On Colab, every result is written straight to Google Drive, so nothing is lost if the session disconnects (sign in when asked)
+if ON_COLAB:
+    from google.colab import drive
+    drive.mount("/content/drive")"""),
 code("""%pip install -q diffusers peft bitsandbytes qwen-vl-utils gradio accelerate
 %pip uninstall -y -q torchao
 import importlib.metadata as md
@@ -46,11 +50,11 @@ LORA_LOCAL = (glob.glob("/kaggle/input/**/adapters/lora_r32.safetensors", recurs
 MAX_REVISIONS = 2
 CLIP_ACCEPT = 0.24
 STEPS = 30
-OUT = f"{{WORK}}/p3_out"
+OUT = "/content/drive/MyDrive/data266_p3/p3_out" if ON_COLAB and os.path.isdir("/content/drive/MyDrive") else f"{{WORK}}/p3_out"
 TRACES = f"{{OUT}}/traces"
 os.makedirs(TRACES, exist_ok=True)
 TESTS = {json.dumps(tests, indent=1)}
-print(LORA_REPO or LORA_LOCAL)"""),
+print(LORA_REPO or LORA_LOCAL, "| outputs:", OUT)"""),
 
 md("## Models"),
 code("""from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor, BitsAndBytesConfig, CLIPModel, CLIPProcessor
