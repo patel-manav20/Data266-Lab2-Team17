@@ -88,6 +88,53 @@ On a Mac or another machine with no GPU:
 
 Citations use the PDF page index, so `DOC1:p3` means the third page of that PDF.
 
+## Live demo
+
+To answer a grader's own questions on the spot (not from `Questions.csv`), use `demo_answer()` in
+`notebooks/p1_rag.ipynb`, section 12b ("Demo: answer any question on the spot"), right after the
+submission-format check and before the test/diagnostics section. It calls the same `build_answer()`/
+`Conversation` the real pipeline uses, unchanged -- nothing in this cell is new answer logic.
+
+**Setup, once, before the demo cell can run.** Run the notebook up through section 12 (Run All, or Run
+All Above from the demo cell) -- this ingests the PDFs, builds the fact store, and loads the embedder
+and reranker. Measured on v35's real Kaggle run: about **10 minutes** (594 of the run's 942.7 total
+seconds; the rest is the regular 40-question answering pass, which the demo doesn't need to wait for).
+After that one-time setup, re-run just the demo cell with new questions as many times as needed --
+each answer takes under a second unless it reaches the A2 answerer (about 24 seconds, for an
+explanatory question the extractive route alone can't resolve).
+
+**Answering 3 grader-chosen questions, including a 2-turn conversation:**
+```python
+# a 2-turn conversation: the second question can refer back to the first
+demo_answer(["<grader's first question>", "<grader's follow-up to it>"], conversation_id="demo-1")
+# a separate, single-turn question in its own conversation
+demo_answer(["<grader's third question>"], conversation_id="demo-2")
+```
+Each call prints, per question: the answer, its status, its citations and its figure references --
+the same fields `Questions.csv` answers get, for any question typed in live.
+
+**Phrasing a follow-up turn, from testing this live**: a follow-up that drops the entity/variable and
+changes only the period or entity ("What about 2009?", "What about China?") threads back to the first
+turn reliably. A follow-up that reintroduces a bare noun instead ("How does that compare with *the
+rate* in 2009?") can resolve to the wrong variable -- found directly while testing this cell (see
+below), not assumed. Prefer the elliptical form for a reliable follow-up.
+
+**If the GPU is slow** (a queued or unavailable Kaggle T4 session): run the exact same `demo_answer()`
+cell on a Mac or any machine with no GPU instead, with `RERANK_MODEL=off` set (see "On a Mac or another
+machine with no GPU" above) -- it gives the same deterministic fact-store/chart/label answers
+immediately; only `route=="text"` explanatory questions answer slightly differently (bge-small + BM25,
+no reranker, no A2) while still being correct and grounded. This is a genuine fallback, not a
+workaround: Team Rule 3 requires the pipeline to run correctly with no GPU or model attached at all,
+and this is exercised by every Mac regression run in this project's history.
+
+Tested on a Mac in model-off mode with three made-up questions (not from `Questions.csv`): two turns of
+one conversation ("What was the unemployment rate in the United States in 2010?" then "What about
+2009?") and one standalone question ("Why did world output growth slow down in 2012?"). All three
+answered correctly with citations -- the follow-up correctly carried the entity and variable forward
+from turn 1 and reported 9.3% for 2009 with both documents' sources. A first attempt at the follow-up,
+phrased as "How does that compare with the rate in 2009?", resolved to the wrong variable (inflation,
+not unemployment) -- kept here as the reason for the phrasing guidance above, not hidden.
+
 ## Results
 
 Full tables and the code that produced them are in `part1_rag/member_manav/notebooks/p1_eval.ipynb`
@@ -183,6 +230,28 @@ whether the final score changes, and the two are not in tension.
 selected Kaggle version (v35)** (documented here and in Limitations): a label-route entity mismatch (G10,
 G11) and an Okun's-law parameter precision gap (G07). Golden is not treated as a clean held-out measure
 for exactly this reason -- see Limitations for the detail on each.
+
+**Baseline (a) vs final (c), v35/A2 -- the report's baseline-vs-final row.** Same corrected configuration
+(a) as the table above, next to (c):
+
+| system | score | answer | status | figure F1 | citations |
+|---|---|---|---|---|---|
+| (a) dense-only baseline, no reranker | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 |
+| (c) final v35, current default | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 |
+
+Identical on every component and every category (`p1_eval.ipynb` section (i)) -- the same finding as
+above, stated as the baseline-vs-final comparison specifically.
+
+**The four Part 1 measurement types, in one table** (`p1_eval.ipynb` section (i),
+`outputs/p1_eval_four_measurement_types.csv`):
+
+| measurement type | metric | value |
+|---|---|---|
+| primary | correct answers out of 25 golden (score >= 0.8) | 15/25 (60%) |
+| secondary | Recall@5 (golden, hybrid retrieval) | 0.92 |
+| secondary | citation accuracy (citations component, v35 config) | 0.7867 |
+| human | groundedness rating (both members) | pending -- see "(d) Human rating of groundedness" |
+| efficiency | median seconds per question (v35 real 40-question run) | 0.14 s |
 
 **Retrieval (Recall@k, MRR).** On the golden set, hybrid retrieval beats dense-only (MRR 0.844 vs 0.778,
 R@1 0.76 vs 0.68); on the auto-generated drop-clause questions (100, made from the corpus's own sentences)
