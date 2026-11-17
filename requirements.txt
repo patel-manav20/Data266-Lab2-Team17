@@ -1,0 +1,7 @@
+# Each part runs in its own GPU notebook and pins the versions measured in its final run:
+#   part1_rag/member_pramod/requirements.txt        (Kaggle T4)
+#   part2_diffusion/member_pramod/requirements.txt  (Colab T4)
+#   part3_agents/member_pramod/requirements.txt     (Colab T4)
+# Install the file for the part you run, e.g.:
+#   pip install -r part2_diffusion/member_pramod/requirements.txt
+# Manav's folders contain their own requirements.txt.

@@ -20,6 +20,20 @@ Colab saves the splits, checkpoints, completed adapters, training measurements a
 
 ## Results
 
+Measured in the executed `p2_02_generate_and_evaluate.ipynb` on a Colab T4. KID is computed on in-domain held-out prompts; lower is better.
+
+| Model | KID in-domain (mean ± std) | CLIP all | CLIP in-domain | LPIPS diversity | NSFW flagged | Trainable params | GPU hours |
+|---|---|---|---|---|---|---|---|
+| Base SD 1.5 | 0.1018 ± 0.0108 | 29.93 | 29.57 | 0.845 | 0 | – | – |
+| LoRA r4 | 0.0444 ± 0.0073 | 29.07 | 29.66 | 0.823 | 2 | 797,184 | 0.90 |
+| **LoRA r32 (final)** | **0.0306 ± 0.0067** | 28.96 | 28.07 | 0.797 | 2 | 6,377,472 | 0.80 |
+
+- **Final adapter:** both adapters bring generations much closer to the training domain, and r32 has the lowest KID, so it's the final adapter. Its prompt alignment (CLIP) stays close to the base model's.
+- **Memorization check:** the highest CLIP cosine between a generated image and its nearest training image is 0.83, so there are no near-copies.
+- **Where to find them:**
+  - the final adapter and model card: https://huggingface.co/pramodsatyad/data266-p2-pokemon-lora_r32;
+  - the 120 generated images: https://huggingface.co/datasets/pramodsatyad/data266-p2-generated-images.
+
 The notebooks write `p2_training_runs.csv`, `p2_data_summary.json`, `p2_metrics.csv`, `p2_results_table.csv`, `memorization.csv` and, after complete human ratings, `p2_human_results.csv`. The final adapter is selected using the unrounded in-domain KID. Its model card is generated from the measured results.
 
 ## Safety and limitations

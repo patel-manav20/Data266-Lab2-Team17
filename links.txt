@@ -1,5 +1,7 @@
-GitHub:
-Tag commits:
+GitHub: https://github.com/patel-manav20/Data266-Lab2-Team17
+Tag commits: (added when the final tags p1-v1.0, p2-v1.0, p3-v1.0 are created)
 Hugging Face models:
-Hugging Face image dataset:
-Kaggle notebook:
+  https://huggingface.co/pramodsatyad/data266-p2-pokemon-lora_r32  (final adapter, with model card)
+  https://huggingface.co/pramodsatyad/data266-p2-pokemon-lora_r4
+Hugging Face image dataset: https://huggingface.co/datasets/pramodsatyad/data266-p2-generated-images
+Kaggle notebook: https://www.kaggle.com/code/pramodsatyad/data266-p1-rag

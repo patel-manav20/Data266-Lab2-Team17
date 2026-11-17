@@ -14,6 +14,18 @@ We fine-tune Stable Diffusion 1.5 on a small captioned image set. We train two v
 
 We build five agents that work together to understand an image and change or create images. A critique agent checks each result and asks for a fix when needed.
 
+## Results at a glance
+
+Details, how to run and the build commands are in each folder's README.
+
+| Part | Notebook | Main result |
+|---|---|---|
+| 1 | `part1_rag/member_pramod/notebooks/p1_rag.ipynb` (Kaggle T4) | Golden set: 22/25 correct and 25/25 statuses, against 17/25 and 22/25 for the dense-only baseline. Kaggle public leaderboard 0.868. |
+| 2 | `part2_diffusion/member_pramod/notebooks/p2_0{1,2}_*.ipynb` (Colab T4) | In-domain KID: base 0.102, LoRA r4 0.044, LoRA r32 0.031 (final). Highest nearest-neighbour cosine 0.83, so no memorization. |
+| 3 | `part3_agents/member_pramod/notebooks/p3_agents.ipynb` (Colab T4) | 5 agents with a critique loop, JSON traces and a Gradio app. Red-team attacks succeeded 0/10 on inspection. |
+
+Links to the models, the datasets and the Kaggle notebook are in `links.txt`. Test sets are in `tests/` and were committed before tuning.
+
 ## Repo layout
 
 ```

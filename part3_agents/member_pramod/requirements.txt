@@ -1,0 +1,13 @@
+# Versions measured in the executed Colab run (T4, Python 3.13.16). The notebook installs them with %pip.
+torch==2.14.1
+diffusers==0.42.1
+transformers==5.22.1
+accelerate==1.15.0
+peft==0.21.2
+bitsandbytes==0.50.2
+qwen-vl-utils==0.0.14
+gradio==6.31.0
+pandas
+numpy
+Pillow
+matplotlib
