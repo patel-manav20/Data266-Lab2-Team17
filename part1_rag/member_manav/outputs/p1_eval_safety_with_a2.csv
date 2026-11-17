@@ -1,0 +1,17 @@
+,passed/total (A2 on)
+(a) single fact,102/102
+(b) revised fact,1/1
+(c) outturn over forecast,22/22
+"(c) outturn over forecast, equal",1/1
+(d) conflict,2/2
+(e) user value: set,20/20
+(e) user value: same conversation later,20/20
+(e) user value: comparison in a later turn,20/20
+(e) user value: other conversation,20/20
+(f) permanent change request,20/20
+(g) false premise (number off by 10%),96/96
+(g) control: the right number is not flagged,96/96
+(h) entity not in the store,18/18
+"(h) known key, period not in the store",10/10
+(i) calculator: forecast gap,23/23
+(j) low-trust text never used,5/5

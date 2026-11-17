@@ -141,6 +141,32 @@ board tests (C2) now cite only the current source, so those three items' citatio
 components score lower than they would against the old convention -- this is the adopted behaviour working
 as intended, not a regression. The golden items themselves were not changed.
 
+**Golden set on Kaggle, v35 (A2 on), three configurations -- the reranker bonus.** Measured on
+`manavpatel2025/lab2-p1-finaleval` version 3 (single T4, the same sources as v35), read directly from its
+log and saved CSVs, not retyped from memory:
+
+| configuration | score | answer | status | figure F1 | citations | A2 used |
+|---|---|---|---|---|---|---|
+| (a) dense-only baseline (A2 off) | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 | 0/25 |
+| (b) final minus the strong reranker (BAAI/bge-reranker-v2-m3) | **0.7967** | 0.7033 | 1.00 | 0.8267 | 0.75 | 0/25 |
+| (c) final v35, current default (Qwen3-Reranker-4B) | 0.7693 | 0.6433 | 0.96 | 0.8133 | 0.7867 | 0/25 |
+
+A2 never fired on any of the 25 golden items in any configuration -- none of them reach `route=="text"`
+with an explanatory classification, so (a) and (c) score identically (nothing in this set is sensitive to
+which retrieval pipeline resolves the text route, because none of them use it). The reranker bonus, **(c)
+minus (b) = -0.0274** on this golden set -- the weaker bge-reranker-v2-m3 fallback scores *higher* than
+the strong Qwen3-Reranker-4B default, measurable on only 4 of 25 items (the ones that do take the text
+route: G01, G05, G09, G22; the strong reranker wins only G09). This is the opposite direction from the
+Recall@k/MRR retrieval metrics just below, which favor hybrid retrieval generally -- with only 4
+retrieval-sensitive golden items, this is a small-sample result about this specific set, not a general
+verdict on the reranker. Per-category numbers are in `p1_eval.ipynb` section (h) and
+`outputs/p1_eval_golden_kaggle_3config_by_category.csv`.
+
+**Two pipeline bugs found while reviewing these golden failures** (documented here and in Limitations,
+not fixed -- Part 1 code is frozen): a label-route entity mismatch (G10, G11) and an Okun's-law parameter
+precision gap (G07). Golden is not treated as a clean held-out measure for exactly this reason -- see
+Limitations for the detail on each.
+
 **Retrieval (Recall@k, MRR).** On the golden set, hybrid retrieval beats dense-only (MRR 0.844 vs 0.778,
 R@1 0.76 vs 0.68); on the auto-generated drop-clause questions (100, made from the corpus's own sentences)
 hybrid is also ahead (MRR 0.873 vs 0.795, R@1 0.80 vs 0.73). On dev A and dev B (hand-written formal,
@@ -153,6 +179,11 @@ has 5 low-trust sentences with a number or an instruction in it). A separate, ea
 model-based anchor-picking feature, since measured and turned off) appended a planted instruction to 36
 real dev questions: the planted word appeared in the model's answer 0 of 36 times, and the model's raw
 reply failed to be a clean choice 0 of 36 times, in two separate runs of that probe.
+
+**Safety, re-run with A2 on (v35 config).** All 16 named test groups in section 13.1-13.13 passed 100%
+with `READER_A2=True` -- including test (j), "low-trust text never used" (5/5), and every fact-store,
+session-override, false-premise and calculator test. No failures. (Same probe as the three-configuration
+table above.)
 
 **Kaggle history.** v2 (first submission) 0.637 -> v17 (refusal policy, explanatory questions, chart
 values) 0.751 -> v21/v22 0.784 -> v29/v30 0.808 -> the four board-tested conventions (0.808-0.819) -> v31
@@ -168,13 +199,15 @@ built and gate-tested the same way but showed no measurable gain (the gate's own
 1-2 chart-reading-eligible questions), so it stays off by default. Full table with what changed at each
 version in `p1_eval.ipynb`, section (e).
 
-**Run time.** Kaggle, version 35 (current, A2 on), diagnostics off: about 20 minutes total for the real
-40-question run (the one-time index/model-load cost is unchanged from earlier versions; the new A2
-answerer pass added 259s for 11 generated answers, 23.6s/call), 0 errors, validator passes. Version 31's
-numbers (all datasets and the vision model, diagnostics off): about 12.7 minutes total (490s building
-the index and the fact store, 170s loading the models, 92s answering the 40 questions and writing the
-submission, 9s for the (skipped) diagnostics check). On a Mac with no GPU and every diagnostic on,
-loading the pipeline and answering the golden set once more took about 8 minutes.
+**Run time and efficiency.** Kaggle, version 35 (current, A2 on), diagnostics off: 942.7s (~15.7 min)
+total for the real 40-question run, **median 0.14 s per question** overall (dominated by the many fast
+deterministic answers; the 11/40 questions that reach the A2 answerer cost 23.57 s/call, 259.3s total),
+0 errors, validator passes. On the golden-set probe above (25 items, mostly fact-store/chart routes,
+zero A2 calls on this set): median 0.05 s per turn for every configuration. Version 31's numbers (all
+datasets and the vision model, diagnostics off): about 12.7 minutes total (490s building the index and
+the fact store, 170s loading the models, 92s answering the 40 questions and writing the submission, 9s
+for the (skipped) diagnostics check). On a Mac with no GPU and every diagnostic on, loading the pipeline
+and answering the golden set once more took about 8 minutes.
 
 ## Limitations
 
@@ -187,6 +220,18 @@ loading the pipeline and answering the golden set once more took about 8 minutes
   Figure B-2 each have one name but three colors (no caption or legend to tell them apart), and Figure B-5
   only matches the table on 3 of its 4 printed labels. The chart reader still gives a value in each case,
   just with a lower confidence the name is right.
+- **Two pipeline bugs, found reviewing golden failures on the v35/A2 Kaggle probe (not fixed -- Part 1
+  code is frozen).** (1) Label-route entity mismatch: a question naming a figure and asking for a specific
+  entity's own value (golden G10 "According to Figure 1-6, what was China's population..."; G11 the same
+  for the Euro area) gets the figure's subject right ("Figure 1-6 (DOC1) shows: China") but then reports
+  an unrelated fact for the wrong entity and variable in both cases -- the identical filler "4.0% for the
+  world output growth for World in 2010" regardless of which figure or entity was actually asked about.
+  (2) Okun's-law parameter precision: golden G07 expects slope -0.42 and threshold 3.1% (presumably read
+  off Figure B-1's own fitted line); `okun_parameters()`'s regex extraction from body-text mentions gives
+  -0.4 and 3% -- one decimal place less precise than the chart. The arithmetic that follows from those
+  inputs is internally correct; the gap is upstream, in how much precision the extraction regex carries
+  over from prose into the calculation. Both are exactly why the golden set is not used to choose
+  anything in this pipeline -- see `p1_eval.ipynb` section (h) for the full comparison these were found in.
 - **No GPU on a Mac** means no reranker (text retrieval falls back to bge-small + BM25 only) and no chart
   naming model, so a Mac run of `p1_eval.ipynb` understates what the same questions score on Kaggle, where
   both are on. The Kaggle numbers in this README (the history table, the v31 run time) come from the real

@@ -1,0 +1,10 @@
+,a_baseline,b_no_strong_rerank,c_final_v35
+fact_table,0.54,0.7,0.54
+false_premise,1.0,1.0,1.0
+figure,0.5528,0.5028,0.5528
+injection,1.0,1.0,1.0
+multi_turn,0.9556,0.9556,0.9556
+multi_turn_user_value,1.0,1.0,1.0
+outturn_over_forecast,0.8889,0.95,0.8889
+two_source,0.8944,0.8944,0.8944
+unanswerable,1.0,1.0,1.0

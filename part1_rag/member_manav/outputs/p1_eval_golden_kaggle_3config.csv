@@ -1,0 +1,4 @@
+variant,score,answer_part,status_part,figure_F1,citations_part,median_s_per_turn,A2_used
+a_baseline,0.7693,0.6433,0.96,0.8133,0.7867,0.05,0
+b_no_strong_rerank (bge-reranker-v2-m3),0.7967,0.7033,1.0,0.8267,0.75,0.05,0
+"c_final_v35 (Qwen3-Reranker-4B, current default)",0.7693,0.6433,0.96,0.8133,0.7867,0.05,0

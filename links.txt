@@ -5,4 +5,4 @@ Hugging Face image dataset (Part 2 generations): https://huggingface.co/datasets
 Hugging Face image dataset (Part 3 input images): https://huggingface.co/datasets/itzmnv/data266-lab2-p3-input-images
 Kaggle notebook (Part 1): https://www.kaggle.com/code/manavpatel2025/lab2-part1-run
 Kaggle datasets used (Part 1): manavpatel2025/lab2-offline-wheels, manavpatel2025/bge-small-en-v1-5-baai, manavpatel2025/bge-base-en-v1-5-baai, manavpatel2025/bge-reranker-v2-m3-baai
-Kaggle models used (Part 1): qwen-lm/qwen-3-reranker/transformers/4b/1, qwen-lm/qwen-3-vl/transformers/4b-instruct/1
+Kaggle models used (Part 1): qwen-lm/qwen-3-reranker/transformers/4b/1, qwen-lm/qwen-3-vl/transformers/4b-instruct/1, qwen-lm/qwen-3/transformers/8b/1

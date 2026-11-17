@@ -14,8 +14,8 @@ G12,two_source,baseline,1.0,1.0,1.0,1.0,1.0
 G13,two_source,baseline,0.6666666666666666,1.0,1.0,1.0,0.8666666666666667
 G14,two_source,baseline,0.75,1.0,1.0,0.5833333333333333,0.8166666666666667
 G15,multi_turn_user_value,baseline,1.0,1.0,1.0,1.0,1.0
-G16,multi_turn,baseline,0.0,0.0,0.0,0.0,0.0
-G17,multi_turn,baseline,0.0,0.0,0.0,0.0,0.0
+G16,multi_turn,baseline,1.0,1.0,1.0,1.0,1.0
+G17,multi_turn,baseline,0.6666666666666666,1.0,1.0,1.0,0.8666666666666667
 G18,multi_turn_user_value,baseline,1.0,1.0,1.0,1.0,1.0
 G19,multi_turn,baseline,1.0,1.0,1.0,1.0,1.0
 G20,outturn_over_forecast,baseline,1.0,1.0,1.0,1.0,1.0
@@ -39,8 +39,8 @@ G12,two_source,final,1.0,1.0,1.0,1.0,1.0
 G13,two_source,final,0.6666666666666666,1.0,1.0,1.0,0.8666666666666667
 G14,two_source,final,0.75,1.0,1.0,0.5833333333333333,0.8166666666666667
 G15,multi_turn_user_value,final,1.0,1.0,1.0,1.0,1.0
-G16,multi_turn,final,0.0,0.0,0.0,0.0,0.0
-G17,multi_turn,final,0.0,0.0,0.0,0.0,0.0
+G16,multi_turn,final,1.0,1.0,1.0,1.0,1.0
+G17,multi_turn,final,0.6666666666666666,1.0,1.0,1.0,0.8666666666666667
 G18,multi_turn_user_value,final,1.0,1.0,1.0,1.0,1.0
 G19,multi_turn,final,1.0,1.0,1.0,1.0,1.0
 G20,outturn_over_forecast,final,1.0,1.0,1.0,1.0,1.0
