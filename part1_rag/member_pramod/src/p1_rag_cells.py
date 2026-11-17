@@ -1160,7 +1160,7 @@ class Conversation:
                 if g["verdict"] == "conflict" and g["value"] is not None:
                     for alt in {f["value"] for f in g["sources"] if abs(f["value"] - g["value"]) > 0.049}:
                         expr = re.sub(r"(?<![\d.])" + re.escape(fmt(alt)) + r"(?![\d])", fmt(g["value"]), expr)
-        falls = user_falls(self.user_values) if status == "session_override" else set()
+        falls = user_falls(self.user_values) if status in ("session_override", "answered") else set()  # a stated fall holds for the whole conversation
         if falls:
             # a user-stated fall enters the calculation as a negative growth rate, and the answer states it with its sign
             neg = lambda m: f"(-{m.group(0)})" if float(m.group(0)) in falls else m.group(0)
