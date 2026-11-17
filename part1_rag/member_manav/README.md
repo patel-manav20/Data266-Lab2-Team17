@@ -213,10 +213,10 @@ root's `links.txt`.
 ## Notebooks
 
 - `notebooks/p1_rag.ipynb`: the Kaggle notebook. It builds the full index, answers every question and
-  writes `submission.csv`. All code is inside the notebook. Current default settings (`READER_A2=True`,
-  `READER_A2_CHARTS=False`) match **Kaggle version 35** (`manavpatel2025/lab2-part1-run`), public score
-  **0.853** -- a single T4 by default (`CUDA_VISIBLE_DEVICES=0`, the reranker never targets a second
-  GPU), ~20 minutes total, 11 of 40 rows changed vs. version 34's `submission.csv` (0.828, itself
+  writes `submission.csv`. All code is inside the notebook. **Its saved outputs are from Kaggle version
+  35** (`manavpatel2025/lab2-part1-run`, `READER_A2=True`, `READER_A2_CHARTS=False`), public score
+  **0.853** -- a single T4 (`CUDA_VISIBLE_DEVICES=0`, the reranker never targets a second
+  GPU; `GPU count: 1`), 942.7s total, 11 of 40 rows changed vs. version 34's `submission.csv` (0.828, itself
   byte-identical to version 32's), all 11 the same single trigger class (an A2 answer) with unchanged
   status/citations/figure_references.
 - `notebooks/p1_eval.ipynb`: runs the frozen pipeline (by executing `p1_rag.ipynb`'s own cells, not a copy
