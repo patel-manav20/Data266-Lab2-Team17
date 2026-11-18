@@ -361,3 +361,6 @@ root's `links.txt`.
   sheets in `outputs/` -- each as a CSV and as a simple standalone HTML page
   (`p1_eval_groundedness_{manav,pramod}.html`) with a 1-5 dropdown per item and a "Download CSV" button,
   so each member can rate without editing a CSV by hand (same pattern as the Part 2/3 rating packs).
+
+**Team's final Kaggle submission:** the team selected Pramod's v19 (0.868) as the final Kaggle
+submission; my pipeline's best was v35 (0.853). Every result above is from my own pipeline, v35.
