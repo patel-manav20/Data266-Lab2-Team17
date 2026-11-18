@@ -22,12 +22,11 @@ Every commit on `member_manav` made with AI help carries a `Co-Authored-By` trai
 
 ## Pramod
 
-(to be confirmed by Pramod -- drafted from what his commits and README show, not from a direct
-statement by him)
+Confirmed by Pramod.
 
 | Tool | Used for |
 |---|---|
-| Claude Opus 5.5 | 50 of his 52 commits on `member_pramod` carry a `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` trailer (`git log member_pramod`), across all three parts. |
+| Claude Code (Claude Opus 5.5) | Used across all three parts to write and debug code, build the notebooks, analyse Kaggle and Colab outputs and draft documentation; he reviewed and ran every change himself. 51 of his 52 commits on `member_pramod` carry a `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` trailer (`git log member_pramod`), across all three parts. |
 | Codex | One commit's subject line is explicitly marked "(changes by Codex)" (`8dc1570`, Part 2: Drive persistence, input validation, CPU tests). His own `part2_diffusion/member_pramod/README.md` states under "AI tools used": "Codex reviewed and fixed the training/evaluation workflow and added CPU regression checks." |
 
 The report text was drafted with an AI coding assistant from our own notebook outputs and facts files, then reviewed and edited by us.

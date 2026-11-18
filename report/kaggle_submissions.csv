@@ -1,4 +1,5 @@
 ref,fileName,date,description,status,publicScore,privateScore
+58498182,submission.csv,2026-11-18 06:30:32.583000,"v20 69e8de2 final: tagged notebook p1-v1.0, from-scratch run, prints no question text",SubmissionStatus.COMPLETE,0.868,
 58487732,submission.csv,2026-11-18 00:39:36.427000,,SubmissionStatus.COMPLETE,0.853,
 58485242,submission.csv,2026-11-17 23:48:02.573000,v19 68fa972 notebook run: v18 plus a user-stated fall holds for the whole conversation,SubmissionStatus.COMPLETE,0.868,
 58453824,submission.csv,2026-11-17 03:08:05.827000,"v18 7242e72 notebook run: tables cited by label, figures with page; calculation only when asked; thin-answer retry",SubmissionStatus.COMPLETE,0.868,
