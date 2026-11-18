@@ -1,0 +1,14 @@
+\begin{table*}[t]
+\caption{Part 1 reranker comparison, Manav's golden set (bonus check)}
+\label{tab:p1-reranker}
+\centering\small
+\begin{tabular}{lc}
+\toprule
+Configuration & Score \\
+\midrule
+(c) Final v35 (Qwen3-Reranker-4B) & 0.7693 \\
+(d) Hybrid retrieval, no reranker at all & 0.7693 \\
+(b) Final minus strong reranker (bge-reranker-v2-m3) & 0.7967 \\
+\bottomrule
+\end{tabular}
+\end{table*}
