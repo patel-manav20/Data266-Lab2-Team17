@@ -34,14 +34,14 @@ The notebook is generated from `src/p1_rag_cells.py`, which uses `# %%` cell mar
 python part1_rag/member_pramod/src/build_p1_notebook.py part1_rag/member_pramod/src/p1_rag_cells.py part1_rag/member_pramod/notebooks/p1_rag.ipynb tests/p1_golden_pramod.json
 ```
 
-## Results (Kaggle run v19, commit `68fa972`)
+## Results (Kaggle run v20, commit `69e8de2`; the executed notebook is `notebooks/p1_rag.ipynb`, results in `outputs/`)
 
 Golden set: `tests/p1_golden_pramod.json`, 25 questions written before tuning and never edited.
 
 | System | Correct (of 25) | Status right | Recall@5 | Citation accuracy | Median s / question |
 |---|---|---|---|---|---|
-| Baseline (dense retrieval only) | 17 | 22 | 0.958 | 0.593 | 57.9 |
-| Final (hybrid retrieval + reconciliation engine) | **22** | **25** | **1.000** | **0.723** | 58.3 |
+| Baseline (dense retrieval only) | 17 | 22 | 0.958 | 0.593 | 57.2 |
+| Final (hybrid retrieval + reconciliation engine) | **22** | **25** | **1.000** | **0.723** | 58.0 |
 
 Remaining misses:
 - G10 gives the right fitted equation for Figure B-2 but leaves out the 2.9% growth threshold printed with it.
