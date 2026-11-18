@@ -9,10 +9,10 @@
 
 \begin{document}
 
-\title{DATA 266 Lab 2: Multimodal RAG, Domain-Specific Diffusion Fine-Tuning, and a Multi-Agent Image System}
+\title{DATA 266 Lab 2: Multimodal RAG, Domain-Specific Diffusion Fine-Tuning, and a Multi-Agent Image System\\[4pt]
+\large Pair\_Programming\_Team\_17 --- San Jose State University}
 
-\author{\IEEEauthorblockN{Manav Patel \and Pramodsatya Dindukurthi}
-\IEEEauthorblockA{Pair\_Programming\_Team\_17 \\ San Jose State University}}
+\author{\IEEEauthorblockN{Manav Patel \and Pramodsatya Dindukurthi}}
 
 \maketitle
 
@@ -22,8 +22,8 @@ system that answers questions about three economics PDFs, handling revisions, cr
 conflicts, false premises, user-supplied values, and an untrusted appendix. Both members built a
 complete, independent pipeline; the team's final Kaggle submission is Pramod's configuration (public
 score 0.868), and Manav's best pipeline reached 0.853 with a small rulebook-style generative
-answerer. Part 2 fine-tunes Stable Diffusion 1.5 with two LoRA adapters each (Manav: rank 8 and
-rank 32; Pramod: rank 4 and rank 32) on a Pokemon-captioned image set, and compares them against
+answerer. Part 2 fine-tunes Stable Diffusion 1.5 with two LoRA adapters each (Manav: rank~8 and
+rank~32; Pramod: rank~4 and rank~32) on a Pokemon-captioned image set, and compares them against
 the base model on KID, CLIP, LPIPS, and a blind human win rate. Part 3 is a five-agent system
 (Planner, Vision, Prompt Engineering, Image Generation, Critique) that reuses the Part 2 adapter for
 domain-style requests and revises its own output against a CLIP-and-rubric critic. For each part we
@@ -273,7 +273,7 @@ prompt match on out-of-domain requests.
 \centering
 \includegraphics[width=0.48\columnwidth]{figures/p2_failure_p16.png}\hfill
 \includegraphics[width=0.48\columnwidth]{figures/p2_failure_p11.png}
-\caption{Two Part 2 examples (rank 32, seed 0; Manav's pipeline). Left: compositional binding failure
+\caption{Two Part 2 examples (rank~32, seed 0; Manav's pipeline). Left: compositional binding failure
 (only one creature is recognizable). Right: an out-of-domain observation, not a failure mode (the
 adapter barely changes a realistic bus/rain/color scene).}
 \label{fig:p2-failures}
@@ -305,7 +305,7 @@ nearest training image (right), CLIP cosine similarity 0.9125.}
 \end{figure}
 
 \textbf{Model card summary (Manav, final run, on Hugging Face).} Base: \texttt{stable-diffusion-v1-5}.
-Adapter: LoRA, rank 32, on UNet attention. Data: \texttt{pokemon-blip-captions}, 743 training images,
+Adapter: LoRA, rank~32, on UNet attention. Data: \texttt{pokemon-blip-captions}, 743 training images,
 512$\times$512. Training: LR 1e-4, 2200 steps, effective batch 4, seed 266. Results: as in
 Table~\ref{tab:p2-results}. License: non-commercial research. Model:
 \url{https://huggingface.co/itzmnv/data266-lab2-sd15-pokemon-lora-r32}.
@@ -371,7 +371,7 @@ image, and 3 of 10 flagged visible instruction-like text in the image without a 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/p3_gradio_screenshot.png}
+\includegraphics[width=0.8\columnwidth]{figures/p3_gradio_screenshot.png}
 \caption{Gradio demo app screenshot (Manav's pipeline, from a real Playwright-driven run).}
 \label{fig:p3-gradio}
 \end{figure}
@@ -426,11 +426,11 @@ succeeded (single rater). Not for real-person editing or commercial use of the P
 Table~\ref{tab:human-status} summarizes who rated what in each part, with missing raters stated
 plainly rather than estimated or filled in.
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{Human evaluation status, both members, all parts}
 \label{tab:human-status}
 \centering\small
-\begin{tabular}{p{0.9cm}p{3.3cm}p{3.3cm}}
+\begin{tabular}{p{1.3cm}p{7.5cm}p{7.5cm}}
 \toprule
 Part & Manav & Pramod \\
 \midrule
@@ -439,7 +439,7 @@ Part & Manav & Pramod \\
 3 -- judging & judge\_1 only in (critic agreement 35\%, task success 11/15); judge\_2, outside rater 1 missing & none collected (automated numbers only) \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 No audio or video recordings of design discussions exist for either member.
 
