@@ -11,18 +11,19 @@ revision. Both members built a complete, independent pipeline for all three part
 
 | Part | Final system | Built by | Headline result | Source |
 |---|---|---|---|---|
-| 1 -- Multimodal RAG | Pramod's pipeline, Kaggle version 19 | Pramod (lead); Manav ran the full pipeline too | **0.868** public Kaggle score | `kaggle competitions submissions` |
+| 1 -- Multimodal RAG | Pramod's pipeline, Kaggle version 20 | Pramod (lead); Manav ran the full pipeline too | **0.868** public Kaggle score | `kaggle competitions submissions` |
 | 2 -- Diffusion fine-tuning | Manav's rank-32 LoRA | Manav (lead); Pramod ran the full pipeline too | KID 0.0349 vs. base 0.0909 | `part2_diffusion/member_manav/README.md` |
 | 3 -- Multi-agent system | Manav's pipeline | Manav (lead); Pramod ran the full pipeline too | human task success 11/15 | `part3_agents/member_manav/README.md` |
 
 **Part 1 Kaggle top score, each member's own pipeline:** Pramod **0.868** (v19, commit `68fa972`,
 also his best across all his tracked runs v6-v19) -- Manav **0.853** (v35, commit `310a1b5`, also his
 best across all his tracked runs v2-v35). Verified from the real `kaggle competitions submissions`
-history, not retyped from memory. The team's selected final submission is Pramod's v19.
+history, not retyped from memory. The team's selected final submission is Pramod's v20 (commit `69e8de2`,
+the committed notebook; same answering code as v19, public score 0.868).
 
 ## Quick links
 
-- **Kaggle final notebook:** `<Pramod's Kaggle notebook link>` (full list in `links.txt`)
+- **Kaggle final notebook:** https://www.kaggle.com/code/pramodsatyad/data266-p1-rag (version 20) (full list in `links.txt`)
 - **Hugging Face models and datasets:** listed in the Part 2 section below and in `links.txt`
 - **GitHub tags:** `p1-v1.0`, `p2-v1.0`, `p3-v1.0` -- created after this document, once both members'
   branches are merged into `main`
@@ -63,8 +64,8 @@ Data266-Lab2-Team17/
 re-estimate with a low-trust appendix) using their text, tables and figures as a read-only knowledge
 base, scored on Kaggle against a hidden question set.
 
-**Team's final submission: Pramod's v19 (commit `68fa972`), public score 0.868.** This beat Manav's
-best, v35 (0.853). Pramod's v19 code is the version copied into this repo's
+**Team's final submission: Pramod's v20 (commit `69e8de2`), public score 0.868** (v19, `68fa972`, scored the
+same with identical answering code). This beat Manav's best, v35 (0.853). Pramod's v20 code is the version copied into this repo's
 `part1_rag/member_pramod/` folder (see the "Final-submission check" note below for exactly which
 commit produced it and what its config shows).
 
@@ -87,7 +88,7 @@ answerer (`Qwen/Qwen3-8B`, 4-bit) blended in for explanatory questions only. Bes
 
 | Measurement | Pramod (final submission) | Manav | Source |
 |---|---|---|---|
-| Kaggle public score | **0.868** (v19) | 0.853 (v35) | `kaggle competitions submissions` |
+| Kaggle public score | **0.868** (v19 and v20) | 0.853 (v35) | `kaggle competitions submissions` |
 | Golden-set correct, of 25 | 22/25 (final) vs. 17/25 (baseline) | 15/25 (final = baseline, identical) | `part1_rag/member_pramod/outputs/p1_results_table.csv`; `p1_eval.ipynb` section (i) |
 | Recall@5 | 1.000 | 0.92 | `outputs/p1_results_table.csv`; `p1_eval.ipynb` section (b) |
 | Citation accuracy | 0.723 | 0.7867 | `outputs/p1_results_table.csv`; `p1_eval.ipynb` section (h) |

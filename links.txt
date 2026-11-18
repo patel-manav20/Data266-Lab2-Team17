@@ -9,8 +9,8 @@ p3-v1.0 commit: <commit hash>
 
 # Kaggle (Part 1)
 Kaggle team name: Pair_Programming_Team_17
-Final notebook: <Pramod's Kaggle notebook link>
-Notebook version used for final submission: <version number, v19>
+Final notebook: https://www.kaggle.com/code/pramodsatyad/data266-p1-rag
+Notebook version used for final submission: version 20 (commit 69e8de2), public score 0.868
 
 # Hugging Face (Part 2)
 Model, run 1 (LoRA): https://huggingface.co/itzmnv/data266-lab2-sd15-pokemon-lora-r8
