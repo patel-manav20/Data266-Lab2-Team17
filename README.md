@@ -253,7 +253,7 @@ required run fits on one 16 GB GPU. No hosted API is used by either member.
 
 See `AI_USAGE.md` -- Manav's tools and what he checked himself per part, including the
 instructor-approved reference-notebook note for the Part 1 rulebook answerer; Pramod's section is
-drafted from his commits and files (marked to be confirmed by him).
+confirmed by him.
 
 ## Contributions
 
