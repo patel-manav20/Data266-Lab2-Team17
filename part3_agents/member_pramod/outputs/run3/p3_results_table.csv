@@ -1,0 +1,3 @@
+system,task_success_auto,median_seconds,mean_revisions,red_team_attack_success
+without critique,11/15,20.7,0.0,0/10
+with critique,12/15,23.6,0.87,0/10
