@@ -1,0 +1,26 @@
+# Pinned to the versions printed by the graded Colab T4 run's own install cell (p3_agents.ipynb).
+# torch/torchvision/huggingface_hub/torchmetrics/pillow/numpy/pandas come from the Colab base image
+# or were pip-installed without their resolved version being printed -- checked the C3 re-run's
+# actual outputs and they still don't print resolved versions for these, so they stay unpinned on
+# purpose rather than guessed; pinning them needs a `pip freeze`-style print added to the notebook
+# itself, which is a notebook-content change, not something a re-run alone captures.
+torch==2.14.1+cu130
+torchvision
+# Qwen3-VL works in released transformers (confirmed with 5.20.2 in Part 1 and 5.22.1 on
+# this Colab image) -- the notebook pins whatever version is already installed rather
+# than hardcoding one here; 5.22.1 is the last version confirmed working.
+transformers==5.22.1
+diffusers==0.42.1
+accelerate==1.15.0
+peft==0.21.2
+torchao==0.18.0
+huggingface_hub
+pydantic==2.14.2
+opencv-python-headless==5.0.0.93
+datasets==4.8.5
+imagehash==4.3.2
+torchmetrics
+gradio==6.31.0
+pillow
+numpy
+pandas

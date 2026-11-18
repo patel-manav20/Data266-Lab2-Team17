@@ -1,5 +1,25 @@
-GitHub:
-Tag commits:
-Hugging Face models:
-Hugging Face image dataset:
-Kaggle notebook:
+Team: Pair_Programming_Team_17
+Members: Manav Patel (019162455), Pramodsatya Dindukurthi (019124612)
+
+# GitHub
+Repository: https://github.com/patel-manav20/Data266-Lab2-Team17
+p1-v1.0 commit: <commit hash>
+p2-v1.0 commit: <commit hash>
+p3-v1.0 commit: <commit hash>
+
+# Kaggle (Part 1)
+Kaggle team name: Pair_Programming_Team_17
+Final notebook: https://www.kaggle.com/code/manavpatel2025/lab2-part1-run
+Notebook version used for final submission: 35
+
+# Hugging Face (Part 2)
+Model, run 1 (LoRA): https://huggingface.co/itzmnv/data266-lab2-sd15-pokemon-lora-r8
+Model, run 2: https://huggingface.co/itzmnv/data266-lab2-sd15-pokemon-lora-r32
+Generated images dataset: https://huggingface.co/datasets/itzmnv/data266-lab2-sd15-pokemon-generations
+
+# Hugging Face (Part 3)
+Input images dataset (optional): https://huggingface.co/datasets/itzmnv/data266-lab2-p3-input-images
+Space (optional, bonus): none
+
+# Recordings
+Folder with meeting recordings (optional): none

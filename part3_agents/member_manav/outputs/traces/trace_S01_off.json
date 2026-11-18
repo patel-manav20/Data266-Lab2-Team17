@@ -1,0 +1,58 @@
+{
+  "request": "Describe this picture. What color is the bus, and how many people are waiting at the stop?",
+  "image": {
+    "path": "/content/p3_images/s01_bus_people_street.jpg",
+    "valid": true,
+    "error": null,
+    "width": 612,
+    "height": 612
+  },
+  "route": "caption_question",
+  "safety": {
+    "unsafe_request": false,
+    "real_person_deceptive_edit": false,
+    "instruction_in_image": false,
+    "instruction_text_found": null,
+    "reason": null
+  },
+  "vision": {
+    "caption": "A white and red Metropolitan Transit System bus is parked at a stop with passengers inside and a driver visible, under the shade of trees with a modern building in the background.",
+    "objects": [
+      "bus",
+      "driver",
+      "passengers",
+      "trees",
+      "building",
+      "sign"
+    ],
+    "visible_text": "Metropolitan Transit System; 1005; 2 DOWNTOWN",
+    "qa": {
+      "Describe this picture. What color is the bus, and how many people are waiting at the stop?": "The bus is white and red, and there are no people visibly waiting at the stop; passengers are inside the bus.",
+      "What is the overall scene or setting?": "The scene is an urban street with a modern building, trees, and a public transit bus stopped at a curb.",
+      "Is there any text visible in the image? If so, what does it say?": "Yes, the text includes 'Metropolitan Transit System', '1005', and '2 DOWNTOWN'."
+    },
+    "too_dark_or_small": false
+  },
+  "prompt": null,
+  "negative_prompt": null,
+  "generation": null,
+  "generation_history": [],
+  "critique": null,
+  "critique_history": [],
+  "revision_count": 0,
+  "errors": [],
+  "final_message": "A white and red Metropolitan Transit System bus is parked at a stop with passengers inside and a driver visible, under the shade of trees with a modern building in the background. Visible text in the image: \"Metropolitan Transit System; 1005; 2 DOWNTOWN\" The bus is white and red, and there are no people visibly waiting at the stop; passengers are inside the bus.",
+  "final_image_path": null,
+  "trace": [
+    {
+      "agent": "Planner",
+      "time_s": 0.07732577699994181,
+      "summary": "route=caption_question"
+    },
+    {
+      "agent": "Vision Understanding",
+      "time_s": 14.481813114000033,
+      "summary": "caption='A white and red Metropolitan Transit System bus is parked at'"
+    }
+  ]
+}

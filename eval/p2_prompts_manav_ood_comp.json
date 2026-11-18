@@ -1,0 +1,52 @@
+[
+  {
+    "id": "P11",
+    "type": "out_of_domain",
+    "prompt": "a red double-decker bus on a rainy london street"
+  },
+  {
+    "id": "P12",
+    "type": "out_of_domain",
+    "prompt": "a bowl of ramen with chopsticks on a wooden table"
+  },
+  {
+    "id": "P13",
+    "type": "out_of_domain",
+    "prompt": "a lighthouse on a rocky coast at sunset"
+  },
+  {
+    "id": "P14",
+    "type": "out_of_domain",
+    "prompt": "an astronaut riding a bicycle on the moon"
+  },
+  {
+    "id": "P15",
+    "type": "out_of_domain",
+    "prompt": "a portrait of an old fisherman wearing a yellow raincoat"
+  },
+  {
+    "id": "P16",
+    "type": "compositional",
+    "prompt": "two cartoon creatures, one red and one blue, standing side by side"
+  },
+  {
+    "id": "P17",
+    "type": "compositional",
+    "prompt": "a small green creature sitting on top of a large orange creature"
+  },
+  {
+    "id": "P18",
+    "type": "compositional",
+    "prompt": "three yellow creatures in a row, the middle one wearing a hat"
+  },
+  {
+    "id": "P19",
+    "type": "compositional",
+    "prompt": "a blue fish-like creature on the left and a purple bird on the right"
+  },
+  {
+    "id": "P20",
+    "type": "compositional",
+    "prompt": "a white cat-like creature holding a red ball under a tree"
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "request": "List the main objects on the table. Is there a cup?",
+  "image": {
+    "path": "/content/p3_images/s03_kitchen_table_cup.jpg",
+    "valid": true,
+    "error": null,
+    "width": 640,
+    "height": 480
+  },
+  "route": "caption_question",
+  "safety": {
+    "unsafe_request": false,
+    "real_person_deceptive_edit": false,
+    "instruction_in_image": false,
+    "instruction_text_found": null,
+    "reason": null
+  },
+  "vision": {
+    "caption": "A modern kitchen with a wooden island, black countertop, and large windows overlooking a garden.",
+    "objects": [
+      "kitchen island",
+      "sink",
+      "faucet",
+      "countertop",
+      "windows",
+      "chairs",
+      "table",
+      "cup",
+      "pitcher",
+      "bowl",
+      "towel",
+      "coffee maker"
+    ],
+    "visible_text": "",
+    "qa": {
+      "List the main objects on the table. Is there a cup?": "Yes, there is a cup on the table along with a bowl and a pitcher.",
+      "What is the overall scene or setting?": "A modern kitchen with a wooden island, black countertop, and large windows overlooking a garden.",
+      "Is there any text visible in the image? If so, what does it say?": "No text is visible."
+    },
+    "too_dark_or_small": false
+  },
+  "prompt": null,
+  "negative_prompt": null,
+  "generation": null,
+  "generation_history": [],
+  "critique": null,
+  "critique_history": [],
+  "revision_count": 0,
+  "errors": [],
+  "final_message": "A modern kitchen with a wooden island, black countertop, and large windows overlooking a garden. Yes, there is a cup on the table along with a bowl and a pitcher.",
+  "final_image_path": null,
+  "trace": [
+    {
+      "agent": "Planner",
+      "time_s": 0.052024324000058186,
+      "summary": "route=caption_question"
+    },
+    {
+      "agent": "Vision Understanding",
+      "time_s": 10.334626092000008,
+      "summary": "caption='A modern kitchen with a wooden island, black countertop, and'"
+    }
+  ]
+}

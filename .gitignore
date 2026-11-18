@@ -15,6 +15,10 @@ kb_manifest.json
 
 outputs/generated/
 
+# scratch environment-probe notebooks -- not part of the graded pipeline, and not guaranteed to
+# run on the T4/P100 the lab requires (p2_colab_check.ipynb was last run on an A100)
+*_colab_check.ipynb
+
 chroma/
 chroma_db/
 
@@ -28,3 +32,4 @@ __pycache__/
 venv/
 wandb/
 lightning_logs/
+part2_diffusion/member_manav/outputs/rating/blind_answer_key.csv

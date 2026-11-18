@@ -1,0 +1,313 @@
+{
+ "description": "Dev set B: 12 casual, multi-concept questions written from the PDFs (not from Questions.csv). Each item has one casual question, 3 to 5 required terms that a good answer must contain, the source pages and the exact source sentences. Every term and sentence was checked with pdfplumber on the PDFs. Used to measure the text route; no golden item.",
+ "page_numbering": "pdf_page is the 1-based page of the PDF file, the same numbering as DOCn:pN citations",
+ "items": [
+  {
+   "id": "B01",
+   "topic": "did the crisis hit emerging countries as hard as rich ones",
+   "question": "Did the crisis hit the emerging countries as hard as the rich ones, or did they get off easier?",
+   "required_terms": [
+    "stock prices",
+    "remained positive",
+    "4 percentage points",
+    "largely recovered"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 2
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 3
+    }
+   ],
+   "sentences": [
+    "Note also that, despite the fact that the crisis originated in the United States, European and emerging market stock prices decreased by as much as their U.S. counterparts; we shall return to this later.",
+    "Growth in emerging and developing economies remained positive but was nearly 4 percentage points lower than the 2000–2007 average.",
+    "Emerging and developing economies have largely recovered."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B02",
+   "topic": "does the euro suit every member",
+   "question": "Does the euro work just as well for every country that uses it?",
+   "required_terms": [
+    "common monetary policy",
+    "same interest rate",
+    "deep recessions",
+    "Greece"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 9
+    }
+   ],
+   "sentences": [
+    "They point out that a common currency means a common monetary policy, which means the same interest rate across the euro countries.",
+    "The first country needs lower interest rates to increase spending and output; the second country needs higher interest rates to slow down its economy.",
+    "A number of euro members, from Ireland, to Portugal, to Greece, are going through deep recessions."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B03",
+   "topic": "why a euro member cannot lower its own interest rate",
+   "question": "Why can't a country in the euro area just cut its own interest rate when it's in a slump?",
+   "required_terms": [
+    "same interest rate",
+    "own currency",
+    "depreciated",
+    "exports"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 9
+    }
+   ],
+   "sentences": [
+    "They point out that a common currency means a common monetary policy, which means the same interest rate across the euro countries.",
+    "If they had their own currency, they likely would have decreased their interest rate or depreciated their currency vis à vis other euro members to increase the demand for their exports.",
+    "Thus, some economists argue that they should drop out of the euro."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B04",
+   "topic": "is very low unemployment always good",
+   "question": "Is really low unemployment always a good thing?",
+   "required_terms": [
+    "labor shortages",
+    "too low",
+    "4%",
+    "overheat",
+    "inflation"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 25
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 29
+    }
+   ],
+   "sentences": [
+    "Like an engine running at too high a speed, an economy in which unemployment is very low may be overutilizing its resources and run into labor shortages.",
+    "At the end of 2000, some economists worried that the unemployment rate, 4% at the time, was indeed too low.",
+    "But intuition suggests that, when unemployment becomes very low, the economy is likely to overheat, and that this will lead to upward pressure on inflation."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B05",
+   "topic": "is inflation always bad and deflation good",
+   "question": "If inflation is so bad, does that mean falling prices are a good thing?",
+   "required_terms": [
+    "deflation",
+    "same problems",
+    "uncertainty",
+    "monetary policy"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 28
+    }
+   ],
+   "sentences": [
+    "If inflation is so bad, does this imply that deflation (negative inflation) is good?",
+    "First, high deflation (a large negative rate of inflation) would create many of the same problems as high inflation, from distortions to increased uncertainty.",
+    "Second, as we shall see later in the book, even a low rate of deflation limits the ability of monetary policy to affect output."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B06",
+   "topic": "why output per person needs a price adjustment across countries",
+   "question": "Why can't you just compare income per person in dollars between a poor country and a rich one?",
+   "required_terms": [
+    "restaurant meal",
+    "Beijing",
+    "PPP",
+    "purchasing power parity"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 10
+    }
+   ],
+   "sentences": [
+    "For example, the price of an average restaurant meal in New York City is about 20 dollars; the price of an average restaurant meal in Beijing is about 25 yuans, or, at the current exchange rate, about 4 dollars.",
+    "Put another way, the same income (expressed in dollars) buys you much more in Beijing than in New York City.",
+    "If we want to compare standards of living, we have to correct for these differences; measures which do so are called PPP (for purchasing power parity) measures."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B07",
+   "topic": "why GDP is not the sum of all sales",
+   "question": "Why isn't GDP just all the sales in the economy added up?",
+   "required_terms": [
+    "$300",
+    "intermediate good",
+    "steel",
+    "final goods"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 17
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 18
+    }
+   ],
+   "sentences": [
+    "As the sum of the values of all goods produced in the economy—the sum of $100 from the production of steel and $200 from the production of cars, so $300?",
+    "Because steel is an intermediate good: It is used in the production of cars.",
+    "We want to count only the production of final goods, not intermediate goods."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B08",
+   "topic": "why the unemployment rate can mislead when jobs are scarce",
+   "question": "Can the unemployment rate make things look better than they really are when jobs are hard to find?",
+   "required_terms": [
+    "give up looking",
+    "no longer counted",
+    "participation rate",
+    "labor force"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 23
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 24
+    }
+   ],
+   "sentences": [
+    "When unemployment is high, some of the unemployed give up looking for a job and therefore are no longer counted as unemployed.",
+    "Equivalently, a higher unemployment rate is typically associated with a lower participation rate, defined as the ratio of the labor force to the total population of working age."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B09",
+   "topic": "do politicians agree on how to cut the U.S. deficit",
+   "question": "Do politicians at least agree on how to fix the U.S. deficit?",
+   "required_terms": [
+    "political lines",
+    "Republicans",
+    "decreases in spending",
+    "Democrats",
+    "increase in taxes"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 6
+    }
+   ],
+   "sentences": [
+    "Even if there is agreement on the need for deficit reduction, there is much less agreement on how it should be achieved.",
+    "The disagreement is along political lines.",
+    "Republicans believe that it should be done primarily through decreases in spending.",
+    "Democrats believe that most existing programs are justified, and they are more inclined to want to do the adjustment through an increase in taxes."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B10",
+   "topic": "why 2001 counts as a recession despite positive growth",
+   "question": "How can people call 2001 a recession if the economy still grew that year?",
+   "required_terms": [
+    "2001",
+    "first three quarters",
+    "negative",
+    "mild"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 21
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 22
+    }
+   ],
+   "sentences": [
+    "According to the graph, growth was positive in 2001.",
+    "Although GDP growth was positive for 2001 as a whole, it was negative during each of the first three quarters of 2001; thus 2001 qualifies as a (mild) recession."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B11",
+   "topic": "what drives output in the short run versus the long run",
+   "question": "What actually moves output: is it people's demand or stuff like schools and saving?",
+   "required_terms": [
+    "demand",
+    "short run",
+    "long run",
+    "education system",
+    "saving rate"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 30
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 31
+    }
+   ],
+   "sentences": [
+    "Reading newspapers suggests a first answer: Movements in output come from movements in the demand for goods.",
+    "This suggests a third answer: The true determinants of output are factors like a country’s education system, its saving rate, and the quality of its government.",
+    "In the short run, say, a few years, the first answer is the right one.",
+    "In the long run, say, a few decades or more, the third answer is the right one."
+   ],
+   "status": "answered"
+  },
+  {
+   "id": "B12",
+   "topic": "why China's growth is not a simple recipe for other poor countries",
+   "question": "Can other poor countries just copy what China did to grow so fast?",
+   "required_terms": [
+    "central planning",
+    "transition",
+    "decrease in output",
+    "property rights"
+   ],
+   "source": [
+    {
+     "doc": "DOC1",
+     "pdf_page": 11
+    },
+    {
+     "doc": "DOC1",
+     "pdf_page": 12
+    }
+   ],
+   "sentences": [
+    "China is one of a number of countries that made the transition from central planning to a market economy.",
+    "Most of the other countries, from Central Europe to Russia and the other former Soviet republics, experienced a large decrease in output at the time of transition.",
+    "Others argue that the fact that the communist party has remained in control has actually helped the economic transition; tight political control has allowed for a better protection of property rights, at least for new firms, giving them incentives to invest."
+   ],
+   "status": "answered"
+  }
+ ]
+}

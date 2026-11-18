@@ -1,0 +1,25 @@
+# Pinned to the versions printed by the graded Colab T4 run's own install cells (p2_finetune.ipynb,
+# p2_generate_eval.ipynb). torch/torchvision/huggingface_hub/tensorboard/pillow/numpy/pandas/matplotlib
+# come from the Colab base image (not pip-installed by these notebooks) -- checked the C2 re-run's
+# actual outputs and they still don't print resolved versions for these, so they stay unpinned on
+# purpose rather than guessed; pinning them needs a `pip freeze`-style print added to the notebook
+# itself, which is a notebook-content change, not something a re-run alone captures.
+torch==2.14.1+cu130
+torchvision
+diffusers==0.42.1
+transformers
+accelerate==1.15.0
+peft==0.21.2
+torchao==0.18.0
+datasets==4.8.5
+huggingface_hub
+torchmetrics==1.9.0
+torch-fidelity==0.4.0
+lpips==0.1.4
+open_clip_torch==4.2.2
+imagehash==4.3.2
+tensorboard
+pillow
+numpy
+pandas
+matplotlib

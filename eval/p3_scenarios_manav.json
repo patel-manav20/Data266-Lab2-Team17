@@ -1,0 +1,190 @@
+[
+  {
+    "id": "S01",
+    "category": "caption_question",
+    "request": "Describe this picture. What color is the bus, and how many people are waiting at the stop?",
+    "input": "a COCO street photo with a bus and a few people at a bus stop",
+    "expected_route": "caption/question",
+    "rubric": [
+      "The caption mentions the bus and the street",
+      "The bus color is correct",
+      "The people count is right within one, or the answer says it is not sure",
+      "The trace stops after Vision Understanding, with no image generated"
+    ]
+  },
+  {
+    "id": "S02",
+    "category": "caption_question",
+    "request": "What does the sign say, and what kind of shop is this?",
+    "input": "a photo of a shop front with a large readable sign",
+    "expected_route": "caption/question",
+    "rubric": [
+      "The visible text field has the main words of the sign",
+      "The shop type matches the photo",
+      "No image is generated"
+    ]
+  },
+  {
+    "id": "S03",
+    "category": "caption_question",
+    "request": "List the main objects on the table. Is there a cup?",
+    "input": "a COCO kitchen photo with a table, plates and a cup",
+    "expected_route": "caption/question",
+    "rubric": [
+      "The object list has at least three objects that are really on the table",
+      "The cup question is answered correctly",
+      "No object is listed that is not in the photo"
+    ]
+  },
+  {
+    "id": "S04",
+    "category": "style_change",
+    "request": "Make this look like a watercolor painting.",
+    "input": "a COCO photo of a dog sitting in a park",
+    "expected_route": "style change",
+    "rubric": [
+      "The output looks like a watercolor painting",
+      "The dog and the overall layout are kept",
+      "The trace records model, prompt, seed and steps"
+    ]
+  },
+  {
+    "id": "S05",
+    "category": "style_change",
+    "request": "Turn this photo into a pencil sketch.",
+    "input": "a COCO photo of a bicycle leaning on a wall",
+    "expected_route": "style change",
+    "rubric": [
+      "The output looks like a pencil sketch (grey lines, little color)",
+      "The bicycle is still clearly visible",
+      "The critique decision (accept or revise) is in the trace"
+    ]
+  },
+  {
+    "id": "S06",
+    "category": "style_change",
+    "request": "Change the style to an oil painting with thick brush strokes.",
+    "input": "a landscape photo with mountains and a lake",
+    "expected_route": "style change",
+    "rubric": [
+      "The output looks like an oil painting",
+      "The mountains and the lake are still there",
+      "No new large objects are added"
+    ]
+  },
+  {
+    "id": "S07",
+    "category": "edit_enhancement",
+    "request": "Change the color of the car to blue.",
+    "input": "a photo of a red car parked on a street",
+    "expected_route": "edit",
+    "rubric": [
+      "The car is blue in the output",
+      "The background and the car shape stay the same",
+      "The trace shows the edit model was used"
+    ]
+  },
+  {
+    "id": "S08",
+    "category": "edit_enhancement",
+    "request": "Add a small party hat on the cat.",
+    "input": "a COCO photo of a cat lying on a sofa",
+    "expected_route": "edit",
+    "rubric": [
+      "A hat is visible on the cat's head",
+      "The cat and the sofa are kept",
+      "If the first try fails, the critique gives a concrete revise instruction"
+    ]
+  },
+  {
+    "id": "S09",
+    "category": "edit_enhancement",
+    "request": "This photo is too dark. Make it brighter and clearer.",
+    "input": "a dark, slightly blurry photo of a living room",
+    "expected_route": "edit",
+    "rubric": [
+      "The output is brighter than the input",
+      "The furniture and room layout are the same",
+      "No new objects are added"
+    ]
+  },
+  {
+    "id": "S10",
+    "category": "domain_style",
+    "request": "Draw a cute green Pokemon-style creature with leaf wings.",
+    "input": "no image, text only",
+    "expected_route": "domain-style generation",
+    "rubric": [
+      "The trace shows the Part 2 LoRA model from Hugging Face",
+      "The image has the Pokemon art style (clean shapes, flat colors)",
+      "The creature is green and has leaf-like wings",
+      "A CLIP score is recorded in the trace"
+    ]
+  },
+  {
+    "id": "S11",
+    "category": "domain_style",
+    "request": "Turn my cat into a Pokemon-style creature.",
+    "input": "a photo of an orange cat sitting on the floor",
+    "expected_route": "domain-style generation",
+    "rubric": [
+      "The trace shows the Part 2 LoRA model was used",
+      "The output is in the Pokemon art style",
+      "The orange color and sitting pose are kept"
+    ]
+  },
+  {
+    "id": "S12",
+    "category": "domain_style",
+    "request": "Make two Pokemon-style creatures side by side, one red fire type and one blue water type.",
+    "input": "no image, text only",
+    "expected_route": "domain-style generation",
+    "rubric": [
+      "Two creatures are visible",
+      "One is mostly red and one is mostly blue",
+      "The image is in the Pokemon art style",
+      "The final prompt in the trace keeps both creatures and both colors"
+    ]
+  },
+  {
+    "id": "S13",
+    "category": "ambiguous_broken",
+    "request": "Make it better.",
+    "input": "a COCO photo of a dog on a beach",
+    "expected_route": "unsupported",
+    "expected_message": "Asks what the user wants (for example a style change, an edit or a brighter photo) and does not generate an image.",
+    "rubric": [
+      "No crash",
+      "A clear message asks the user to say what change they want",
+      "No image is generated",
+      "The trace shows the Planner marked the request as ambiguous"
+    ]
+  },
+  {
+    "id": "S14",
+    "category": "ambiguous_broken",
+    "request": "Describe this image.",
+    "input": "a broken JPG file (the file is cut off and cannot be opened)",
+    "expected_route": "unsupported",
+    "expected_message": "Says the image could not be opened and asks for a valid JPG or PNG file.",
+    "rubric": [
+      "No crash",
+      "A clear error message is shown",
+      "No agent after the Planner runs",
+      "A JSON trace is still saved with the error"
+    ]
+  },
+  {
+    "id": "S15",
+    "category": "ambiguous_broken",
+    "request": "What is in this picture?",
+    "input": "a very small (32x32), almost black image",
+    "expected_route": "caption/question",
+    "expected_message": "Says the image is too small or too dark to describe with confidence and asks for a clearer image.",
+    "rubric": [
+      "No crash",
+      "The answer says the image is too dark or too small instead of guessing objects",
+      "The user is asked for a clearer image"
+    ]
+  }
+]

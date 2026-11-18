@@ -1,0 +1,3 @@
+system,score,answer,status,figure_F1,citations
+"a_baseline (dense-only, no reranker)",0.7693,0.6433,0.96,0.8133,0.7867
+c_final_v35 (current default),0.7693,0.6433,0.96,0.8133,0.7867
