@@ -2,5 +2,5 @@ measurement type,metric,value
 primary,correct answers out of 25 golden (score >= 0.8),15/25 (60%)
 secondary,"Recall@5 (golden, hybrid retrieval)",0.92
 secondary,"citation accuracy (citations component, v35 config)",0.7867
-human,groundedness rating (both members),pending -- see section (d)
+human,"groundedness rating, manav (n=25, 1-5)","mean 4.56 -- pramod, outside rater 1 missing"
 efficiency,median seconds per question (v35 real 40-question run),0.14 s
