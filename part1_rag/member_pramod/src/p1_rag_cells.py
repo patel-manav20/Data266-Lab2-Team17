@@ -1234,7 +1234,8 @@ for conv_id, turns in q.groupby("conversation_id", sort=False):
                      "figure_references": ",".join(a["figure_references"]) or "NONE",
                      "citations": ",".join(a["citations"]) or "NONE", "status": a["status"]})
         log.append({"id": r["id"], "question": r["question"], **{k: a[k] for k in ["answer", "status", "citations", "figure_references", "seconds"]}})
-        print(f"[{r['id']}] {r['question']}\n  -> {a['status']} | {rows[-1]['figure_references']} | {rows[-1]['citations']}\n  {a['answer']}\n", flush=True)
+        # only the row number is printed: question text and IDs stay out of the saved outputs
+        print(f"[{r['id']}] -> {a['status']} | {rows[-1]['figure_references']} | {rows[-1]['citations']}\n  {a['answer']}\n", flush=True)
 pd.DataFrame(rows).set_index("id").loc[q["id"]].reset_index().to_csv("submission.csv", index=False)
 json.dump(log, open(f"{OUT}/submission_log.json", "w"), indent=1)
 print("total minutes: %.1f, median seconds per question: %.1f" % ((time.time() - t_all) / 60, np.median([l["seconds"] for l in log])))
