@@ -80,5 +80,10 @@ fairness guarantee between the critique-on and critique-off runs.
 
 ## Meeting recordings
 
-No audio or video recordings of knowledge-transfer sessions or architecture trade-off discussions
-exist for either member. Stated plainly rather than inventing any.
+Folder: https://drive.google.com/drive/folders/1oCFDsvJGlZswKFr2T6k7Qt7PPnCy1Ze-
+
+| Date | Topic | Link |
+|---|---|---|
+| 2026-11-17 | Knowledge transfer and design trade-offs across Parts 1-3 (each member explains his own pipeline; demo plan) | https://drive.google.com/drive/folders/1oCFDsvJGlZswKFr2T6k7Qt7PPnCy1Ze- |
+
+No earlier sessions were recorded.

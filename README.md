@@ -241,8 +241,8 @@ the Gradio app.
 | 2 -- blind win rate | rater_1/manav (0.40, n=25) | rater_2 (pramod), outside rater 1 | none | all three |
 | 3 -- judging | judge_1/manav (critic agreement 35%, task success 11/15) | judge_2 (pramod), outside rater 1 | none | all |
 
-No audio or video recordings of design discussions exist for either member -- see
-`CONTRIBUTIONS.md`.
+One knowledge-transfer and design trade-off session (Parts 1-3) was recorded on 2026-11-17; earlier
+discussions were not recorded. Link in `CONTRIBUTIONS.md` and `links.txt`.
 
 ## Reproducibility
 

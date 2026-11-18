@@ -22,4 +22,4 @@ Input images dataset (optional): https://huggingface.co/datasets/itzmnv/data266-
 Space (optional, bonus): none
 
 # Recordings
-Folder with meeting recordings (optional): none
+Folder with meeting recordings: https://drive.google.com/drive/folders/1oCFDsvJGlZswKFr2T6k7Qt7PPnCy1Ze-
