@@ -15,6 +15,11 @@ revision. Both members built a complete, independent pipeline for all three part
 | 2 -- Diffusion fine-tuning | Manav's rank-32 LoRA | Manav (lead); Pramod ran the full pipeline too | KID 0.0349 vs. base 0.0909 | `part2_diffusion/member_manav/README.md` |
 | 3 -- Multi-agent system | Manav's pipeline | Manav (lead); Pramod ran the full pipeline too | human task success 11/15 | `part3_agents/member_manav/README.md` |
 
+**Part 1 Kaggle top score, each member's own pipeline:** Pramod **0.868** (v19, commit `68fa972`,
+also his best across all his tracked runs v6-v19) -- Manav **0.853** (v35, commit `310a1b5`, also his
+best across all his tracked runs v2-v35). Verified from the real `kaggle competitions submissions`
+history, not retyped from memory. The team's selected final submission is Pramod's v19.
+
 ## Quick links
 
 - **Kaggle final notebook:** `<Pramod's Kaggle notebook link>` (full list in `links.txt`)
