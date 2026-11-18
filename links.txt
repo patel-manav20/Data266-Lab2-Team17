@@ -1,5 +1,5 @@
 Team: Pair_Programming_Team_17
-Members: Manav Patel (<SJSU ID>), Pramodsatya Dindukurthi (<SJSU ID>)
+Members: Manav Patel (019162455), Pramodsatya Dindukurthi (019124612)
 
 # GitHub
 Repository: https://github.com/patel-manav20/Data266-Lab2-Team17
