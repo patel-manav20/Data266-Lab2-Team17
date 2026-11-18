@@ -47,6 +47,11 @@ Remaining misses:
 - G10 gives the right fitted equation for Figure B-2 but leaves out the 2.9% growth threshold printed with it.
 - G18 and G19 are a two-turn conversation about Greece. G18 compares a user-assumed value with Spain from a dense country chart and gets the gap wrong. G19 ("its rate two years earlier") needs Figure A-6 and is answered from the wrong chart.
 
+Human groundedness (both members scored all 25 final answers independently from 1 to 5; computed in `notebooks/p1_human_eval.ipynb` from `outputs/p1_human_ratings.csv`):
+- mean **4.30 / 5** (member1 4.16, member2 4.44);
+- exact agreement 48%, agreement within one point 100%;
+- the 3 answers judged wrong on the golden set average 3.00, the 22 correct ones 4.48.
+
 Public leaderboard for the notebook's own submissions: v6 0.728 → v9 0.721 → v13 0.857 → v16 0.857 → **v18 0.868 → v19 0.868**. Format tests on the same answers:
 - table citations with pages: 0.857;
 - tables by label only: 0.868;
