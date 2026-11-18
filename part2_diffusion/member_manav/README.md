@@ -138,6 +138,26 @@ Both model cards on Hugging Face state this.
   These are CLIP embedding similarities, not pixel-identical matches, but 0.91 is high enough to flag:
   rank 32's P02 and P05 generations lean closer to specific training images than most other prompts do.
 
+### Failure modes
+
+Two generated examples, inspected directly (`p2_generate_eval.ipynb`'s failure-mode cell, right after the
+grid); image descriptions were drafted with the coding agent's help and checked by the user against the
+images (see `AI_USAGE.md`).
+
+- **Compositional binding (P16, "two cartoon creatures, one red and one blue, standing side by side",
+  rank 32, seed 0)**: only one clearly recognisable creature (blue); the red area is a single spotted mass
+  with no limbs or head, so "one red and one blue creature side by side" is not met, and an extra dark
+  striped shape appears at the left edge.
+- **Unusable in-domain outputs from the safety filter**: 8 of 120 images (all from the fine-tuned runs, 7
+  of them in-domain prompts, base 0 -- see the NSFW table above) were replaced by black placeholders by the
+  SD 1.5 safety checker, most likely false positives on the learned cartoon style rather than real unsafe
+  content. Example: `run_r32_P04_s0.png`, shown in the notebook's new failure-mode-2 cell.
+
+**Observation, not a failure mode (P11, "a red double-decker bus on a rainy london street", rank 32, seed
+0)**: rank 32 kept a realistic bus with the rain and colour intact for this out-of-domain prompt, so the
+LoRA barely changes out-of-domain prompts. Together with rater_1's 10/25 win rate, this supports choosing
+rank 32 for in-domain style (best KID) while noting it does not help prompt match.
+
 ### Human evaluation
 
 A rater pack (`outputs/rating/rater_1.html`, `rater_2.html`, `rater_3.html`, plus a blank

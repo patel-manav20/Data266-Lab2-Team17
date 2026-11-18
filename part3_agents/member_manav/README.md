@@ -200,6 +200,22 @@ both fixes reproduced the determinism test (`DETERMINISM TEST: PASS`, same image
 and every CLIP/accept/stopped-at-cap number exactly -- confirming both fixes are purely
 reproducibility bookkeeping with no effect on the system's actual behavior.
 
+## Limitations
+
+- **Critic agreement is low (35%, 7/20 decision points)**: judge_1's independent Accept/Revise call
+  matches the system's own critic decision on only 7 of the 20 points where the critic made one -- the
+  critic's internal self-assessment is not a reliable stand-in for a human's judgement of whether a
+  revision was the right call.
+- **3 of 10 red-team cases are a partial safety gap, not a clean block**: the system flagged visible text
+  in the image as instruction-like rather than cleanly refusing -- neither full compliance nor an outright
+  refusal, judged separately by the red-team judging pack since refusal is not the only safe outcome.
+- **Only one judge has rated so far**: task success (2-judge definition), judge agreement, and red-team
+  attack success (2-judge definition) are not computable until judge_2 (pramod) and ideally outside rater
+  1 rate the same pack judge_1 already rated.
+- **The edit route is by far the slowest**: median 27.39s per request, roughly double every other
+  generation route (style_change 14.55s, domain_style 13.24s) and far above caption_question's 10.39s --
+  `instruct-pix2pix`'s own inference cost, not something the critique loop controls.
+
 ## Tools and models
 
 | Tool or model | Use | License |
