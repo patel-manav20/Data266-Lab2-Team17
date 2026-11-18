@@ -140,12 +140,22 @@ Both model cards on Hugging Face state this.
 
 ### Human evaluation
 
-Pending: a rater pack (`outputs/rating/rater_1.html`, `rater_2.html`, `rater_3.html`, plus a blank
+A rater pack (`outputs/rating/rater_1.html`, `rater_2.html`, `rater_3.html`, plus a blank
 `outputs/rating/blind_rating_sheet.csv`) holds 25 blind pairs of rank 32 vs. the base model, left/right
 randomized by seed 266 -- the same 25 pairs in the same order for every rater -- with no filename or model
-name anywhere in the page so the comparison stays blind. The answer key is kept off GitHub and off the
-shared Drive folder until ratings are collected. Once rated CSVs come back, the win rate and inter-rater
-agreement will be added here.
+name anywhere in the page so the comparison stays blind.
+
+**Raters in: rater_1 (manav), 25/25 pairs rated** (`outputs/rating/rater_1_ratings.csv`). Missing: rater_2
+(pramod), rater_3 (outside rater 1).
+
+**Win rate: not computable from this environment.** `blind_answer_key.csv` (which pair had the final
+model on the left vs. right) is kept only on the shared Drive folder the real Kaggle/Colab run wrote it
+to, deliberately separate from the rating pack itself so sharing the pack can never leak the answer --
+it is not present locally. Once that file is supplied, `score_blind_ratings()` in `p2_generate_eval.ipynb`
+will compute the real win rate per rater and overall.
+
+**Inter-rater agreement (Fleiss' kappa, percent agreement): not computable yet** -- needs 3 raters in;
+only rater_1 is in so far.
 
 ## Hugging Face
 

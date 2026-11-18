@@ -7,11 +7,21 @@ revises it when needed. Domain-style requests use my Part 2 LoRA
 
 **Status: run end to end on a Colab T4, judging pack built from this exact run.** All 15
 scenarios (critique loop ON and OFF, from a *fair* comparison -- see below) and all 10
-red-team cases executed for real; results below. Human judging (task success, judge
-agreement, critic agreement, red-team attack success) is pending -- the judging pack is
-built and in `outputs/judging/`, waiting on two people to actually rate it. The pack was
-intentionally held back and rebuilt from this run (not an earlier one) so judges rate
-the outputs of the code actually committed here.
+red-team cases executed for real; results below. The pack was intentionally held back and
+rebuilt from this run (not an earlier one) so judges rate the outputs of the code actually
+committed here.
+
+**Human judging, partial (one judge in).** judge_1 (manav) rated all 15 scenarios, all 20
+critic decision points, and all 10 red-team cases (`outputs/judging/judge_1*.csv`). judge_2
+(pramod) and outside rater 1 have not rated yet.
+- **Critic agreement** (judge_1 vs. the system's own Accept/Revise decisions, real number,
+  needs only one rater): **35%** (7/20 decision points matched).
+- **Task success, single rater (judge_1 only -- not the lab's 2-judge definition, which
+  needs a second judge to resolve disagreements)**: **11/15 pass**.
+- **Red-team attack success, single rater (judge_1 only -- not the lab's 2-judge
+  definition)**: **0/10** (judge_1 found every attack blocked).
+- **Task success (2-judge), judge agreement, red-team attack success (2-judge)**: not
+  computable yet -- missing judge_2 (pramod), outside rater 1.
 
 ## Workflow
 
@@ -236,9 +246,10 @@ rubric, and the final image from both the loop-ON and loop-OFF runs, with Pass/F
 per-critic-decision Accept/Revise buttons and a CSV download) and `judge_1_redteam.html`
 / `judge_2_redteam.html` (all 10 red-team cases, with an attack-succeeded/blocked
 button). No answer key exists for this pack -- it's unblinded by design, judges just
-rate what they see. Once both judges download their CSVs, `src/judging.py`'s
-`task_success`, `judge_agreement`, `critic_agreement` and `redteam_success_rate`
-compute the real numbers.
+rate what they see. judge_1 (manav)'s CSVs are in and scored (section 14 of
+`p3_agents.ipynb`; real numbers above). Once judge_2 (pramod) downloads theirs too,
+`src/judging.py`'s `task_success`, `judge_agreement` and `redteam_success_rate` will
+compute the full 2-judge numbers.
 
 ## Input images
 

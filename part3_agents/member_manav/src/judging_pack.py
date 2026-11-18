@@ -47,12 +47,12 @@ body {{ font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 100
 button.choice {{ padding: 6px 16px; margin-right: 8px; margin-top: 8px; cursor: pointer; }}
 button.choice.selected {{ background: #2563eb; color: white; }}
 #bar {{ position: sticky; top: 0; background: white; padding: 10px 0; border-bottom: 1px solid #ccc; z-index: 10; }}
-#download {{ padding: 10px 20px; font-weight: 600; cursor: pointer; }}
+#downloadPF, #downloadCritic {{ padding: 10px 20px; font-weight: 600; cursor: pointer; }}
 .critic-row {{ font-size: 13px; margin: 4px 0; }}
 </style></head><body>
 <div id="bar"><strong>Judge:</strong> <input id="judgeName" value="{judge_id}">
 &nbsp; <span id="progress">0 / {n} scenarios rated</span> &nbsp;
-<button id="download">Download CSVs</button></div>
+<button id="downloadPF">Download pass/fail CSV</button> <button id="downloadCritic">Download critic CSV</button></div>
 <p>For each scenario: look at the request, each agent's output, the rubric, and the two
 final images (critique loop ON vs. OFF). Mark Pass or Fail for the scenario overall, and
 Accept or Revise for each point where the Critique agent made a decision (this measures
@@ -111,11 +111,14 @@ function downloadCsv(filename, rows) {{
   a.download = filename;
   a.click();
 }}
-document.getElementById("download").addEventListener("click", () => {{
+document.getElementById("downloadPF").addEventListener("click", () => {{
   const name = document.getElementById("judgeName").value.trim().replace(/[^a-zA-Z0-9_-]/g, "_") || "{judge_id}";
   const pfRows = ["scenario_id,pass_fail"];
   SCENARIOS.forEach(s => {{ pfRows.push(`${{s.id}},${{choices[s.id] || ""}}`); }});
   downloadCsv(`${{name}}.csv`, pfRows);
+}});
+document.getElementById("downloadCritic").addEventListener("click", () => {{
+  const name = document.getElementById("judgeName").value.trim().replace(/[^a-zA-Z0-9_-]/g, "_") || "{judge_id}";
   const criticRows = ["scenario_id,decision_point,judge_decision,system_decision"];
   SCENARIOS.forEach(s => {{
     s.critic_points.forEach((cp, i) => {{

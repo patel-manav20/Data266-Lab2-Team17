@@ -20,7 +20,7 @@ button.choice.selected { background: #2563eb; color: white; }
 </style></head><body>
 <div id="bar"><strong>Judge:</strong> <input id="judgeName" value="judge_1">
 &nbsp; <span id="progress">0 / 15 scenarios rated</span> &nbsp;
-<button id="download">Download CSVs</button></div>
+<button id="downloadPF">Download pass/fail CSV</button> <button id="downloadCritic">Download critic CSV</button></div>
 <p>For each scenario: look at the request, each agent's output, the rubric, and the two
 final images (critique loop ON vs. OFF). Mark Pass or Fail for the scenario overall, and
 Accept or Revise for each point where the Critique agent made a decision (this measures
@@ -79,11 +79,14 @@ function downloadCsv(filename, rows) {
   a.download = filename;
   a.click();
 }
-document.getElementById("download").addEventListener("click", () => {
+document.getElementById("downloadPF").addEventListener("click", () => {
   const name = document.getElementById("judgeName").value.trim().replace(/[^a-zA-Z0-9_-]/g, "_") || "judge_1";
   const pfRows = ["scenario_id,pass_fail"];
   SCENARIOS.forEach(s => { pfRows.push(`${s.id},${choices[s.id] || ""}`); });
   downloadCsv(`${name}.csv`, pfRows);
+});
+document.getElementById("downloadCritic").addEventListener("click", () => {
+  const name = document.getElementById("judgeName").value.trim().replace(/[^a-zA-Z0-9_-]/g, "_") || "judge_1";
   const criticRows = ["scenario_id,decision_point,judge_decision,system_decision"];
   SCENARIOS.forEach(s => {
     s.critic_points.forEach((cp, i) => {

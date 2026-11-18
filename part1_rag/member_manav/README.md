@@ -250,8 +250,14 @@ above, stated as the baseline-vs-final comparison specifically.
 | primary | correct answers out of 25 golden (score >= 0.8) | 15/25 (60%) |
 | secondary | Recall@5 (golden, hybrid retrieval) | 0.92 |
 | secondary | citation accuracy (citations component, v35 config) | 0.7867 |
-| human | groundedness rating (both members) | pending -- see "(d) Human rating of groundedness" |
+| human | groundedness rating, manav (n=25, 1-5) | mean 4.56 -- see "(d) Human rating of groundedness" |
 | efficiency | median seconds per question (v35 real 40-question run) | 0.14 s |
+
+**Human rating of groundedness** (`p1_eval.ipynb` section (d), `outputs/p1_eval_groundedness_results.csv`).
+manav rated all 25 golden answers on a 1-5 groundedness scale against their own cited evidence: mean
+**4.56** (16 fives, 8 fours, 1 two). Raters in: manav. Missing: pramod, outside rater 1 -- neither has
+rated yet. Exact/within-1 agreement and the weighted Cohen's kappa between raters are not computable with
+only one rater in; both will be added once a second rater's sheet is filled in.
 
 **Retrieval (Recall@k, MRR).** On the golden set, hybrid retrieval beats dense-only (MRR 0.844 vs 0.778,
 R@1 0.76 vs 0.68); on the auto-generated drop-clause questions (100, made from the corpus's own sentences)
