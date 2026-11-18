@@ -70,7 +70,7 @@ Safety below) -- nothing is ever regenerated or replaced, the flag just isn't al
 
 | metric | rank 8 | rank 32 | base |
 |---|---|---|---|
-| KID, without flagged (used by the rule) | 0.0642 +/- 0.0101 (n=16) | 0.0349 +/- 0.0074 (n=17) | 0.0909 +/- 0.0091 (n=20) |
+| KID, without flagged (used by the rule) | 0.0642 +/- 0.0101 (n=16) | 0.0349 +/- 0.0074 (n=17) | 0.0909 +/- 0.0137 (n=20) |
 | KID, all images | 0.0896 +/- 0.0084 | 0.0472 +/- 0.0063 | 0.0909 +/- 0.0091 |
 | CLIP score, without flagged (mean, all 20 prompts) | 27.94 | 28.23 | 29.24 |
 | LPIPS, without flagged pairs (seed 0 vs. seed 1, mean) | 0.7670 | 0.7517 | 0.8132 |
@@ -148,11 +148,10 @@ name anywhere in the page so the comparison stays blind.
 **Raters in: rater_1 (manav), 25/25 pairs rated** (`outputs/rating/rater_1_ratings.csv`). Missing: rater_2
 (pramod), rater_3 (outside rater 1).
 
-**Win rate: not computable from this environment.** `blind_answer_key.csv` (which pair had the final
-model on the left vs. right) is kept only on the shared Drive folder the real Kaggle/Colab run wrote it
-to, deliberately separate from the rating pack itself so sharing the pack can never leak the answer --
-it is not present locally. Once that file is supplied, `score_blind_ratings()` in `p2_generate_eval.ipynb`
-will compute the real win rate per rater and overall.
+**Win rate, rater_1 (manav) only: 0.40** (10 of 25 pairs preferred the final run over the base model;
+`score_blind_ratings()` in `p2_generate_eval.ipynb`, `blind_answer_key.csv` supplied). This single rater
+preferred the base model on more pairs than the final run -- rater_2 (pramod) and rater_3 (outside rater
+1) are still missing, so this is not yet the overall win rate the lab asks for, only one rater's.
 
 **Inter-rater agreement (Fleiss' kappa, percent agreement): not computable yet** -- needs 3 raters in;
 only rater_1 is in so far.

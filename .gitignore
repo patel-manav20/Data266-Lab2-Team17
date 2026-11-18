@@ -32,3 +32,4 @@ __pycache__/
 venv/
 wandb/
 lightning_logs/
+part2_diffusion/member_manav/outputs/rating/blind_answer_key.csv

@@ -123,15 +123,15 @@ human judges -- see below.
 
 | id | route | CLIP (ON) | CLIP (OFF) | attempts (ON) | attempts (OFF) | time ON (s) | time OFF (s) |
 |---|---|---|---|---|---|---|---|
-| S04 | style_change | 0.370 | 0.318 | 3 | 1 | 52.6 | 14.2 |
-| S05 | style_change | 0.296 | 0.296 | 1 | 1 | 15.0 | 14.8 |
-| S06 | style_change | 0.369 | 0.274 | 2 | 1 | 23.8 | 14.2 |
-| S07 | edit | 0.291 | 0.289 | 3 | 1 | 58.6 | 20.3 |
-| S08 | edit | 0.342 | 0.333 | 3 | 1 | 37.7 | 17.3 |
-| S09 | edit | 0.311 | 0.288 | 3 | 1 | 38.3 | 17.7 |
-| S10 | domain_style | 0.305 | 0.305 | 1 | 1 | 11.1 | 7.4 |
-| S11 | domain_style | 0.300 | 0.300 | 1 | 1 | 16.9 | 14.3 |
-| S12 | domain_style | 0.276 | 0.223 | 3 | 1 | 25.8 | 7.5 |
+| S04 | style_change | 0.370 | 0.318 | 3 | 1 | 53.7 | 14.1 |
+| S05 | style_change | 0.296 | 0.296 | 1 | 1 | 14.5 | 14.3 |
+| S06 | style_change | 0.369 | 0.274 | 2 | 1 | 23.0 | 13.9 |
+| S07 | edit | 0.291 | 0.289 | 3 | 1 | 57.7 | 19.5 |
+| S08 | edit | 0.342 | 0.333 | 3 | 1 | 36.6 | 16.9 |
+| S09 | edit | 0.311 | 0.288 | 3 | 1 | 35.3 | 16.4 |
+| S10 | domain_style | 0.305 | 0.305 | 1 | 1 | 12.6 | 7.0 |
+| S11 | domain_style | 0.300 | 0.300 | 1 | 1 | 17.1 | 13.9 |
+| S12 | domain_style | 0.276 | 0.223 | 3 | 1 | 24.9 | 7.1 |
 
 **Mean CLIP, loop ON: 0.318 (n=9). Mean CLIP, loop OFF: 0.292 (n=9).** ON is now
 consistently >= OFF (the fairness check above), as it should be: ON always has at least
@@ -272,7 +272,10 @@ files (a 0-byte file and a truncated JPEG, used to test error handling) are not 
    `False` so this does not block on the Gradio app.
 4. To see the app and take a screenshot, run Section 13 separately on the same live
    session afterward (it launches non-blocking with `share=True`, drives one scenario
-   through a real Playwright browser, screenshots it, then shuts the app down).
+   through a real Playwright browser, screenshots it, then shuts the app down). The real
+   screenshot from that run is saved at `outputs/app_screenshot.png`.
+
+![Gradio app screenshot](outputs/app_screenshot.png)
 
 Traces save to `/content/p3_outputs/traces/` during a run (and a copy ships in
 `outputs/traces/` here); test images build into `/content/p3_images/` (reproducible,
