@@ -3,9 +3,9 @@ Members: Manav Patel (019162455), Pramodsatya Dindukurthi (019124612)
 
 # GitHub
 Repository: https://github.com/patel-manav20/Data266-Lab2-Team17
-p1-v1.0 commit: <commit hash>
-p2-v1.0 commit: <commit hash>
-p3-v1.0 commit: <commit hash>
+p1-v1.0 commit: 8edfb9dfe9409888d03cf081aa90a4bfda590470
+p2-v1.0 commit: 8edfb9dfe9409888d03cf081aa90a4bfda590470
+p3-v1.0 commit: 8edfb9dfe9409888d03cf081aa90a4bfda590470
 
 # Kaggle (Part 1)
 Kaggle team name: Pair_Programming_Team_17
