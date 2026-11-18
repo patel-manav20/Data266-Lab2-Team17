@@ -1,0 +1,31 @@
+sid,group,critique,route,status,revisions,clip,critic_decisions,auto_pass,seconds,message,trace
+S01,caption_question,True,caption_question,done,0,,[],True,12.38,"The main subject is a ginger cat, which appears to be awake and relaxed on a blue couch. The setting is indoors, likely in a living room, with a window allowing natural light to enter the space.",6ed7e49b
+S02,caption_question,True,caption_question,done,0,,[],True,13.95,The image shows a street scene with red buildings and parked cars. A sign reading 'Dean' is visible on one of the buildings. The setting appears to be an urban area with a mix of commercial and reside,28e853d3
+S03,caption_question,True,caption_question,done,0,,[],True,11.62,"The meeting is scheduled for 3 PM. Text visible in the image: ""Shopping list: milk, eggs, bread. Meeting at 3 PM."".",08ae6dcb
+S04,style_change,True,style_change,done,0,0.2408,['accept'],False,25.98,Accepted after 0 revision(s).,afe8c6e4
+S05,style_change,True,style_change,done,2,0.2629,"['revise', 'revise', 'accept_best']",True,58.41,Accepted after 2 revision(s).,9b5d7c0c
+S06,style_change,True,style_change,done,2,0.3248,"['revise', 'revise', 'accept_best']",True,54.57,Accepted after 2 revision(s).,330edb5b
+S07,edit,True,edit,done,2,0.2348,"['revise', 'revise', 'accept_best']",False,69.76,Accepted after 2 revision(s).,46770dc3
+S08,edit,True,edit,done,1,0.2486,"['revise', 'accept']",False,49.97,Accepted after 1 revision(s).,ae801be0
+S09,edit,True,edit,done,1,0.265,"['revise', 'accept']",True,42.2,Accepted after 1 revision(s).,efbea4df
+S10,domain_style,True,domain_style,done,0,0.3005,['accept'],True,23.95,Accepted after 0 revision(s).,48e62b63
+S11,domain_style,True,domain_style,done,2,0.238,"['revise', 'revise', 'accept_best']",False,50.45,Accepted after 2 revision(s).,c3a4d599
+S12,domain_style,True,domain_style,done,0,0.3057,['accept'],True,23.06,Accepted after 0 revision(s).,7b88caa2
+S13,ambiguous_broken,True,ambiguous,clarify,0,,[],True,0.02,"Your request is ambiguous. Do you want a style change (e.g. watercolor), a specific edit (e.g. add snow), or a description of the image?",26287329
+S14,ambiguous_broken,True,,error,0,,[],True,0.0,The file could not be read as an image (OSError). Please upload a valid PNG or JPEG.,21ef32c8
+S15,ambiguous_broken,True,caption_question,done,0,,[],True,11.71,"The image shows a close-up of red apples and bananas placed on a wooden surface, likely a table or countertop. (Note: the image is very blurry.)",8bcc8849
+S01,caption_question,False,caption_question,done,0,,[],True,12.68,"The main subject is a ginger cat, which appears to be awake and relaxed on a blue couch. The setting is indoors, likely in a living room, with a window allowing natural light to enter the space.",68e0d015
+S02,caption_question,False,caption_question,done,0,,[],True,14.2,The image shows a street scene with red buildings and parked cars. A sign reading 'Dean' is visible on one of the buildings. The setting appears to be an urban area with a mix of commercial and reside,04751598
+S03,caption_question,False,caption_question,done,0,,[],True,11.55,"The meeting is scheduled for 3 PM. Text visible in the image: ""Shopping list: milk, eggs, bread. Meeting at 3 PM."".",17675799
+S04,style_change,False,style_change,done,0,0.2408,[],False,21.84,Image generated (critique loop disabled).,03e58f33
+S05,style_change,False,style_change,done,0,0.2772,[],True,21.63,Image generated (critique loop disabled).,30955c9c
+S06,style_change,False,style_change,done,0,0.2905,[],True,19.74,Image generated (critique loop disabled).,b7d070fa
+S07,edit,False,edit,done,0,0.2107,[],False,24.19,Image generated (critique loop disabled).,c680b73a
+S08,edit,False,edit,done,0,0.136,[],False,25.64,Image generated (critique loop disabled).,3f1c25b3
+S09,edit,False,edit,done,0,0.2592,[],True,24.13,Image generated (critique loop disabled).,beb3d6db
+S10,domain_style,False,domain_style,done,0,0.3005,[],True,22.4,Image generated (critique loop disabled).,d6451200
+S11,domain_style,False,domain_style,done,0,0.238,[],False,21.78,Image generated (critique loop disabled).,974889ea
+S12,domain_style,False,domain_style,done,0,0.3057,[],True,21.44,Image generated (critique loop disabled).,a37e5471
+S13,ambiguous_broken,False,ambiguous,clarify,0,,[],True,0.02,"Your request is ambiguous. Do you want a style change (e.g. watercolor), a specific edit (e.g. add snow), or a description of the image?",fa499a20
+S14,ambiguous_broken,False,,error,0,,[],True,0.0,The file could not be read as an image (OSError). Please upload a valid PNG or JPEG.,b15b4cee
+S15,ambiguous_broken,False,caption_question,done,0,,[],True,11.42,"The image shows a close-up of red apples and bananas placed on a wooden surface, likely a table or countertop. (Note: the image is very blurry.)",4231877c

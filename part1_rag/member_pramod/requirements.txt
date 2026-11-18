@@ -1,0 +1,12 @@
+# Versions measured in the final Kaggle run (T4, Python 3.13.16). The notebook installs them with %pip.
+torch==2.11.0
+transformers==5.20.2
+accelerate==1.15.0
+bitsandbytes==0.50.2
+sentence-transformers==5.7.0
+chromadb==1.5.9
+rank-bm25==0.2.2
+pymupdf==2.1
+qwen-vl-utils==0.0.14
+pandas
+numpy
