@@ -16,5 +16,10 @@ Every commit on `member_manav` made with Claude Code carries a `Co-Authored-By: 
 
 ## Pramod
 
+(to be confirmed by Pramod -- drafted from what his commits and README show, not from a direct
+statement by him)
+
 | Tool | Used for |
 |---|---|
+| Claude Opus 5.5 | 50 of his 52 commits on `member_pramod` carry a `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` trailer (`git log member_pramod`), across all three parts. |
+| Codex | One commit's subject line is explicitly marked "(changes by Codex)" (`8dc1570`, Part 2: Drive persistence, input validation, CPU tests). His own `part2_diffusion/member_pramod/README.md` states under "AI tools used": "Codex reviewed and fixed the training/evaluation workflow and added CPU regression checks." |
