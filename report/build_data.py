@@ -198,8 +198,8 @@ Pramod r32 (final) & 6{,}377{,}472 & 4.35 & -- & 0.797 \\
 \end{tabular}
 \end{table}
 """ % (
-    manav_r8[1], manav_r8[7], manav_r8[9], manav_r8[10],
-    manav_r32[1], manav_r32[7], manav_r32[9], manav_r32[10],
+    f"{int(manav_r8[1]):,}".replace(",", "{,}"), manav_r8[7], manav_r8[9], manav_r8[10],
+    f"{int(manav_r32[1]):,}".replace(",", "{,}"), manav_r32[7], manav_r32[9], manav_r32[10],
 ))
 
 # Verify every literal used in the Part 2 results table actually appears in the
